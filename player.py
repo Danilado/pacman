@@ -24,13 +24,17 @@ class Pacman:
         self.screen = window
         self.dead = False
         self.dead_sound = pygame.mixer.Sound("./sounds/death_1.wav")
-        self.dead_channel = None
+        self.dead_channel = pygame.mixer.Channel(1)
+        self.dead_sound_playing = False
         self.invincible = 0
         self.eaten = 0
         self.lives = 3
         self.last = pygame.time.get_ticks()
         self.eat_ghost_sound = pygame.mixer.Sound("./sounds/eat_ghost.wav")
-        self.eat_ghost_channel = None
+        self.eat_channel = pygame.mixer.Channel(2)
+        self.eat_sound1 = pygame.mixer.Sound("./sounds/munch_1.wav")
+        self.eat_sound2 = pygame.mixer.Sound("./sounds/munch_2.wav")
+        self.current_eat_sound_index = 1
 
     def draw(self):
         img = img_load(f'./textures/pacsprites/pacman{self.vec}.png')
@@ -39,16 +43,26 @@ class Pacman:
         self.screen.blit(img, (self.x - 4, self.y - 4))
 
     def play_dead_sound(self):
-        if self.dead_channel is None:
-            self.dead_channel = self.dead_sound.play()
-        is_audio_running = self.dead_channel.get_busy()
-        return is_audio_running
+        if not self.dead_sound_playing:
+            self.dead_channel.play(self.dead_sound)
+            self.dead_sound_playing = True
+        return self.dead_channel.get_busy()
 
     def play_eat_ghost_sound(self):
-        if self.eat_ghost_channel is None:
-            self.eat_ghost_channel = self.eat_ghost_sound.play()
-        is_audio_running = self.eat_ghost_channel.get_busy()
+        is_audio_running = self.eat_channel.get_busy()
+        if not is_audio_running:
+            self.eat_channel.play(self.eat_ghost_sound)
+        is_audio_running = self.eat_channel.get_busy()
         return is_audio_running
+
+    def play_munch_sound(self):
+        if not self.eat_channel.get_busy():
+            if self.current_eat_sound_index == 1:
+                self.eat_channel.play(self.eat_sound1)
+                self.current_eat_sound_index += 1
+            elif self.current_eat_sound_index == 2:
+                self.eat_channel.play(self.eat_sound2)
+                self.current_eat_sound_index = 1
 
     def _update_energizer_effect(self, ghosts: List["MainGhost"]):
         global score
@@ -93,6 +107,7 @@ class Pacman:
                 score += 10
                 game_map[int(self.y // 8)][int(self.x // 8)] = 5
                 game_simplified_map[int(self.y // 8)][int(self.x // 8)] = 5
+                self.play_munch_sound()
             # коллизия с батарейкой
             if game_map[int(self.y // 8)][int(self.x // 8)] == 4:
                 self.invincible = 1
