@@ -29,6 +29,7 @@ class Pacman:
         self.eaten = 0
         self.lives = 3
         self.last = pygame.time.get_ticks()
+        self.in_energizer = False
         self.eat_ghost_sound = pygame.mixer.Sound("./sounds/eat_ghost.wav")
         self.eat_ghost_channel = None
 
@@ -53,7 +54,7 @@ class Pacman:
     def _update_energizer_effect(self, ghosts: List["MainGhost"]):
         global score
         now = pygame.time.get_ticks()
-        if now - self.last <= 7000:
+        if self.in_energizer and now - self.last <= 7000:
             rect = pygame.rect.Rect(self.x - 4, self.y - 4, 8, 8)
             for ghost in ghosts:
                 if rect.colliderect(ghost.position):
@@ -64,6 +65,7 @@ class Pacman:
                     self.play_eat_ghost_sound()
         if now - self.last >= 7000:
             self.invincible = 0
+            self.in_energizer = False
 
     def upd(self, ghosts: List["MainGhost"]):
         global score
@@ -101,6 +103,7 @@ class Pacman:
                 game_map[int(self.y // 8)][int(self.x // 8)] = 5
                 game_simplified_map[int(self.y // 8)][int(self.x // 8)] = 5
                 self.last = pygame.time.get_ticks()
+                self.in_energizer = True
 
             self._update_energizer_effect(ghosts)
 
