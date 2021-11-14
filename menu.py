@@ -4,6 +4,7 @@ import pygame
 
 import player
 from game import main
+from input_name_menu import ask_name
 from perfomance import img_load
 from store_score import store_score
 from store_score_menu import store_score_menu
@@ -56,6 +57,8 @@ class Button:
                     and self.is_over(pygame.mouse.get_pos()) \
                     and self.action:
                 self.action()
+                return True
+        return False
 
     def is_over(self, pos):
         if self.x < pos[0] < self.x + self.width:
@@ -71,9 +74,9 @@ def play():
     global in_game
     in_game = True
     main()
-    pygame.init()
     time.sleep(0.3)  # Костыль
     in_game = False  # Но почему ?
+    store_score(player.score, ask_name())
     options_menu()  # Но зачем ?
 
 
@@ -83,7 +86,6 @@ def exit_game():
 
 
 def options_menu():
-    store_score(player.score)
     main_screen = pygame.display.set_mode((1066, 600))
     settings = GuiSettings()
     clock = pygame.time.Clock()

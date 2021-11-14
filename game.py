@@ -90,4 +90,3 @@ def main():
         done = done or (pac.dead and not pac.play_dead_sound())
         pygame.display.flip()
         clock.tick(120)
-    pygame.quit()

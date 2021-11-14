@@ -1,26 +1,31 @@
+import csv
 import os.path
 
-filename = "top_score.txt"
+filename = "top_score.csv"
 max_store = 5
 
 
 def get_scores():
+    if not os.path.exists(filename):
+        clear_scores()
     with open(filename, "r", encoding="ascii") as file:
-        for line in file:
-            if line != "":
-                yield int(line)
+        reader = csv.reader(file)
+        for line in reader:
+            yield line[0], int(line[1])
 
 
 def clear_scores():
     open(filename, "w", encoding="ascii").close()
 
 
-def store_score(score: int):
+def store_score(score: int, nickname: str):
     if not os.path.exists(filename):
         clear_scores()
     scores = list(get_scores())[:(max_store-1)]
-    scores.append(score)
-    scores.sort(reverse=True)
+    scores.append((nickname, score))
+    scores.sort(key=lambda item: item[1], reverse=True)
+    print(scores)
     with open(filename, "w", encoding="ascii") as file:
-        for score in scores:
-            file.write(f"{score}\n")
+        writer = csv.writer(file)
+        for nickname, score in scores:
+            writer.writerow((nickname, score))
