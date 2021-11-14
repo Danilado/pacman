@@ -23,10 +23,9 @@ def complement(r, g, b):
 
 
 def render_scores(main_screen, text_font: pygame.font.Font, color):
-    for index, result in enumerate(get_scores()):
-        text = f"{index + 1}) {result}"
+    for index, score in enumerate(get_scores()):
+        text = f"{index + 1}) {score[0]}: {score[1]}"
         pos = (1066//2 - (text_font.size(text)[0])//2 - 15, 100 + 100 * (index + 1))
-        print(text, pos)
         main_screen.blit(
             text_font.render(text, False, color),
             pos
@@ -40,10 +39,10 @@ def store_score_menu():
 
     text_font = pygame.font.SysFont("Arial", 32)
 
+    back_color = (randint(0, 255), randint(0, 255), randint(0, 255))
+    # noinspection PyTypeChecker
+    text_color: Tuple[int, int, int] = complement(back_color[0], back_color[1], back_color[2])
     while running:
-        back_color = (randint(0, 255), randint(0, 255), randint(0, 255))
-        # noinspection PyTypeChecker
-        text_color: Tuple[int, int, int] = complement(back_color[0], back_color[1], back_color[2])
 
         clock.tick(120)
         pygame.display.flip()
