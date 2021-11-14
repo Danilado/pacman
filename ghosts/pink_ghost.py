@@ -43,7 +43,6 @@ class PinkGhostLogic(AbstractGhostLogic):
 
         if self.timeout == 0:
             if list(self.main_ghost.position_in_blocks) in self.main_ghost.trigger_blocks:  # я где
-                print(f'Triggered!')
                 dirs = {}
                 direction = ''
                 if game_map[self.main_ghost.position_in_blocks[1] - 1][self.main_ghost.position_in_blocks[0]] != 0:
@@ -71,7 +70,6 @@ class PinkGhostLogic(AbstractGhostLogic):
                         direction = 'right'
                     elif dirs[direction] > dirs['right']:
                         direction = 'right'
-                print(f'{dirs} {direction}')
                 self.timeout = 1
                 self.timer = 27
                 if direction == "up" or direction == "back":

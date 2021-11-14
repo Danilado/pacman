@@ -36,6 +36,7 @@ class Pacman:
         self.eat_sound1 = pygame.mixer.Sound("./sounds/munch_1.wav")
         self.eat_sound2 = pygame.mixer.Sound("./sounds/munch_2.wav")
         self.current_eat_sound_index = 1
+        self.remember_vec = -1
 
     def draw(self):
         img = img_load(f'./textures/pacsprites/pacman{self.vec}.png')
@@ -96,6 +97,35 @@ class Pacman:
                 self.x -= self.vel
             if self.vec == 3:
                 self.y += self.vel
+
+        # 1 /\
+        # 3 \/
+        # 2 <
+        # 0 >
+
+        # print(f'{self.vec} {self.remember_vec}')
+
+        # БЛОК ПРОВЕРКИ НА ЗАПОМИНАНИЯ
+        if (game_map[int(self.y // 8)][int(self.x // 8) + 1] == 3 or game_map[int(self.y // 8)][int(self.x // 8) + 1] == 4 or game_map[int(self.y // 8)][int(self.x // 8) + 1] == 5) and self.remember_vec == 0:
+            if self.vec == 1:
+                self.y -= 8
+            self.vec = self.remember_vec
+            self.remember_vec = -1
+        if (game_map[int(self.y // 8)][int(self.x // 8) - 1] == 3 or game_map[int(self.y // 8)][int(self.x // 8) - 1] == 4 or game_map[int(self.y // 8)][int(self.x // 8) - 1] == 5) and self.remember_vec == 2:
+            if self.vec == 1:
+                self.y -= 8
+            self.vec = self.remember_vec
+            self.remember_vec = -1
+        if (game_map[int(self.y // 8) + 1][int(self.x // 8)] == 3 or game_map[int(self.y // 8) + 1][int(self.x // 8)] == 4 or game_map[int(self.y // 8) + 1][int(self.x // 8)] == 5) and self.remember_vec == 3:
+            if self.vec == 2:
+                self.x -= 8
+            self.vec = self.remember_vec
+            self.remember_vec = -1
+        if (game_map[int(self.y // 8) - 1][int(self.x // 8)] == 3 or game_map[int(self.y // 8) - 1][int(self.x // 8)] == 4 or game_map[int(self.y // 8) - 1][int(self.x // 8)] == 5) and self.remember_vec == 1:
+            if self.vec == 2:
+                self.x -= 8
+            self.vec = self.remember_vec
+            self.remember_vec = -1
 
         # Дебаг
         # print(f'{self.x} {self.y} {self.vec} {map[int(self.y//8)][int(self.x//8)]} {self.status}')
@@ -161,26 +191,47 @@ class Pacman:
                         break
 
     def process_event(self, event: pygame.event.Event):
+        # ПРОВЕРКА НА ПОВОРОТ И ЗАПОМИНАНИЕ В СЛУЧИИ ЕГО ОТСУТСВИЯ
         if event.key == pygame.K_a or event.key == pygame.K_LEFT:
-            if self.status != 'hit-2':
-                self.status = 'unhit'
-                self.vec = 2
-                self.number_image = 2
+            if game_map[int(self.y // 8)][int(self.x // 8) - 1] == 3 or game_map[int(self.y // 8)][int(self.x // 8) - 1] == 5 or game_map[int(self.y // 8)][int(self.x // 8) - 1] == 4:
+                if self.status != 'hit-2':
+                    self.y = round(self.y/8)*8
+                    self.status = 'unhit'
+                    self.vec = 2
+                    self.number_image = 2
+                    self.remember_vec = -1
+            elif game_map[int(self.y // 8)][int(self.x // 8)-1] == 0:
+                self.remember_vec = 2
 
         if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
-            if self.status != 'hit-0':
-                self.status = 'unhit'
-                self.vec = 0
-                self.number_image = 0
+            if game_map[int(self.y // 8)][int(self.x // 8) + 1] == 3 or game_map[int(self.y // 8)][int(self.x // 8) + 1] == 5 or game_map[int(self.y // 8)][int(self.x // 8) + 1] == 4:
+                if self.status != 'hit-0':
+                    self.y = round(self.y/8)*8
+                    self.status = 'unhit'
+                    self.vec = 0
+                    self.number_image = 0
+                    self.remember_vec = -1
+            elif game_map[int(self.y // 8)][int(self.x // 8)+1] == 0:
+                self.remember_vec = 0
 
         if event.key == pygame.K_w or event.key == pygame.K_UP:
-            if self.status != 'hit-1':
-                self.status = 'unhit'
-                self.vec = 1
-                self.number_image = 1
+            if game_map[int(self.y // 8) - 1][int(self.x // 8)] == 3 or game_map[int(self.y // 8) - 1][int(self.x // 8)] == 5 or game_map[int(self.y // 8) - 1][int(self.x // 8)] == 4:
+                if self.status != 'hit-1':
+                    self.x = round(self.x/8)*8
+                    self.status = 'unhit'
+                    self.vec = 1
+                    self.number_image = 1
+                    self.remember_vec = -1
+            elif game_map[int(self.y // 8)-1][int(self.x // 8)] == 0:
+                self.remember_vec = 1
 
         if event.key == pygame.K_s or event.key == pygame.K_DOWN:
-            if self.status != 'hit-3':
-                self.status = 'unhit'
-                self.vec = 3
-                self.number_image = 3
+            if game_map[int(self.y // 8) + 1][int(self.x // 8)] == 3 or game_map[int(self.y // 8) + 1][int(self.x // 8)] == 5 or game_map[int(self.y // 8) + 1][int(self.x // 8)] == 4:
+                if self.status != 'hit-3':
+                    self.x = round(self.x/8)*8
+                    self.status = 'unhit'
+                    self.vec = 3
+                    self.number_image = 3
+                    self.remember_vec = -1
+            elif game_map[int(self.y // 8)+1][int(self.x // 8)] == 0:
+                self.remember_vec = 3

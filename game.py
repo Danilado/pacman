@@ -2,6 +2,8 @@ from typing import List
 
 import pygame
 
+import globalvars
+
 import player
 from ghosts.blue_ghost import BlueGhostLogic
 from ghosts.core import MainGhost
@@ -53,11 +55,12 @@ def main():
     done = False
     pac = player.Pacman(w / 2 - 4, h / 2 + 6 * 8 + 8, screen)
 
-    orange_ghost = MainGhost(OrangeGhostLogic, screen)
-    red_ghost = MainGhost(RedGhostLogic, screen)
-    pink_ghost = MainGhost(PinkGhostLogic, screen)
-    blue_ghost = MainGhost(BlueGhostLogic, screen)
-    ghosts: List[MainGhost] = [orange_ghost, red_ghost, pink_ghost, blue_ghost]
+    if not globalvars.ghostless:
+        orange_ghost = MainGhost(OrangeGhostLogic, screen)
+        red_ghost = MainGhost(RedGhostLogic, screen)
+        pink_ghost = MainGhost(PinkGhostLogic, screen)
+        blue_ghost = MainGhost(BlueGhostLogic, screen)
+        ghosts: List[MainGhost] = [orange_ghost, red_ghost, pink_ghost, blue_ghost]
 
     audio_sound = pygame.mixer.Sound("./sounds/game_start.wav")
     audio_channel = pygame.mixer.Channel(0)
@@ -79,14 +82,20 @@ def main():
         screen.fill((0, 0, 0))
         render(screen, player.game_simplified_map)
         # MainGhost.draw_trigger_blocks(screen)
-        for ghost in ghosts:
-            ghost.draw(screen)
-        if pygame.time.get_ticks() % 16 == 0 or not audio_channel.get_busy():
-            pac.draw()
-        if not audio_channel.get_busy() and not pac.dead:
-            pac.upd(ghosts)
+
+        if not globalvars.ghostless:
             for ghost in ghosts:
-                ghost.update(pac, ghosts)
+                ghost.draw(screen)
+
+            if not audio_channel.get_busy() and not pac.dead:
+                pac.upd(ghosts)
+                for ghost in ghosts:
+                    ghost.update(pac, ghosts)
+        elif not audio_channel.get_busy() and not pac.dead: 
+            pac.upd([])
+
+        if pygame.time.get_ticks() % 16 <= 10 or not audio_channel.get_busy():
+            pac.draw()
         done = done or (pac.dead and not pac.play_dead_sound())
         pygame.display.flip()
         clock.tick(120)
