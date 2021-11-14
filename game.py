@@ -46,8 +46,8 @@ def pause(clock: pygame.time.Clock):
 
 
 def main():
-    player.game_simplified_map = sprited
-    player.game_map = simplified
+    player.game_simplified_map = [i.copy() for i in sprited]
+    player.game_map = [i.copy() for i in simplified]
     player.score = 0
     screen = pygame.display.set_mode(resolution)
     done = False
