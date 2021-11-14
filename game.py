@@ -60,7 +60,8 @@ def main():
     ghosts: List[MainGhost] = [orange_ghost, red_ghost, pink_ghost, blue_ghost]
 
     audio_sound = pygame.mixer.Sound("./sounds/game_start.wav")
-    audio_channel = audio_sound.play()
+    audio_channel = pygame.mixer.Channel(0)
+    audio_channel.play(audio_sound)
 
     clock = pygame.time.Clock()
 
