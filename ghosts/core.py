@@ -178,7 +178,7 @@ class MainGhost:
     def __init__(self, ghost_logic: Type[AbstractGhostLogic], window=0):
         self.screen = window
         self._ghost_logic = ghost_logic(self)
-        self._position = self._ghost_logic.default_position
+        self._position = pygame.Vector2(self._ghost_logic.default_position.x, self._ghost_logic.default_position.y)
         self._direction: Direction = ""
         self._current_animation_frame = 0  # Текущий кадр
         self._current_animation_list: AnimationList = []  # Спосок текстур, отвечающих за анимацию в направлении где
