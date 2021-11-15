@@ -1,31 +1,18 @@
-from random import randint
 from typing import Tuple
 
 import pygame
 
-from store_score import get_scores
+from store_score import get_scores, max_store
 
 
-# Sum of the min & max of (a, b, c)
-def hilo(a, b, c):
-    if c < b:
-        b, c = c, b
-    if b < a:
-        a, b = b, a
-    if c < b:
-        b, c = c, b
-    return a + c
-
-
-def complement(r, g, b):
-    k = hilo(r, g, b)
-    return tuple(k - u for u in (r, g, b))
-
-
-def render_scores(main_screen, text_font: pygame.font.Font, color):
+def render_scores(main_screen: pygame.Surface, text_font: pygame.font.Font, color):
     for index, score in enumerate(get_scores()):
         text = f"{index + 1}) {score[0]}: {score[1]}"
-        pos = (1066//2 - (text_font.size(text)[0])//2 - 15, 100 + 100 * (index + 1))
+        text_size = text_font.size(text)
+        pos = (
+            main_screen.get_width() // 2 - text_size[0] // 2 - round(main_screen.get_width() * 0.0140),
+            main_screen.get_height() // (max_store + 1) * (index + 2)
+        )
         main_screen.blit(
             text_font.render(text, False, color),
             pos
@@ -34,26 +21,30 @@ def render_scores(main_screen, text_font: pygame.font.Font, color):
 
 def store_score_menu():
     main_screen = pygame.display.set_mode((1066, 600))
-    clock = pygame.time.Clock()
     running = True
 
     text_font = pygame.font.SysFont("Arial", 32)
 
-    back_color = (randint(0, 255), randint(0, 255), randint(0, 255))
+    back_color = "black"
     # noinspection PyTypeChecker
-    text_color: Tuple[int, int, int] = complement(back_color[0], back_color[1], back_color[2])
+    text_color: Tuple[int, int, int] = "white"
     while running:
+        if pygame.event.peek(pump=True):
+            main_screen.fill(back_color)
 
-        clock.tick(120)
-        pygame.display.flip()
-        main_screen.fill(back_color)
+            main_screen.blit(
+                text_font.render("Таблица рекордов", False, text_color),
+                (
+                    main_screen.get_width() // 2 - text_font.size("Таблица рекордов")[0] // 2,
+                    main_screen.get_height() // (max_store + 1)
+                )
+            )
+            render_scores(main_screen, text_font, text_color)
 
-        main_screen.blit(text_font.render("Таблица рекордов", False, text_color), (380, 100))
-        render_scores(main_screen, text_font, text_color)
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
                     running = False
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        running = False
+            pygame.display.flip()
