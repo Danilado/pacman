@@ -67,8 +67,9 @@ def main():
     audio_channel.play(audio_sound)
 
     clock = pygame.time.Clock()
-
+    stage = 1
     while not done:
+        trigger = 0
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
@@ -79,6 +80,12 @@ def main():
                     pac.process_event(event)
                     if event.key == pygame.K_p:
                         pause(clock)
+                    if event.key == pygame.K_r: #
+                        trigger = 1
+                    if event.key == pygame.K_e:
+                        stage = 2
+                    if event.key == pygame.K_q:
+                        stage = 1
         screen.fill((0, 0, 0))
         render(screen, player.game_simplified_map)
         # MainGhost.draw_trigger_blocks(screen)
@@ -90,7 +97,8 @@ def main():
             if not audio_channel.get_busy() and not pac.dead:
                 pac.upd(ghosts)
                 for ghost in ghosts:
-                    ghost.update(pac, ghosts)
+                    # TODO сделать тригеры и стадии игры (я чутка поправил код, чтобы до логики дошли тригер и стадия
+                    ghost.update(pac, ghosts, stage, trigger)
         elif not audio_channel.get_busy() and not pac.dead: 
             pac.upd([])
 

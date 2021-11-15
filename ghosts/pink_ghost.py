@@ -27,7 +27,7 @@ class PinkGhostLogic(AbstractGhostLogic):
             'y': 0,
         }
 
-    def where_am_i_should_move(self, pacman: Pacman, all_ghosts: List["MainGhost"]) -> Direction:
+    def where_am_i_should_move(self, pacman: Pacman, all_ghosts: List["MainGhost"], stage, trigger) -> Direction:
         self.target["y"] = pacman.y
         self.target["x"] = pacman.x
         if pacman.vec == 0:

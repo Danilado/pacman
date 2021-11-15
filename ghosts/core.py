@@ -83,7 +83,7 @@ class AbstractGhostLogic(ABC):
         ...
 
     @abstractmethod
-    def where_am_i_should_move(self, pacman: Pacman, all_ghosts: List["MainGhost"]) -> Direction:
+    def where_am_i_should_move(self, pacman: Pacman, all_ghosts: List["MainGhost"], stage, trigger) -> Direction:
         """Функция выполняющаяся каждый кадр. Должна возваращать направление в котором будет двигаться призрак."""
         ...
 
@@ -210,10 +210,10 @@ class MainGhost:
             )
             # pygame.draw.rect(screen, (0, 0, 255), (int(self._position.x), int(self._position.y), 8, 8), 1)
 
-    def update(self, pacman: Pacman, all_ghosts: List["MainGhost"]):
+    def update(self, pacman: Pacman, all_ghosts: List["MainGhost"], stage, trigger):
         """Двигает призрака и изменяет его направление"""
         moved = False
-        self.direction = self._ghost_logic.where_am_i_should_move(pacman, all_ghosts)  # Направление куда должен
+        self.direction = self._ghost_logic.where_am_i_should_move(pacman, all_ghosts, stage, trigger)  # Направление куда должен
         # двигаться призрак
         if self._current_speed.x != 0:
             for _ in range(self._timer2, pygame.time.get_ticks(), abs(round(1000 // self._current_speed.x))):
