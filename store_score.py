@@ -11,7 +11,11 @@ def get_scores():
     with open(filename, "r", encoding="ascii") as file:
         reader = csv.reader(file)
         for line in reader:
-            yield line[0], int(line[1])
+            if len(line) >= 2:
+                yield line[0], int(line[1])
+            else:
+                # print("invalid line", line)
+                pass
 
 
 def clear_scores():
