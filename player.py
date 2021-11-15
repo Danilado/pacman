@@ -206,7 +206,7 @@ class Pacman:
         if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
             if game_map[int(self.y // 8)][int(self.x // 8) + 1] == 3 or game_map[int(self.y // 8)][int(self.x // 8) + 1] == 5 or game_map[int(self.y // 8)][int(self.x // 8) + 1] == 4:
                 if self.status != 'hit-0':
-                    self.y = round(self.y/8)*8
+                    self.y = round(self.y/8)* 8
                     self.status = 'unhit'
                     self.vec = 0
                     self.number_image = 0
@@ -228,7 +228,7 @@ class Pacman:
         if event.key == pygame.K_s or event.key == pygame.K_DOWN:
             if game_map[int(self.y // 8) + 1][int(self.x // 8)] == 3 or game_map[int(self.y // 8) + 1][int(self.x // 8)] == 5 or game_map[int(self.y // 8) + 1][int(self.x // 8)] == 4:
                 if self.status != 'hit-3':
-                    self.x = round(self.x/8)*8
+                    self.x = round(self.x/8) *8
                     self.status = 'unhit'
                     self.vec = 3
                     self.number_image = 3
