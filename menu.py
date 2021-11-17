@@ -93,6 +93,7 @@ def options_menu():
         Button(80, 530, 200, 50, (0, 0, 0), settings, "Играть!", play),
         Button(300, 530, 200, 50, (0, 0, 0), settings, "Таблица Рекордов", store_score_menu),
         Button(520, 530, 200, 50, (0, 0, 0), settings, "Выйти из игры", exit_game),
+        Button(740, 530, 200, 50, (0, 0, 0), settings, "Настройки",            ),
     ]
     background_file = "./textures/bg/pacman2.jpg"
 

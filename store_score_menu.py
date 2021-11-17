@@ -18,7 +18,7 @@ def render_scores(main_screen: pygame.Surface, text_font: pygame.font.Font, colo
                f"{score.datetime.strftime(datetime_format): <{max_len_datetime}} " \
                f"{score.nickname: <{max_len_nickname}} " \
                f"{score.score}"
-        print(text)
+        # print(text)
         text_size = text_font.size(text)
         pos = (
             # main_screen.get_width() // 2 - text_size[0] // 2 - round(main_screen.get_width() * 0.0140),

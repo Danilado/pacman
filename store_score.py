@@ -39,7 +39,7 @@ def store_score(score: int, nickname: str):
     scores = list(get_scores())[:(max_store - 1)]
     scores.append(Score(datetime.today(), nickname, score))
     scores.sort(key=lambda item: item.score, reverse=True)
-    print(scores)
+    # print(scores)
     with open(filename, "w", encoding="ascii") as file:
         writer = csv.writer(file)
         for date_and_time, nickname, score in [astuple(score) for score in scores]:
