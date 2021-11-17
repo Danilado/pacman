@@ -189,10 +189,17 @@ class Pacman:
             rect = pygame.rect.Rect(self.x + 4, self.y + 4, 8, 8)
             for ghost in ghosts:
                 if rect.colliderect(ghost.position):
+                    for ghost in ghosts:
+                        if rect.colliderect(ghost.position):
+                            ghost.reset_position()
                     self.lives -= 1
+                    self.x = 108
+                    self.y = 184
                     if self.lives == 0:
                         self.dead = True
                         break
+
+        
 
     def process_event(self, event: pygame.event.Event):
         # ПРОВЕРКА НА ПОВОРОТ И ЗАПОМИНАНИЕ В СЛУЧИИ ЕГО ОТСУТСВИЯ
