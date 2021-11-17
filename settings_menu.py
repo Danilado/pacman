@@ -1,31 +1,25 @@
-from typing import Tuple
-from globalclasses import Button
-from globalclasses import GuiSettingsForOptions
-import globalvars
-
 import pygame
+
+from globalclasses import Button, GuiSettings
+
 
 def settings_menu():
     main_screen = pygame.display.set_mode((1066, 600))
-    running = True
-    settings = GuiSettingsForOptions()
-    clock = pygame.time.Clock()
+    text_color = (255,) * 3
+    settings = GuiSettings(button_color=text_color, button_color_hover=(120,) * 3)
     buttons = [
-        Button(340, 80, 200, 50, (0, 0, 0), settings, "Лёгкая", ),
-        Button(560, 80, 200, 50, (0, 0, 0), settings, "Нормальная", ),
-        Button(780, 80, 200, 50, (0, 0, 0), settings, "Сложная", ),
-
-
-        Button(340, 180, 200, 50, (0, 0, 0), settings, "Обычные", ),
-        Button(780, 180, 200, 50, (0, 0, 0), settings, "Альтернативные", ),
+        Button(220 * 0 + main_screen.get_width() // 4 + 80, 80, 200, 50, (0, 0, 0), settings, "Лёгкая"),
+        Button(220 * 1 + main_screen.get_width() // 4 + 80, 80, 200, 50, (0, 0, 0), settings, "Нормальная"),
+        Button(220 * 2 + main_screen.get_width() // 4 + 80, 80, 200, 50, (0, 0, 0), settings, "Сложная"),
+        Button(220 * 0 + main_screen.get_width() // 4 + 80, 180, 200, 50, (0, 0, 0), settings, "Обычные"),
+        Button(220 * 2 + main_screen.get_width() // 4 + 80, 180, 200, 50, (0, 0, 0), settings, "Альтернативные"),
     ]
     text_font = pygame.font.SysFont("segoeuisemibold", 32)
+    running = True
     back_color = "black"
-    # noinspection PyTypeChecker
-    text_color: Tuple[int, int, int] = "white"
     while running:
-        events = pygame.event.get()
         if pygame.event.peek(pump=True):
+            events = pygame.event.get()
             main_screen.fill(back_color)
             main_screen.blit(
                 text_font.render("Настройки", False, text_color),
@@ -38,7 +32,7 @@ def settings_menu():
             main_screen.blit(text_font.render("Сложность", False, text_color), (20, 90))
             main_screen.blit(text_font.render("Текстуры", False, text_color), (20, 190))
 
-            for event in pygame.event.get():
+            for event in events:
                 if event.type == pygame.QUIT:
                     running = False
                 if event.type == pygame.KEYDOWN:
