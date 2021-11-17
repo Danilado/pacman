@@ -75,7 +75,7 @@ class Pacman:
                 if rect.colliderect(ghost.position):
                     score += 200 * (2 ** self.eaten)
                     self.eaten += 1
-                    print(f'{self.eaten} {score}')
+                    # print(f'{self.eaten} {score}')
                     ghost.reset_position()
                     self.play_eat_ghost_sound()
         if now - self.last >= 7000:
@@ -106,43 +106,29 @@ class Pacman:
         #print(f'{self.x} {self.y} {self.vec} {int(self.x // 8)} {int(self.y // 8)} {self.status} {self.vec}')
         # БЛОК ПРОВЕРКИ НА ЗАПОМИНАНИЯ
         if int(self.x // 8) + 1 <= 27 and int(self.x // 8) - 1 >= 0:
-            if (game_map[int(self.y // 8)][int(self.x // 8) + 1] == 3 \
-                  or game_map[int(self.y // 8)][int(self.x // 8) + 1] == 4 \
-                  or game_map[int(self.y // 8)][int(self.x // 8) + 1] == 5) \
-                  and self.remember_vec == 0:
+            if (game_map[int(self.y // 8)][int(self.x // 8) + 1] == 3 or game_map[int(self.y // 8)][int(self.x // 8) + 1] == 4 or game_map[int(self.y // 8)][int(self.x // 8) + 1] == 5) and self.remember_vec == 0:
                 self.x = (self.x // 8) * 8
                 self.y = (self.y // 8) * 8
                 self.vec = self.remember_vec
-                #print(f'ПАВЕРНУЛ {self.remember_vec}')
+                self.status = 'unhit'
                 self.remember_vec = -1
-
-            elif (game_map[int(self.y // 8)][int(self.x // 8) - 1] == 3 \
-                  or game_map[int(self.y // 8)][int(self.x // 8) - 1] == 4 \
-                  or game_map[int(self.y // 8)][int(self.x // 8) - 1] == 5) \
-                  and self.remember_vec == 2:
+            elif (game_map[int(self.y // 8)][int(self.x // 8) - 1] == 3 or game_map[int(self.y // 8)][int(self.x // 8) - 1] == 4 or game_map[int(self.y // 8)][int(self.x // 8) - 1] == 5) and self.remember_vec == 2:
                 self.x = (self.x // 8) * 8
                 self.y = (self.y // 8) * 8
                 self.vec = self.remember_vec
-                #print(f'ПАВЕРНУЛ {self.remember_vec}')
+                self.status = 'unhit'
                 self.remember_vec = -1
-            elif (game_map[int(self.y // 8) + 1][int(self.x // 8)] == 3 \
-                  or game_map[int(self.y // 8) + 1][int(self.x // 8)] == 4 \
-                  or game_map[int(self.y // 8) + 1][int(self.x // 8)] == 5) \
-                  and self.remember_vec == 3:
+            elif (game_map[int(self.y // 8) + 1][int(self.x // 8)] == 3 or game_map[int(self.y // 8) + 1][int(self.x // 8)] == 4 or game_map[int(self.y // 8) + 1][int(self.x // 8)] == 5) and self.remember_vec == 3:
                 self.x = (self.x // 8) * 8
                 self.y = (self.y // 8) * 8
                 self.vec = self.remember_vec
-                #print(f'ПАВЕРНУЛ {self.remember_vec}')
-
+                self.status = 'unhit'
                 self.remember_vec = -1
-            elif (game_map[int(self.y // 8) - 1][int(self.x // 8)] == 3 \
-                  or game_map[int(self.y // 8) - 1][int(self.x // 8)] == 4 \
-                  or game_map[int(self.y // 8) - 1][int(self.x // 8)] == 5) \
-                  and self.remember_vec == 1:
+            elif (game_map[int(self.y // 8) - 1][int(self.x // 8)] == 3 or game_map[int(self.y // 8) - 1][int(self.x // 8)] == 4 or game_map[int(self.y // 8) - 1][int(self.x // 8)] == 5) and self.remember_vec == 1:
                 self.x = (self.x // 8) * 8
                 self.y = (self.y // 8) * 8
                 self.vec = self.remember_vec
-                #print(f'ПАВЕРНУЛ {self.remember_vec}')
+                self.status = 'unhit'
                 self.remember_vec = -1
 
         # Дебаг
@@ -211,9 +197,7 @@ class Pacman:
     def process_event(self, event: pygame.event.Event):
         # ПРОВЕРКА НА ПОВОРОТ И ЗАПОМИНАНИЕ В СЛУЧИИ ЕГО ОТСУТСВИЯ
         if event.key == pygame.K_a or event.key == pygame.K_LEFT:
-            if game_map[int(self.y // 8)][int(self.x // 8) - 1] == 3 \
-                or game_map[int(self.y // 8)][int(self.x // 8) - 1] == 5 \
-                or game_map[int(self.y // 8)][int(self.x // 8) - 1] == 4:
+            if game_map[int(self.y // 8)][int(self.x // 8) - 1] == 3 or game_map[int(self.y // 8)][int(self.x // 8) - 1] == 5 or game_map[int(self.y // 8)][int(self.x // 8) - 1] == 4:
                 if self.vec == 0 and self.y % 1 >= 0:
                     self.y = int(self.y) + 1
                 elif self.vec == 2 and self.y % 1 >= 0:
@@ -224,13 +208,13 @@ class Pacman:
                         self.vec = 2
                         self.number_image = 2
                         self.remember_vec = -1
+                    else:
+                        self.remember_vec = 2
             elif game_map[int(self.y // 8)][int(self.x // 8)-1] == 0:
                 self.remember_vec = 2
 
         if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
-            if game_map[int(self.y // 8)][int(self.x // 8) + 1] == 3 \
-                or game_map[int(self.y // 8)][int(self.x // 8) + 1] == 5 \
-                or game_map[int(self.y // 8)][int(self.x // 8) + 1] == 4:
+            if game_map[int(self.y // 8)][int(self.x // 8) + 1] == 3 or game_map[int(self.y // 8)][int(self.x // 8) + 1] == 5 or game_map[int(self.y // 8)][int(self.x // 8) + 1] == 4:
                 if self.vec == 0 and self.y % 1 >= 0:
                     self.y = int(self.y) + 1
                 elif self.vec == 2 and self.y % 1 >= 0:
@@ -241,13 +225,13 @@ class Pacman:
                         self.vec = 0
                         self.number_image = 0
                         self.remember_vec = -1
+                    else:
+                        self.remember_vec = 0
             elif game_map[int(self.y // 8)][int(self.x // 8)+1] == 0:
                 self.remember_vec = 0
 
         if event.key == pygame.K_w or event.key == pygame.K_UP:
-            if game_map[int(self.y // 8) - 1][int(self.x // 8)] == 3 \
-                or game_map[int(self.y // 8) - 1][int(self.x // 8)] == 5 \
-                or game_map[int(self.y // 8) - 1][int(self.x // 8)] == 4:
+            if game_map[int(self.y // 8) - 1][int(self.x // 8)] == 3 or game_map[int(self.y // 8) - 1][int(self.x // 8)] == 5 or game_map[int(self.y // 8) - 1][int(self.x // 8)] == 4:
                 if self.vec == 0 and self.x % 1 >= 0:
                     self.x = int(self.x) + 1
                 elif self.vec == 2 and self.x % 1 >= 0:
@@ -258,13 +242,13 @@ class Pacman:
                         self.vec = 1
                         self.number_image = 1
                         self.remember_vec = -1
+                    else:
+                        self.remember_vec = 1
             elif game_map[int(self.y // 8)-1][int(self.x // 8)] == 0:
                 self.remember_vec = 1
 
         if event.key == pygame.K_s or event.key == pygame.K_DOWN:
-            if game_map[int(self.y // 8) + 1][int(self.x // 8)] == 3 \
-                or game_map[int(self.y // 8) + 1][int(self.x // 8)] == 5 \
-                or game_map[int(self.y // 8) + 1][int(self.x // 8)] == 4:
+            if game_map[int(self.y // 8) + 1][int(self.x // 8)] == 3 or game_map[int(self.y // 8) + 1][int(self.x // 8)] == 5 or game_map[int(self.y // 8) + 1][int(self.x // 8)] == 4:
                 if self.vec == 0 and self.x % 1 >= 0:
                     self.x = int(self.x) + 1
                 elif self.vec == 2 and self.x % 1 >= 0:
@@ -275,5 +259,8 @@ class Pacman:
                         self.vec = 3
                         self.number_image = 3
                         self.remember_vec = -1
+                    else:
+                        self.remember_vec = 3
             elif game_map[int(self.y // 8)+1][int(self.x // 8)] == 0:
                 self.remember_vec = 3
+
