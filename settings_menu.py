@@ -1,6 +1,6 @@
 from typing import Tuple
 from globalclasses import Button
-from globalclasses import GuiSettings
+from globalclasses import GuiSettingsForOptions
 import globalvars
 
 import pygame
@@ -8,7 +8,7 @@ import pygame
 def settings_menu():
     main_screen = pygame.display.set_mode((1066, 600))
     running = True
-    settings = GuiSettings()
+    settings = GuiSettingsForOptions()
     clock = pygame.time.Clock()
     buttons = [
         Button(340, 80, 200, 50, (0, 0, 0), settings, "Лёгкая", ),
@@ -19,7 +19,7 @@ def settings_menu():
         Button(340, 180, 200, 50, (0, 0, 0), settings, "Обычные", ),
         Button(780, 180, 200, 50, (0, 0, 0), settings, "Альтернативные", ),
     ]
-    text_font = pygame.font.SysFont("Consolas", 32)
+    text_font = pygame.font.SysFont("segoeuisemibold", 32)
     back_color = "black"
     # noinspection PyTypeChecker
     text_color: Tuple[int, int, int] = "white"

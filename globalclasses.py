@@ -51,3 +51,9 @@ class GuiSettings:
         self.text_size = 20
         self.button_color = (93, 0, 255)
         self.button_color_hover = (174, 127, 255)
+
+class GuiSettingsForOptions:
+    def __init__(self):
+        self.text_size = 20
+        self.button_color = (255, 255, 255)
+        self.button_color_hover = (120, 120, 120)
