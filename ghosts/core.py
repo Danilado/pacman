@@ -206,7 +206,7 @@ class MainGhost:
             screen.blit(  # Если у вас здесь исключение(ошибка). Проверьте свой __init__ в логике класса, скорее всего
                 # там отстуствует super().__init__()
                 self._current_animation_list[self._current_animation_frame],
-                (self._position.x - 4, self._position.y - 4)
+                (self._position.x - 4, self._position.y - 4 + 50)
             )
             # pygame.draw.rect(screen, (0, 0, 255), (int(self._position.x), int(self._position.y), 8, 8), 1)
 

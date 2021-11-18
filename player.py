@@ -1,5 +1,7 @@
 from typing import List, TYPE_CHECKING
 
+from store_score import get_scores
+
 import pygame
 
 from perfomance import img_load
@@ -12,9 +14,11 @@ score = 0
 game_map = []
 game_simplified_map = []
 
-
 class Pacman:
+    
+
     def __init__(self, x, y, window):
+        self.best = list(get_scores())[0].score
         self.x = x
         self.y = y
         self.vec = 0  # 0 - вправо. 1 - вверх. 2 - влево. 3 - вниз.
@@ -40,9 +44,12 @@ class Pacman:
 
     def draw(self):
         img = img_load(f'./textures/pacsprites/pacman{self.vec}.png')
+        img2 = img_load(f'./textures/pacsprites/pacman0.png')
+        for i in range(self.lives):
+            self.screen.blit(img2, (20*i, self.screen.get_height()-20))
         img = pygame.transform.scale(img, (16, 16))
         # pygame.draw.rect(self.screen, (255, 255, 0), (self.x, self.y, 8, 8), 1)
-        self.screen.blit(img, (self.x - 4, self.y - 4))
+        self.screen.blit(img, (self.x - 4 , self.y - 4 + 50))
 
     def play_dead_sound(self):
         if not self.dead_sound_playing:
@@ -70,9 +77,8 @@ class Pacman:
         global score
         now = pygame.time.get_ticks()
         if self.in_energizer and now - self.last <= 7000:
-            rect = pygame.rect.Rect(self.x - 4, self.y - 4, 8, 8)
             for ghost in ghosts:
-                if rect.colliderect(ghost.position):
+                if ((self.x-ghost.position.x)**2 + (self.y-ghost.position.y)**2)**0.5<=8:
                     score += 200 * (2 ** self.eaten)
                     self.eaten += 1
                     # print(f'{self.eaten} {score}')
@@ -86,6 +92,13 @@ class Pacman:
         global score
         global game_map
         global game_simplified_map
+
+        text_font = pygame.font.SysFont("segoeuisemibold", 16)
+        self.screen.blit(text_font.render("Счёт", False, (255, 255, 255)), (0, 0))
+        self.screen.blit(text_font.render("Рекорд", False, (255, 255, 255)), (self.screen.get_width()/2, 0))
+
+        self.screen.blit(text_font.render(f"{score}", False, (255, 255, 255)), (0, 18))
+        self.screen.blit(text_font.render(f"{self.best}", False, (255, 255, 255)), (self.screen.get_width()/2, 18))
 
         if self.status != 'hit-0' and self.status != 'hit-1' and self.status != 'hit-2' and self.status != 'hit-3':
             self.vel = self.speed
@@ -186,11 +199,11 @@ class Pacman:
 
         # проверка на призрака
         if not self.invincible:
-            rect = pygame.rect.Rect(self.x + 4, self.y + 4, 8, 8)
             for ghost in ghosts:
-                if rect.colliderect(ghost.position):
+                # print(f'{ghost.position.x} {ghost.position.y} {((ghost.position.x-self.x)**2 + (ghost.position.y-self.y)**2)**0.5}')
+                if ((self.x-ghost.position.x)**2 + (self.y-ghost.position.y)**2)**0.5<=8:
                     for ghost in ghosts:
-                        if rect.colliderect(ghost.position):
+                        if ((self.x-ghost.position.x)**2 + (self.y-ghost.position.y)**2)**0.5<=8:
                             ghost.reset_position()
                     self.lives -= 1
                     self.x = 108

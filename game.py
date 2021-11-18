@@ -14,7 +14,7 @@ from layouts import simplified
 from layouts import sprited
 from perfomance import img_load
 
-resolution = w, h = 224, 256
+resolution = w, h = 224, 336
 
 
 def render(window, matrix):  # Моя функция рендера карты и зёрен
@@ -22,10 +22,10 @@ def render(window, matrix):  # Моя функция рендера карты �
         for j in range(len(matrix[i])):
             # X
             if matrix[i][j] == 5:
-                pygame.draw.rect(window, (0, 0, 0), (8 * j, 8 * i, 8, 8), 1)
+                pygame.draw.rect(window, (0, 0, 0), (8 * j, 8 * i + 50, 8, 8), 1)
                 # Пустота окрашивается в чёрное   но зачем ?
             else:
-                window.blit(img_load(f'./textures/walls/{globalvars.texture_modifier}{matrix[i][j]}.png'), (8 * j, 8 * i))
+                window.blit(img_load(f'./textures/walls/{globalvars.texture_modifier}{matrix[i][j]}.png'), (8 * j, 8 * i + 50))
                 # Всё остальное отрисовывается
 
 
@@ -33,7 +33,6 @@ def pause(clock: pygame.time.Clock):
     paused = True
     print("paused")
     while paused:
-        print("paused")
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -53,7 +52,7 @@ def main():
     player.score = 0
     screen = pygame.display.set_mode(resolution)
     done = False
-    pac = player.Pacman(w / 2 - 4, h / 2 + 6 * 8 + 8, screen)
+    pac = player.Pacman(w / 2 - 4, h / 2 + 6 * 8 + 8 - 40, screen)
 
     if not globalvars.ghostless:
         orange_ghost = MainGhost(OrangeGhostLogic, screen)
@@ -80,7 +79,7 @@ def main():
                     pac.process_event(event)
                     if event.key == pygame.K_p:
                         pause(clock)
-                    if event.key == pygame.K_r: #
+                    if event.key == pygame.K_r: 
                         trigger = 1
                     if event.key == pygame.K_e:
                         stage = 2
