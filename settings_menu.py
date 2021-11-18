@@ -1,6 +1,13 @@
 import pygame
 
 from globalclasses import Button, GuiSettings
+import globalvars
+
+def setTextures(flag):
+    if not flag:
+        globalvars.texture_modifier = ""
+    else:
+        globalvars.texture_modifier = "r_"
 
 
 def settings_menu():
@@ -11,8 +18,8 @@ def settings_menu():
         Button(220 * 0 + main_screen.get_width() // 4 + 80, 80, 200, 50, (0, 0, 0), settings, "Лёгкая"),
         Button(220 * 1 + main_screen.get_width() // 4 + 80, 80, 200, 50, (0, 0, 0), settings, "Нормальная"),
         Button(220 * 2 + main_screen.get_width() // 4 + 80, 80, 200, 50, (0, 0, 0), settings, "Сложная"),
-        Button(220 * 0 + main_screen.get_width() // 4 + 80, 180, 200, 50, (0, 0, 0), settings, "Обычные"),
-        Button(220 * 2 + main_screen.get_width() // 4 + 80, 180, 200, 50, (0, 0, 0), settings, "Альтернативные"),
+        Button(220 * 0 + main_screen.get_width() // 4 + 80, 180, 200, 50, (0, 0, 0), settings, "Обычные", setTextures(0)),
+        Button(220 * 2 + main_screen.get_width() // 4 + 80, 180, 200, 50, (0, 0, 0), settings, "Альтернативные", setTextures(1)),
     ]
     text_font = pygame.font.SysFont("segoeuisemibold", 32)
     running = True
