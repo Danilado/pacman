@@ -1,4 +1,8 @@
+from dataclasses import dataclass
+from typing import Tuple
+
 import pygame
+
 
 class Button:
     def __init__(self, x, y, width, height, outline, settings, text="", action=None):
@@ -46,8 +50,15 @@ class Button:
                 return True
         return False
 
+
+@dataclass
 class GuiSettings:
-    def __init__(self):
-        self.text_size = 20
-        self.button_color = (93, 0, 255)
-        self.button_color_hover = (174, 127, 255)
+    text_size: int = 20
+    button_color: Tuple[int, int, int] = (93, 0, 255)
+    button_color_hover: Tuple[int, int, int] = (174, 127, 255)
+
+# class GuiSettingsForOptions:
+#     def __init__(self):
+#         self.text_size = 20
+#         self.button_color = (255, 255, 255)
+#         self.button_color_hover = (120, 120, 120)
