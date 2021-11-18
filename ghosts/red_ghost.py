@@ -4,7 +4,7 @@ import pygame
 
 from ghosts.core import AbstractGhostLogic, MainGhost, Direction
 from player import Pacman
-
+import globalvars
 from layouts import simplified as game_map
 
 
@@ -13,10 +13,10 @@ class RedGhostLogic(AbstractGhostLogic):
 
     default_position = pygame.Vector2(13 * 8 + 4, 10 * 8 + 8)
     default_direction = "left"
-    back_animations = ["./textures/ghosts/red/b1.png", "./textures/ghosts/red/b2.png"]
-    left_animations = ["./textures/ghosts/red/l1.png", "./textures/ghosts/red/l2.png"]
-    right_animations = ["./textures/ghosts/red/r1.png", "./textures/ghosts/red/r2.png"]
-    up_animations = ["./textures/ghosts/red/u1.png", "./textures/ghosts/red/u2.png"]
+    back_animations = [f"./textures/ghosts/red/{globalvars.texture_modifier}b1.png", f"./textures/ghosts/red/{globalvars.texture_modifier}b2.png"]
+    left_animations = [f"./textures/ghosts/red/{globalvars.texture_modifier}l1.png", f"./textures/ghosts/red/{globalvars.texture_modifier}l2.png"]
+    right_animations = [f"./textures/ghosts/red/{globalvars.texture_modifier}r1.png", f"./textures/ghosts/red/{globalvars.texture_modifier}r2.png"]
+    up_animations = [f"./textures/ghosts/red/{globalvars.texture_modifier}u1.png", f"./textures/ghosts/red/{globalvars.texture_modifier}u2.png"]
     speed = 0.3
 
     def __init__(self, main_ghost: "MainGhost"):
@@ -24,6 +24,14 @@ class RedGhostLogic(AbstractGhostLogic):
         self.main_ghost = main_ghost
         self.timeout = 0
         self.timer = 0
+        global back_animations
+        global left_animations
+        global right_animations
+        global up_animations
+        back_animations = [f"./textures/ghosts/red/{globalvars.texture_modifier}b1.png", f"./textures/ghosts/red/{globalvars.texture_modifier}b2.png"]
+        left_animations = [f"./textures/ghosts/red/{globalvars.texture_modifier}l1.png", f"./textures/ghosts/red/{globalvars.texture_modifier}l2.png"]
+        right_animations = [f"./textures/ghosts/red/{globalvars.texture_modifier}r1.png", f"./textures/ghosts/red/{globalvars.texture_modifier}r2.png"]
+        up_animations = [f"./textures/ghosts/red/{globalvars.texture_modifier}u1.png", f"./textures/ghosts/red/{globalvars.texture_modifier}u2.png"]
 
     def where_am_i_should_move(self, pacman: Pacman, all_ghosts: List["MainGhost"], stage, trigger) -> Direction:
 

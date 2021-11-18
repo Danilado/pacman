@@ -25,7 +25,7 @@ def render(window, matrix):  # Моя функция рендера карты �
                 pygame.draw.rect(window, (0, 0, 0), (8 * j, 8 * i, 8, 8), 1)
                 # Пустота окрашивается в чёрное   но зачем ?
             else:
-                window.blit(img_load(f'./textures/walls/{matrix[i][j]}.png'), (8 * j, 8 * i))
+                window.blit(img_load(f'./textures/walls/{globalvars.texture_modifier}{matrix[i][j]}.png'), (8 * j, 8 * i))
                 # Всё остальное отрисовывается
 
 
