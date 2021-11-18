@@ -7,14 +7,16 @@ from player import Pacman
 
 from layouts import simplified as game_map
 
+import globalvars
+
 
 class PinkGhostLogic(AbstractGhostLogic):
     default_position = pygame.Vector2(13 * 8 + 4, 10 * 8 + 8)
     default_direction = "left"
-    back_animations = ["./textures/ghosts/pink/b1.png", "./textures/ghosts/pink/b2.png"]
-    left_animations = ["./textures/ghosts/pink/l1.png", "./textures/ghosts/pink/l2.png"]
-    right_animations = ["./textures/ghosts/pink/r1.png", "./textures/ghosts/pink/r2.png"]
-    up_animations = ["./textures/ghosts/pink/u1.png", "./textures/ghosts/pink/u2.png"]
+    back_animations = [f"./textures/ghosts/pink/{globalvars.texture_modifier}b1.png", f"./textures/ghosts/pink/{globalvars.texture_modifier}b2.png"]
+    left_animations = [f"./textures/ghosts/pink/{globalvars.texture_modifier}l1.png", f"./textures/ghosts/pink/{globalvars.texture_modifier}l2.png"]
+    right_animations = [f"./textures/ghosts/pink/{globalvars.texture_modifier}r1.png", f"./textures/ghosts/pink/{globalvars.texture_modifier}r2.png"]
+    up_animations = [f"./textures/ghosts/pink/{globalvars.texture_modifier}u1.png", f"./textures/ghosts/pink/{globalvars.texture_modifier}u2.png"]
     speed = 0.2
 
     def __init__(self, main_ghost: "MainGhost"):
@@ -26,6 +28,14 @@ class PinkGhostLogic(AbstractGhostLogic):
             'x': 0,
             'y': 0,
         }
+        global back_animations
+        global left_animations
+        global right_animations
+        global up_animations
+        back_animations = [f"./textures/ghosts/pink/{globalvars.texture_modifier}b1.png", f"./textures/ghosts/pink/{globalvars.texture_modifier}b2.png"]
+        left_animations = [f"./textures/ghosts/pink/{globalvars.texture_modifier}l1.png", f"./textures/ghosts/pink/{globalvars.texture_modifier}l2.png"]
+        right_animations = [f"./textures/ghosts/pink/{globalvars.texture_modifier}r1.png", f"./textures/ghosts/pink/{globalvars.texture_modifier}r2.png"]
+        up_animations = [f"./textures/ghosts/pink/{globalvars.texture_modifier}u1.png", f"./textures/ghosts/pink/{globalvars.texture_modifier}u2.png"]
 
     def where_am_i_should_move(self, pacman: Pacman, all_ghosts: List["MainGhost"], stage, trigger) -> Direction:
         self.target["y"] = pacman.y

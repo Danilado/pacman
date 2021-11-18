@@ -6,17 +6,17 @@ from ghosts.core import AbstractGhostLogic, MainGhost, Direction
 from player import Pacman
 from layouts import simplified
 from layouts import sprited
-
+import globalvars
 
 class OrangeGhostLogic(AbstractGhostLogic):
     """Пример логики призрака"""
 
     default_position = pygame.Vector2(15 * 8 + 4, 14 * 8)
     default_direction = "right"
-    back_animations = ["./textures/ghosts/orange/b1.png", "./textures/ghosts/orange/b2.png"]
-    left_animations = ["./textures/ghosts/orange/l1.png", "./textures/ghosts/orange/l2.png"]
-    right_animations = ["./textures/ghosts/orange/r1.png", "./textures/ghosts/orange/r2.png"]
-    up_animations = ["./textures/ghosts/orange/u1.png", "./textures/ghosts/orange/u2.png"]
+    back_animations = [f"./textures/ghosts/orange/{globalvars.texture_modifier}b1.png", f"./textures/ghosts/orange/{globalvars.texture_modifier}b2.png"]
+    left_animations = [f"./textures/ghosts/orange/{globalvars.texture_modifier}l1.png", f"./textures/ghosts/orange/{globalvars.texture_modifier}l2.png"]
+    right_animations = [f"./textures/ghosts/orange/{globalvars.texture_modifier}r1.png", f"./textures/ghosts/orange/{globalvars.texture_modifier}r2.png"]
+    up_animations = [f"./textures/ghosts/orange/{globalvars.texture_modifier}u1.png", f"./textures/ghosts/orange/{globalvars.texture_modifier}u2.png"]
     speed = 0.321
     flag = 1
     list_normal_tile = ['seed', 5, 'nrg']
@@ -27,6 +27,14 @@ class OrangeGhostLogic(AbstractGhostLogic):
         self.stay = 1
         self.abs_speed = 0.1
         self.prev_block = (0, 0)
+        global back_animations
+        global left_animations
+        global right_animations
+        global up_animations
+        back_animations = [f"./textures/ghosts/orange/{globalvars.texture_modifier}b1.png", f"./textures/ghosts/orange/{globalvars.texture_modifier}b2.png"]
+        left_animations = [f"./textures/ghosts/orange/{globalvars.texture_modifier}l1.png", f"./textures/ghosts/orange/{globalvars.texture_modifier}l2.png"]
+        right_animations = [f"./textures/ghosts/orange/{globalvars.texture_modifier}r1.png", f"./textures/ghosts/orange/{globalvars.texture_modifier}r2.png"]
+        up_animations = [f"./textures/ghosts/orange/{globalvars.texture_modifier}u1.png", f"./textures/ghosts/orange/{globalvars.texture_modifier}u2.png"]
 
     def my_position_in_blocks(self):
         return int((self.main_ghost.position.x + 4) // 8), int((self.main_ghost.position.y + 4) // 8)

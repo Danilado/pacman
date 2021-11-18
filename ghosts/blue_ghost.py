@@ -3,6 +3,7 @@ from math import sqrt
 import pygame
 
 from ghosts.core import AbstractGhostLogic, MainGhost, Direction
+import globalvars
 from player import Pacman
 from layouts import simplified
 from layouts import sprited
@@ -11,10 +12,10 @@ from layouts import sprited
 class BlueGhostLogic(AbstractGhostLogic):
     default_position = pygame.Vector2(11 * 8 + 4, 14 * 8)
     default_direction = "right"
-    back_animations = ["./textures/ghosts/blue/b1.png", "./textures/ghosts/blue/b2.png"]
-    left_animations = ["./textures/ghosts/blue/l1.png", "./textures/ghosts/blue/l2.png"]
-    right_animations = ["./textures/ghosts/blue/r1.png", "./textures/ghosts/blue/r2.png"]
-    up_animations = ["./textures/ghosts/blue/u1.png", "./textures/ghosts/blue/u2.png"]
+    back_animations = [f"./textures/ghosts/blue/{globalvars.texture_modifier}b1.png", f"./textures/ghosts/blue/{globalvars.texture_modifier}b2.png"]
+    left_animations = [f"./textures/ghosts/blue/{globalvars.texture_modifier}l1.png", f"./textures/ghosts/blue/{globalvars.texture_modifier}l2.png"]
+    right_animations = [f"./textures/ghosts/blue/{globalvars.texture_modifier}r1.png", f"./textures/ghosts/blue/{globalvars.texture_modifier}r2.png"]
+    up_animations = [f"./textures/ghosts/blue/{globalvars.texture_modifier}u1.png", f"./textures/ghosts/blue/{globalvars.texture_modifier}u2.png"]
     speed = 0.3
     flag = 1
     list_normal_tile = ['seed', 5, 'nrg']
