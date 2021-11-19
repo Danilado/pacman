@@ -1,10 +1,10 @@
 from typing import List, TYPE_CHECKING
 
-from store_score import get_scores
-
 import pygame
+
 import globalvars
 from perfomance import img_load
+from store_score import get_scores
 
 if TYPE_CHECKING:
     from ghosts.core import MainGhost
@@ -15,10 +15,10 @@ game_map = []
 game_simplified_map = []
 
 class Pacman:
-    
 
     def __init__(self, x, y, window):
-        self.best = list(get_scores())[0].score
+        scores = tuple(get_scores())
+        self.best = 0 if scores != () else max(scores).score
         self.x = x
         self.y = y
         self.vec = 0  # 0 - вправо. 1 - вверх. 2 - влево. 3 - вниз.
