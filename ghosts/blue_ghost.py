@@ -1,5 +1,5 @@
 from math import sqrt
-
+from random import randint
 import pygame
 
 from ghosts.core import AbstractGhostLogic, MainGhost, Direction
@@ -16,14 +16,17 @@ class BlueGhostLogic(AbstractGhostLogic):
     left_animations = [f"./textures/ghosts/blue/{globalvars.texture_modifier}l1.png", f"./textures/ghosts/blue/{globalvars.texture_modifier}l2.png"]
     right_animations = [f"./textures/ghosts/blue/{globalvars.texture_modifier}r1.png", f"./textures/ghosts/blue/{globalvars.texture_modifier}r2.png"]
     up_animations = [f"./textures/ghosts/blue/{globalvars.texture_modifier}u1.png", f"./textures/ghosts/blue/{globalvars.texture_modifier}u2.png"]
+    scared_animations_blue = []
     speed = 0.3
     flag = 1
     list_normal_tile = ['seed', 5, 'nrg']
+    
 
     def __init__(self, main_ghost: "MainGhost"):
         super().__init__(main_ghost)
         self.prev_block = (0, 0)
         self.main_ghost = main_ghost
+        self.stage = 1
         self.stay = 1
 
     def my_position_in_blocks(self):
@@ -113,8 +116,14 @@ class BlueGhostLogic(AbstractGhostLogic):
         target_pos = (tmp_pos[0] + tmp_pos[0] - Blinky_pos[0], tmp_pos[1] + tmp_pos[1] - Blinky_pos[1])
         return self.select_tile(target_pos)
 
+    def gohome(self):
+        self.main_ghost.reset_position()
+        self.main_ghost.direction = "up"
+        self.stay = 1
+        self.stage = 1
+
     def stay_stage(self, trigger):
-        if trigger != 0:
+        if trigger != 0 and self.stay == 1:
             self.stay = 2
         if self.flag == 1:
             self.main_ghost.direction = 'up'
@@ -146,15 +155,20 @@ class BlueGhostLogic(AbstractGhostLogic):
                     return 'right'
             return 'up'
 
+    def scared_stage(self):
+        target_pos = [self.main_ghost.position.x + randint(-1, 1)*8, self.main_ghost.position.x + randint(-1, 1)*8]
+        return self.select_tile(target_pos)
+
     def where_am_i_should_move(self, pacman: Pacman, all_ghosts, stage=1,
                                trigger=0) -> Direction:  ## 1 - стадия разгона, 2 - стадия преследования, 3 - страх
-
+        # print(f'{globalvars.bluetrigger} {self.stage} {self.stay}')
         if self.stay:
-            return self.stay_stage(trigger)
-        elif stage == 1:
+            return self.stay_stage(globalvars.bluetrigger)
+        elif self.main_ghost.scared:
+            return self.scared_stage()
+        elif self.stage == 1:
             return self.chase_stage(pacman, all_ghosts)
-        elif stage == 2:
+        elif self.stage == 2:
             return self.acceleration_stage()
-        elif stage == 3:
-            return 'right'
+        
         return 'back'

@@ -1,5 +1,6 @@
 import pygame
 from math import sqrt
+from random import randint
 from ghosts.core import AbstractGhostLogic, MainGhost, Direction
 from player import Pacman
 from layouts import simplified
@@ -12,6 +13,7 @@ class PinkGhostLogic(AbstractGhostLogic):
     left_animations = ["./textures/ghosts/pink/l1.png", "./textures/ghosts/pink/l2.png"]
     right_animations = ["./textures/ghosts/pink/r1.png", "./textures/ghosts/pink/r2.png"]
     up_animations = ["./textures/ghosts/pink/u1.png", "./textures/ghosts/pink/u2.png"]
+    scared_animations_blue = []
     speed = 0.25
     list_normal_tile = ['seed', 5, 'nrg']
 
@@ -19,6 +21,7 @@ class PinkGhostLogic(AbstractGhostLogic):
         super().__init__(main_ghost)
         self.stay = 1
         self.main_ghost = main_ghost
+        self.trigger = 0
 
     def my_position_in_blocks(self):
         return int((self.main_ghost.position.x + 4) // 8), int((self.main_ghost.position.y + 4) // 8)
@@ -105,6 +108,16 @@ class PinkGhostLogic(AbstractGhostLogic):
             print("или стоит или фейл")
         return self.select_tile(tmp_pos)
 
+    def scared_stage(self):
+        target_pos = [self.main_ghost.position.x + randint(-1, 1)*8, self.main_ghost.position.y + randint(-1, 1)*8]
+        return self.select_tile(target_pos)
+
+    def gohome(self):
+        self.main_ghost.reset_position()
+        self.main_ghost.direction = "up"
+        self.stay = 1
+        self.stage = 1
+
     def stay_stage(self, trigger):
         self.default_direction = "right"
         if (self.main_ghost.position[1]) % 8 == 0:
@@ -118,11 +131,12 @@ class PinkGhostLogic(AbstractGhostLogic):
     def where_am_i_should_move(self, pacman: Pacman, all_ghosts, stage=1,
                                trigger=0) -> Direction:  ## 1 - стадия разгона, 2 - стадия преследования, 3 - страх
         if self.stay:
-            return self.stay_stage(trigger)
+            return self.stay_stage(1)
+        elif self.main_ghost.scared:
+            return self.scared_stage()
         elif stage == 1:
             return self.chase_stage(pacman)
         elif stage == 2:
             return self.acceleration_stage()
-        elif stage == 3:
-            return 'right'
+        
         return 'back'

@@ -53,6 +53,9 @@ def main():
     screen = pygame.display.set_mode(resolution)
     done = False
     pac = player.Pacman(w / 2 - 4, h / 2 + 6 * 8 + 8 - 40, screen)
+    lasttime = 0
+    localstage = 1
+    flag = 0
 
     if not globalvars.ghostless:
         orange_ghost = MainGhost(OrangeGhostLogic, screen)
@@ -67,6 +70,13 @@ def main():
 
     clock = pygame.time.Clock()
     stage = 1
+
+    if not globalvars.ghostless:
+        for ghost in ghosts:
+            globalvars.bluetrigger = 0
+            globalvars.orangetrigger = 0
+            ghost.reset_position()
+
     while not done:
         trigger = 0
         for event in pygame.event.get():
@@ -79,12 +89,6 @@ def main():
                     pac.process_event(event)
                     if event.key == pygame.K_p:
                         pause(clock)
-                    if event.key == pygame.K_r: 
-                        trigger = 1
-                    if event.key == pygame.K_e:
-                        stage = 2
-                    if event.key == pygame.K_q:
-                        stage = 1
         screen.fill((0, 0, 0))
         render(screen, player.game_simplified_map)
         # MainGhost.draw_trigger_blocks(screen)
@@ -92,6 +96,30 @@ def main():
         if not globalvars.ghostless:
             for ghost in ghosts:
                 ghost.draw(screen)
+
+
+            if ghosts[0].scared and not flag:
+                print("Scare detected")
+                lasttime += 7000
+                flag = 1
+            if localstage == 1:
+                if pygame.time.get_ticks() - lasttime >= 20000:
+                    localstage = 2
+                    flag = 0
+                    print("Set AI mode runaway")
+                    for ghost in ghosts:
+                        if ghost._ghost_logic.stay == 0:
+                            ghost._ghost_logic.stage = 2 
+                    lasttime = pygame.time.get_ticks()
+            if localstage == 2:
+                if pygame.time.get_ticks() - lasttime >= 7000:
+                    localstage = 1
+                    flag = 0
+                    print("Set AI mode chase")
+                    for ghost in ghosts:
+                        if ghost._ghost_logic.stay == 0:
+                            ghost._ghost_logic.stage = 1 
+                    lasttime = pygame.time.get_ticks() # TODO prikolist
 
             if not audio_channel.get_busy() and not pac.dead:
                 pac.upd(ghosts)

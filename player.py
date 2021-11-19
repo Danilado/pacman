@@ -3,7 +3,7 @@ from typing import List, TYPE_CHECKING
 from store_score import get_scores
 
 import pygame
-
+import globalvars
 from perfomance import img_load
 
 if TYPE_CHECKING:
@@ -41,6 +41,7 @@ class Pacman:
         self.eat_sound2 = pygame.mixer.Sound("./sounds/munch_2.wav")
         self.current_eat_sound_index = 1
         self.remember_vec = -1
+        self.dots = 0
 
     def draw(self):
         img = img_load(f'./textures/pacsprites/pacman{self.vec}.png')
@@ -79,19 +80,44 @@ class Pacman:
         if self.in_energizer and now - self.last <= 7000:
             for ghost in ghosts:
                 if ((self.x-ghost.position.x)**2 + (self.y-ghost.position.y)**2)**0.5<=8:
-                    score += 200 * (2 ** self.eaten)
-                    self.eaten += 1
-                    # print(f'{self.eaten} {score}')
-                    ghost.reset_position()
-                    self.play_eat_ghost_sound()
+                    if ghost.scared:
+                        score += 200 * (2 ** self.eaten)
+                        self.eaten += 1
+                        # print(f'{self.eaten} {score}')
+                        ghost.reset_position()
+                        self.play_eat_ghost_sound()
+                    else:
+                        self.hit(ghosts)
         if now - self.last >= 7000:
             self.invincible = 0
             self.in_energizer = False
+
+    def hit(self, ghosts: List["MainGhost"]):
+        for ghost in ghosts:
+            ghost._ghost_logic.gohome() 
+            ghost.trigger = 0
+            ghost.stay = 1
+        self.lives -= 1
+        self.x = 108
+        self.y = 184
+        self.vec = 1
+        self.remember_vec = -1
+        self.status = "hit-1"
+        self.play_dead_sound()
+        if self.lives == 0:
+            self.dead = True
 
     def upd(self, ghosts: List["MainGhost"]):
         global score
         global game_map
         global game_simplified_map
+
+        if self.dots >= 30:
+            globalvars.bluetrigger = 1
+        if self.dots >= 244//3:
+            globalvars.orangetrigger = 1
+        if self.dots >= 244:
+            self.dead = True
 
         text_font = pygame.font.SysFont("segoeuisemibold", 16)
         self.screen.blit(text_font.render("Счёт", False, (255, 255, 255)), (0, 0))
@@ -154,6 +180,7 @@ class Pacman:
             # коллизия с зерном
             if game_map[int(self.y // 8)][int(self.x // 8)] == 3:
                 score += 10
+                self.dots += 1
                 game_map[int(self.y // 8)][int(self.x // 8)] = 5
                 game_simplified_map[int(self.y // 8)][int(self.x // 8)] = 5
                 self.play_munch_sound()
@@ -162,10 +189,13 @@ class Pacman:
                 self.invincible = 1
                 self.eaten = 0
                 score += 50
+                self.dots += 1
                 game_map[int(self.y // 8)][int(self.x // 8)] = 5
                 game_simplified_map[int(self.y // 8)][int(self.x // 8)] = 5
                 self.last = pygame.time.get_ticks()
-                self.in_energizer = True
+                self.in_energizer = True 
+                for ghost in ghosts:
+                    ghost.scare()
 
             self._update_energizer_effect(ghosts)
 
@@ -200,17 +230,8 @@ class Pacman:
         # проверка на призрака
         if not self.invincible:
             for ghost in ghosts:
-                # print(f'{ghost.position.x} {ghost.position.y} {((ghost.position.x-self.x)**2 + (ghost.position.y-self.y)**2)**0.5}')
                 if ((self.x-ghost.position.x)**2 + (self.y-ghost.position.y)**2)**0.5<=8:
-                    for ghost in ghosts:
-                        if ((self.x-ghost.position.x)**2 + (self.y-ghost.position.y)**2)**0.5<=8:
-                            ghost.reset_position()
-                    self.lives -= 1
-                    self.x = 108
-                    self.y = 184
-                    if self.lives == 0:
-                        self.dead = True
-                        break
+                    self.hit(ghosts)
 
         
 

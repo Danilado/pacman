@@ -1,4 +1,5 @@
 from math import sqrt
+from random import randint
 
 import pygame
 
@@ -17,6 +18,7 @@ class RedGhostLogic(AbstractGhostLogic):
     left_animations = ["./textures/ghosts/red/l1.png", "./textures/ghosts/red/l2.png"]
     right_animations = ["./textures/ghosts/red/r1.png", "./textures/ghosts/red/r2.png"]
     up_animations = ["./textures/ghosts/red/u1.png", "./textures/ghosts/red/u2.png"]
+    scared_animations_blue = []
     speed = 0.3333
     flag = 1
     list_normal_tile = ['seed', 5, 'nrg']
@@ -25,7 +27,8 @@ class RedGhostLogic(AbstractGhostLogic):
         super().__init__(main_ghost)
         self.prev_block = (0, 0)
         self.main_ghost = main_ghost
-        self.stay = 1
+        self.stay = 0
+        self.trigger = 0
 
     def my_position_in_blocks(self):
         return int((self.main_ghost.position.x + 4) // 8), int((self.main_ghost.position.y + 4) // 8)
@@ -102,12 +105,23 @@ class RedGhostLogic(AbstractGhostLogic):
         target_pos = [pacman.x, pacman.y]
         return self.select_tile(target_pos)
 
+    def scared_stage(self):
+        target_pos = [self.main_ghost.position.x + randint(-1, 1)*8, self.main_ghost.position.y + randint(-1, 1)*8]
+        return self.select_tile(target_pos)
+
+    def gohome(self):
+        self.main_ghost.reset_position()
+        self.main_ghost.direction = "right"
+        self.stage = 1
+
     def where_am_i_should_move(self, pacman: Pacman, all_ghosts, stage=1,
                                trigger=0) -> Direction:  ## 1 - стадия разгона, 2 - стадия преследования, 3 - страх
-        if stage == 1:
+        
+        if self.main_ghost.scared:
+            return self.scared_stage()
+        elif stage == 1:
             return self.chase_stage(pacman, all_ghosts)
         elif stage == 2:
             return self.acceleration_stage()
-        elif stage == 3:
-            return 'right'
+        
         return 'back'
