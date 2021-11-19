@@ -2,14 +2,13 @@ from abc import ABC, abstractmethod
 from typing import List, Literal, SupportsAbs, Type, Tuple, Union
 
 import pygame
-
+import globalvars
 import player
 from perfomance import img_load
 from player import Pacman
 
 Direction = Literal["left", "right", "up", "back", ""]
 AnimationList = List[pygame.Surface]
-
 
 class AbstractGhostLogic(ABC):
     # Абстрактный класс логики призрака. У каждого призрака есть своя логика.
@@ -33,6 +32,11 @@ class AbstractGhostLogic(ABC):
         for index, up_animation in enumerate(self.up_animations):
             if type(up_animation) is str:
                 self.up_animations[index] = img_load(up_animation).convert_alpha()
+
+        self.scared_animations_blue = [img_load("./textures/ghosts/scared/z1.png").convert_alpha(), img_load("./textures/ghosts/scared/z2.png").convert_alpha(), img_load("./textures/ghosts/scared/z3.png").convert_alpha(), img_load("./textures/ghosts/scared/z4.png").convert_alpha()]
+
+
+        
 
     # default_position: pygame.Vector2
     @property
@@ -69,6 +73,13 @@ class AbstractGhostLogic(ABC):
         """список картинок, отвечающих за анимацию наверх"""
         ...
 
+    # scared_animations: AnimationList
+    @property
+    @abstractmethod
+    def scared_animations_blue(self) -> AnimationList:
+        """список картинок, отвечающих за анимацию наверх"""
+        ...
+
     # speed: SupportsAbs
     @property
     @abstractmethod
@@ -83,7 +94,7 @@ class AbstractGhostLogic(ABC):
         ...
 
     @abstractmethod
-    def where_am_i_should_move(self, pacman: Pacman, all_ghosts: List["MainGhost"]) -> Direction:
+    def where_am_i_should_move(self, pacman: Pacman, all_ghosts: List["MainGhost"], stage, trigger) -> Direction:
         """Функция выполняющаяся каждый кадр. Должна возваращать направление в котором будет двигаться призрак."""
         ...
 
@@ -112,6 +123,8 @@ class MainGhost:
         [26, 5],
         [26, 1],
         [6, 8],
+        [9, 8],
+        [18, 8],
         [21, 8],
         [6, 14],
         [9, 14],
@@ -178,7 +191,7 @@ class MainGhost:
     def __init__(self, ghost_logic: Type[AbstractGhostLogic], window=0):
         self.screen = window
         self._ghost_logic = ghost_logic(self)
-        self._position = self._ghost_logic.default_position
+        self._position = pygame.Vector2(self._ghost_logic.default_position.x, self._ghost_logic.default_position.y)
         self._direction: Direction = ""
         self._current_animation_frame = 0  # Текущий кадр
         self._current_animation_list: AnimationList = []  # Спосок текстур, отвечающих за анимацию в направлении где
@@ -187,6 +200,23 @@ class MainGhost:
         self._timer = pygame.time.get_ticks()
         self._timer2 = pygame.time.get_ticks()
         self.direction = self._ghost_logic.default_direction
+        self.defpos = self._ghost_logic.default_position
+        self.scared = 0
+        self.speedmod = 1
+        self.scaretick = 0
+        self.scaremod = 1
+        self.trigger = 0
+
+    def scare(self):
+        self.scared = 1
+        self.speedmod = 0.5
+        self.scaremod = 1
+        self.scaretick = pygame.time.get_ticks()
+
+    def unscare(self):
+        self.scared = 0
+        self.speedmod = 1
+        self._current_animation_frame = 0
 
     def _check_position(self):
         if player.game_map[self.position_in_blocks[0]][self.position_in_blocks[1]] == 0:
@@ -195,38 +225,58 @@ class MainGhost:
     def draw(self, screen: pygame.Surface):
         """Рисует призрака"""
         # self._check_position()
-        if self.direction != "":
+        if self.scared:
             if pygame.time.get_ticks() - self._timer >= 200:  # Каждые 200 мс
-                self._current_animation_frame += 1
+                self._current_animation_frame += (1 + self.scaremod)
+                self._timer = pygame.time.get_ticks()
+                if self._current_animation_frame >= (4 - self.scaremod*2):
+                    self._current_animation_frame = 0
+            screen.blit(
+                self._ghost_logic.scared_animations_blue[self._current_animation_frame],
+                (self._position.x - 4, self._position.y - 4 + 50)
+            )
+        elif self.direction != "":
+            if pygame.time.get_ticks() - self._timer >= 200:  # Каждые 200 мс
+                self._current_animation_frame += 1 
                 self._timer = pygame.time.get_ticks()
                 if self._current_animation_frame >= len(self._current_animation_list):
                     self._current_animation_frame = 0
             screen.blit(  # Если у вас здесь исключение(ошибка). Проверьте свой __init__ в логике класса, скорее всего
                 # там отстуствует super().__init__()
                 self._current_animation_list[self._current_animation_frame],
-                (self._position.x - 4, self._position.y - 4)
+                (self._position.x - 4, self._position.y - 4 + 50)
             )
             # pygame.draw.rect(screen, (0, 0, 255), (int(self._position.x), int(self._position.y), 8, 8), 1)
 
-    def update(self, pacman: Pacman, all_ghosts: List["MainGhost"]):
+    def update(self, pacman: Pacman, all_ghosts: List["MainGhost"], stage, trigger):
         """Двигает призрака и изменяет его направление"""
+
+        if self.scared:
+            if pygame.time.get_ticks() - self.scaretick >= 7000:
+                self.unscare()
+            if pygame.time.get_ticks() - self.scaretick >= 4000:
+                self.scaremod = 0
+
         moved = False
-        self.direction = self._ghost_logic.where_am_i_should_move(pacman, all_ghosts)  # Направление куда должен
+        self.direction = self._ghost_logic.where_am_i_should_move(pacman, all_ghosts, stage, trigger)  # Направление куда должен
         # двигаться призрак
         if self._current_speed.x != 0:
             for _ in range(self._timer2, pygame.time.get_ticks(), abs(round(1000 // self._current_speed.x))):
-                self._position.x += self._current_speed.x
+                self._position.x += self._current_speed.x * self.speedmod * globalvars.difficulty
                 moved = True
         if self._current_speed.y != 0:
             for _ in range(self._timer2, pygame.time.get_ticks(), abs(round(1000 // self._current_speed.y))):
-                self._position.y += self._current_speed.y
+                self._position.y += self._current_speed.y * self.speedmod * globalvars.difficulty
                 moved = True
         if moved:
             self._timer2 = pygame.time.get_ticks()
 
     def reset_position(self):
-        self.position = pygame.Vector2(13 * 8 + 4, 10 * 8 + 8)
-        self.direction = self._ghost_logic.default_direction
+        self._position.x = self.defpos.x
+        self._position.y = self.defpos.y
+        self._ghost_logic.stay = 1
+        self._ghost_logic.stage = 1
+        self.unscare()
 
     @property
     def direction(self) -> Direction:
