@@ -18,7 +18,7 @@ class Pacman:
 
     def __init__(self, x, y, window):
         scores = tuple(get_scores())
-        self.best = 0 if scores != () else max(scores).score
+        self.best = max(scores, key=lambda item: item.score).score if scores != () else 0
         self.x = x
         self.y = y
         self.vec = 0  # 0 - вправо. 1 - вверх. 2 - влево. 3 - вниз.
@@ -304,4 +304,3 @@ class Pacman:
                         self.remember_vec = 3
             elif game_map[int(self.y // 8)+1][int(self.x // 8)] == 0:
                 self.remember_vec = 3
-
