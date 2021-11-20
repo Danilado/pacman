@@ -145,25 +145,25 @@ class Pacman:
         #print(f'{self.x} {self.y} {self.vec} {int(self.x // 8)} {int(self.y // 8)} {self.status} {self.vec}')
         # БЛОК ПРОВЕРКИ НА ЗАПОМИНАНИЯ
         if int(self.x // 8) + 1 <= 27 and int(self.x // 8) - 1 >= 0:
-            if (game_map[int(self.y // 8)][int(self.x // 8) + 1] == 3 or game_map[int(self.y // 8)][int(self.x // 8) + 1] == 4 or game_map[int(self.y // 8)][int(self.x // 8) + 1] == 5) and self.remember_vec == 0:
+            if (game_map[int(self.y // 8)][int(self.x // 8) + 1] == 3 or game_map[int(self.y // 8)][int(self.x // 8) + 1] == 4 or game_map[int(self.y // 8)][int(self.x // 8) + 1] == 5) and self.remember_vec == 0 and self.vec != 0:
                 self.x = (self.x // 8) * 8
                 self.y = (self.y // 8) * 8
                 self.vec = self.remember_vec
                 self.status = 'unhit'
                 self.remember_vec = -1
-            elif (game_map[int(self.y // 8)][int(self.x // 8) - 1] == 3 or game_map[int(self.y // 8)][int(self.x // 8) - 1] == 4 or game_map[int(self.y // 8)][int(self.x // 8) - 1] == 5) and self.remember_vec == 2:
+            elif (game_map[int(self.y // 8)][int(self.x // 8) - 1] == 3 or game_map[int(self.y // 8)][int(self.x // 8) - 1] == 4 or game_map[int(self.y // 8)][int(self.x // 8) - 1] == 5) and self.remember_vec == 2 and self.vec != 2:
                 self.x = (self.x // 8) * 8
                 self.y = (self.y // 8) * 8
                 self.vec = self.remember_vec
                 self.status = 'unhit'
                 self.remember_vec = -1
-            elif (game_map[int(self.y // 8) + 1][int(self.x // 8)] == 3 or game_map[int(self.y // 8) + 1][int(self.x // 8)] == 4 or game_map[int(self.y // 8) + 1][int(self.x // 8)] == 5) and self.remember_vec == 3:
+            elif (game_map[int(self.y // 8) + 1][int(self.x // 8)] == 3 or game_map[int(self.y // 8) + 1][int(self.x // 8)] == 4 or game_map[int(self.y // 8) + 1][int(self.x // 8)] == 5) and self.remember_vec == 3 and self.vec != 3:
                 self.x = (self.x // 8) * 8
                 self.y = (self.y // 8) * 8
                 self.vec = self.remember_vec
                 self.status = 'unhit'
                 self.remember_vec = -1
-            elif (game_map[int(self.y // 8) - 1][int(self.x // 8)] == 3 or game_map[int(self.y // 8) - 1][int(self.x // 8)] == 4 or game_map[int(self.y // 8) - 1][int(self.x // 8)] == 5) and self.remember_vec == 1:
+            elif (game_map[int(self.y // 8) - 1][int(self.x // 8)] == 3 or game_map[int(self.y // 8) - 1][int(self.x // 8)] == 4 or game_map[int(self.y // 8) - 1][int(self.x // 8)] == 5) and self.remember_vec == 1 and self.vec != 1:
                 self.x = (self.x // 8) * 8
                 self.y = (self.y // 8) * 8
                 self.vec = self.remember_vec
