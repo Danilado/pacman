@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List, Literal, SupportsAbs, Type, Tuple, Union
 
 import pygame
+
 import globalvars
 import player
 from perfomance import img_load
@@ -9,6 +10,7 @@ from player import Pacman
 
 Direction = Literal["left", "right", "up", "back", ""]
 AnimationList = List[pygame.Surface]
+
 
 class AbstractGhostLogic(ABC):
     # Абстрактный класс логики призрака. У каждого призрака есть своя логика.
@@ -32,11 +34,10 @@ class AbstractGhostLogic(ABC):
         for index, up_animation in enumerate(self.up_animations):
             if type(up_animation) is str:
                 self.up_animations[index] = img_load(up_animation).convert_alpha()
-
-        self.scared_animations_blue = [img_load("./textures/ghosts/scared/z1.png").convert_alpha(), img_load("./textures/ghosts/scared/z2.png").convert_alpha(), img_load("./textures/ghosts/scared/z3.png").convert_alpha(), img_load("./textures/ghosts/scared/z4.png").convert_alpha()]
-
-
-        
+        # Текстуры режима страха
+        for index, scared_animation in enumerate(self.scared_animations_blue):
+            if type(scared_animation) is str:
+                self.scared_animations_blue[index] = img_load(scared_animation)
 
     # default_position: pygame.Vector2
     @property
@@ -96,6 +97,11 @@ class AbstractGhostLogic(ABC):
     @abstractmethod
     def where_am_i_should_move(self, pacman: Pacman, all_ghosts: List["MainGhost"], stage, trigger) -> Direction:
         """Функция выполняющаяся каждый кадр. Должна возваращать направление в котором будет двигаться призрак."""
+        ...
+
+    @abstractmethod
+    def go_home(self):
+        """Функция которая возвращает призрака в калитку."""
         ...
 
 
@@ -200,22 +206,21 @@ class MainGhost:
         self._timer = pygame.time.get_ticks()
         self._timer2 = pygame.time.get_ticks()
         self.direction = self._ghost_logic.default_direction
-        self.defpos = self._ghost_logic.default_position
         self.scared = 0
-        self.speedmod = 1
-        self.scaretick = 0
-        self.scaremod = 1
+        self.speed_mod = 1
+        self.scare_timer = 0
+        self.scare_mod = 1
         self.trigger = 0
 
     def scare(self):
         self.scared = 1
-        self.speedmod = 0.5
-        self.scaremod = 1
-        self.scaretick = pygame.time.get_ticks()
+        self.speed_mod = 0.5
+        self.scare_mod = 1
+        self.scare_timer = pygame.time.get_ticks()
 
-    def unscare(self):
+    def un_scare(self):
         self.scared = 0
-        self.speedmod = 1
+        self.speed_mod = 1
         self._current_animation_frame = 0
 
     def _check_position(self):
@@ -227,9 +232,9 @@ class MainGhost:
         # self._check_position()
         if self.scared:
             if pygame.time.get_ticks() - self._timer >= 200:  # Каждые 200 мс
-                self._current_animation_frame += (1 + self.scaremod)
+                self._current_animation_frame += (1 + self.scare_mod)
                 self._timer = pygame.time.get_ticks()
-                if self._current_animation_frame >= (4 - self.scaremod*2):
+                if self._current_animation_frame >= (4 - self.scare_mod * 2):
                     self._current_animation_frame = 0
             screen.blit(
                 self._ghost_logic.scared_animations_blue[self._current_animation_frame],
@@ -237,7 +242,7 @@ class MainGhost:
             )
         elif self.direction != "":
             if pygame.time.get_ticks() - self._timer >= 200:  # Каждые 200 мс
-                self._current_animation_frame += 1 
+                self._current_animation_frame += 1
                 self._timer = pygame.time.get_ticks()
                 if self._current_animation_frame >= len(self._current_animation_list):
                     self._current_animation_frame = 0
@@ -252,31 +257,32 @@ class MainGhost:
         """Двигает призрака и изменяет его направление"""
 
         if self.scared:
-            if pygame.time.get_ticks() - self.scaretick >= 7000:
-                self.unscare()
-            if pygame.time.get_ticks() - self.scaretick >= 4000:
-                self.scaremod = 0
+            if pygame.time.get_ticks() - self.scare_timer >= 7000:
+                self.un_scare()
+            if pygame.time.get_ticks() - self.scare_timer >= 4000:
+                self.scare_mod = 0
 
         moved = False
-        self.direction = self._ghost_logic.where_am_i_should_move(pacman, all_ghosts, stage, trigger)  # Направление куда должен
+        self.direction = self._ghost_logic.where_am_i_should_move(pacman, all_ghosts, stage,
+                                                                  trigger)  # Направление куда должен
         # двигаться призрак
         if self._current_speed.x != 0:
             for _ in range(self._timer2, pygame.time.get_ticks(), abs(round(1000 // self._current_speed.x))):
-                self._position.x += self._current_speed.x * self.speedmod * globalvars.difficulty
+                self._position.x += self._current_speed.x * self.speed_mod * globalvars.difficulty
                 moved = True
         if self._current_speed.y != 0:
             for _ in range(self._timer2, pygame.time.get_ticks(), abs(round(1000 // self._current_speed.y))):
-                self._position.y += self._current_speed.y * self.speedmod * globalvars.difficulty
+                self._position.y += self._current_speed.y * self.speed_mod * globalvars.difficulty
                 moved = True
         if moved:
             self._timer2 = pygame.time.get_ticks()
 
     def reset_position(self):
-        self._position.x = self.defpos.x
-        self._position.y = self.defpos.y
+        self._position.x = self.default_position.x
+        self._position.y = self.default_position.y
         self._ghost_logic.stay = 1
         self._ghost_logic.stage = 1
-        self.unscare()
+        self.un_scare()
 
     @property
     def direction(self) -> Direction:
@@ -348,3 +354,7 @@ class MainGhost:
     @property
     def ghost_logic(self):
         return self._ghost_logic
+
+    @property
+    def default_position(self):
+        return self._ghost_logic.default_position

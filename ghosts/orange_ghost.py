@@ -1,23 +1,28 @@
 from math import sqrt
 from random import randint
+
 import pygame
 
-from ghosts.core import AbstractGhostLogic, MainGhost, Direction
-from player import Pacman
-from layouts import simplified
-from layouts import sprited
 import globalvars
+from ghosts.core import AbstractGhostLogic, MainGhost, Direction
+from layouts import map_with_sprites
+from player import Pacman
+
 
 class OrangeGhostLogic(AbstractGhostLogic):
     """Пример логики призрака"""
 
     default_position = pygame.Vector2(15 * 8 + 4, 14 * 8)
     default_direction = "right"
-    back_animations = [f"./textures/ghosts/orange/{globalvars.texture_modifier}b1.png", f"./textures/ghosts/orange/{globalvars.texture_modifier}b2.png"]
-    left_animations = [f"./textures/ghosts/orange/{globalvars.texture_modifier}l1.png", f"./textures/ghosts/orange/{globalvars.texture_modifier}l2.png"]
-    right_animations = [f"./textures/ghosts/orange/{globalvars.texture_modifier}r1.png", f"./textures/ghosts/orange/{globalvars.texture_modifier}r2.png"]
-    up_animations = [f"./textures/ghosts/orange/{globalvars.texture_modifier}u1.png", f"./textures/ghosts/orange/{globalvars.texture_modifier}u2.png"]
-    scared_animations_blue = []
+    back_animations = [f"./textures/ghosts/orange/{globalvars.texture_modifier}b1.png",
+                       f"./textures/ghosts/orange/{globalvars.texture_modifier}b2.png"]
+    left_animations = [f"./textures/ghosts/orange/{globalvars.texture_modifier}l1.png",
+                       f"./textures/ghosts/orange/{globalvars.texture_modifier}l2.png"]
+    right_animations = [f"./textures/ghosts/orange/{globalvars.texture_modifier}r1.png",
+                        f"./textures/ghosts/orange/{globalvars.texture_modifier}r2.png"]
+    up_animations = [f"./textures/ghosts/orange/{globalvars.texture_modifier}u1.png",
+                     f"./textures/ghosts/orange/{globalvars.texture_modifier}u2.png"]
+    scared_animations_blue = [f"./textures/ghosts/scared/z{i}.png" for i in range(1, 5)]
     speed = 0.321
     flag = 1
     list_normal_tile = ['seed', 5, 'nrg']
@@ -34,22 +39,24 @@ class OrangeGhostLogic(AbstractGhostLogic):
 
     def find_ways(self):  # 0 - ищем выход из начальной комнаты
         tmp_list_vec = []
-        if (self.main_ghost.position[0]) % 8 == 0 and (self.main_ghost.position[1]) % 8 == 0 and self.prev_block != (self.main_ghost.position[0], self.main_ghost.position[1]):
+        if self.main_ghost.position[0] % 8 == 0 and self.main_ghost.position[1] % 8 == 0 and \
+                self.prev_block != (self.main_ghost.position[0], self.main_ghost.position[1]):
             self.prev_block = (self.main_ghost.position[0], self.main_ghost.position[1])
-            if len(sprited[0]) <= self.my_position_in_blocks()[0] + 1 or self.my_position_in_blocks()[0] - 1 < 0:
+            if len(map_with_sprites[0]) <= self.my_position_in_blocks()[0] + 1 or \
+                    self.my_position_in_blocks()[0] - 1 < 0:
                 tmp_list_vec.append('ll')
                 return tmp_list_vec
-            if sprited[self.my_position_in_blocks()[1] + 1][
-                (self.my_position_in_blocks()[0])] in self.list_normal_tile:
+            if map_with_sprites[self.my_position_in_blocks()[1] + 1][self.my_position_in_blocks()[0]] in \
+                    self.list_normal_tile:
                 tmp_list_vec.append('back')
-            if sprited[self.my_position_in_blocks()[1] - 1][
-                (self.my_position_in_blocks()[0])] in self.list_normal_tile:
+            if map_with_sprites[self.my_position_in_blocks()[1] - 1][self.my_position_in_blocks()[0]] in \
+                    self.list_normal_tile:
                 tmp_list_vec.append('up')
-            if sprited[(self.my_position_in_blocks()[1])][
-                self.my_position_in_blocks()[0] + 1] in self.list_normal_tile:
+            if map_with_sprites[self.my_position_in_blocks()[1]][self.my_position_in_blocks()[0] + 1] in \
+                    self.list_normal_tile:
                 tmp_list_vec.append('right')
-            if sprited[(self.my_position_in_blocks()[1])][
-                self.my_position_in_blocks()[0] - 1] in self.list_normal_tile:
+            if map_with_sprites[self.my_position_in_blocks()[1]][self.my_position_in_blocks()[0] - 1] in \
+                    self.list_normal_tile:
                 tmp_list_vec.append('left')
         return tmp_list_vec
 
@@ -106,10 +113,10 @@ class OrangeGhostLogic(AbstractGhostLogic):
         return self.select_tile(target_pos)
 
     def scared_stage(self):
-        target_pos = [self.main_ghost.position.x + randint(-1, 1)*8, self.main_ghost.position.y + randint(-1, 1)*8]
+        target_pos = [self.main_ghost.position.x + randint(-1, 1) * 8, self.main_ghost.position.y + randint(-1, 1) * 8]
         return self.select_tile(target_pos)
-        
-    def gohome(self):
+
+    def go_home(self):
         self.main_ghost.reset_position()
         self.main_ghost.direction = "up"
         self.stay = 1
@@ -123,40 +130,38 @@ class OrangeGhostLogic(AbstractGhostLogic):
             self.flag = 0
         if self.stay == 1:
             if (self.main_ghost.position[1] + 4) % 8 == 0:
-                if sprited[(self.main_ghost.position.y+8) // 8 + 1][
-                    (self.main_ghost.position.x // 8)] in self.list_normal_tile:
+                if map_with_sprites[(self.main_ghost.position.y + 8) // 8 + 1][(self.main_ghost.position.x // 8)] in \
+                        self.list_normal_tile:
                     return 'back'
-                elif sprited[(self.main_ghost.position.y+8) // 8 - 1][
-                    (self.main_ghost.position.x // 8)] in self.list_normal_tile:
+                elif map_with_sprites[(self.main_ghost.position.y + 8) // 8 - 1][(self.main_ghost.position.x // 8)] in \
+                        self.list_normal_tile:
                     return 'up'
             return self.main_ghost.direction
         elif self.stay == 2:
             if (self.main_ghost.position[0] + 4) % 8 == 0:
-                if sprited[self.main_ghost.position_in_blocks[1] - 1][
-                    (self.main_ghost.position.x + 4) // 8] == 'gate' or \
-                        sprited[self.main_ghost.position_in_blocks[1] - 2][
-                            (self.main_ghost.position.x + 4) // 8] == 'gate':
+                map_position_y = (self.main_ghost.position.x + 4) // 8
+                if map_with_sprites[self.main_ghost.position_in_blocks[1] - 1][map_position_y] == 'gate' or \
+                        map_with_sprites[self.main_ghost.position_in_blocks[1] - 2][map_position_y] == 'gate':
                     self.stay = 3
                     return 'up'
             return 'left'
         elif self.stay == 3:
-            if (self.main_ghost.position[1]) % 8 == 0:
-                if sprited[self.my_position_in_blocks()[1] + 1][
-                    (self.main_ghost.position_in_blocks[0])] == 'gate':
+            if self.main_ghost.position[1] % 8 == 0:
+                if map_with_sprites[self.my_position_in_blocks()[1] + 1][self.main_ghost.position_in_blocks[0]] == \
+                        'gate':
                     self.stay = 0
                     self.prev_block = (self.main_ghost.position[0], self.main_ghost.position[1])
                     return 'right'
             return 'up'
 
     def where_am_i_should_move(self, pacman: Pacman, all_ghosts, stage=1,
-                               trigger=0) -> Direction:  #stage: 1 - стадия разгона, 2 - стадия преследования, 3 - страх
-        if self.stay:                                    #trigger: 0 - не выходить, 1 - сигнал к выходу
-            return self.stay_stage(globalvars.orangetrigger)
+                               trigger=0) -> Direction:  # stage: 1 - стадия разгона,2 - стадия преследования,3 - страх
+        if self.stay:  # trigger: 0 - не выходить, 1 - сигнал к выходу
+            return self.stay_stage(globalvars.orange_trigger)
         elif self.main_ghost.scared:
             return self.scared_stage()
         elif self.stage == 1:
             return self.chase_stage(pacman)
         elif self.stage == 2:
             return self.acceleration_stage()
-
         return 'back'
