@@ -15,6 +15,9 @@ class Score:
     nickname: str
     score: int
 
+    def __int__(self):
+        return self.score
+
 
 def get_scores():
     if not os.path.exists(filename):

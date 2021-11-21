@@ -1,30 +1,43 @@
 import pygame
-from globalclasses import Button, GuiSettings
-import globalvars
 
-def setTextures():
+import globalvars
+from globalclasses import Button, GuiSettings
+
+
+def set_textures():
     if globalvars.texture_modifier != "":
         globalvars.texture_modifier = ""
     else:
         globalvars.texture_modifier = "r_"
 
-def setEasy():
+
+def set_easy_difficulty():
     globalvars.difficulty = 0.5
-def setNormal():
+
+
+def set_normal_difficulty():
     globalvars.difficulty = 1
-def setHard():
+
+
+def set_hard_difficulty():
     globalvars.difficulty = 1.5
+
 
 def settings_menu():
     main_screen = pygame.display.set_mode((1066, 600))
     text_color = (255,) * 3
-    settings = GuiSettings(button_color=text_color, button_color_hover=(120,) * 3)
+    settings = GuiSettings(button_color=text_color, button_color_hover=(127,) * 3)
     buttons = [
-        Button(220 * 0 + main_screen.get_width() // 4 + 80, 80, 200, 50, (0, 0, 0), settings, "Лёгкая", setEasy),
-        Button(220 * 1 + main_screen.get_width() // 4 + 80, 80, 200, 50, (0, 0, 0), settings, "Нормальная", setNormal),
-        Button(220 * 2 + main_screen.get_width() // 4 + 80, 80, 200, 50, (0, 0, 0), settings, "Сложная", setHard),
-        Button(220 * 0 + main_screen.get_width() // 4 + 80, 180, 200, 50, (0, 0, 0), settings, "Обычные", setTextures),
-        Button(220 * 2 + main_screen.get_width() // 4 + 80, 180, 200, 50, (0, 0, 0), settings, "Альтернативные", setTextures),
+        Button(220 * 0 + main_screen.get_width() // 4 + 80, 80, 200, 50, (0, 0, 0), settings, "Лёгкая",
+               set_easy_difficulty),
+        Button(220 * 1 + main_screen.get_width() // 4 + 80, 80, 200, 50, (0, 0, 0), settings, "Нормальная",
+               set_normal_difficulty),
+        Button(220 * 2 + main_screen.get_width() // 4 + 80, 80, 200, 50, (0, 0, 0), settings, "Сложная",
+               set_hard_difficulty),
+        Button(220 * 0 + main_screen.get_width() // 4 + 80, 180, 200, 50, (0, 0, 0), settings, "Обычные",
+               set_textures),
+        Button(220 * 2 + main_screen.get_width() // 4 + 80, 180, 200, 50, (0, 0, 0), settings, "Альтернативные",
+               set_textures),
     ]
     text_font = pygame.font.SysFont("segoeuisemibold", 32)
     running = True

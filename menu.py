@@ -2,11 +2,11 @@ import time
 
 import pygame
 
+import globalvars
 import player
 from game import main
 from globalclasses import Button
 from globalclasses import GuiSettings
-import globalvars
 from input_name_menu import ask_name
 from perfomance import img_load
 from settings_menu import settings_menu
@@ -17,6 +17,7 @@ pygame.init()
 pygame.mixer.init()
 
 in_game: bool = False
+
 
 def play():
     global in_game
@@ -43,7 +44,6 @@ def options_menu():
         Button(220 * 2 + 80, 530, 200, 50, (0, 0, 0), settings, "Настройки", settings_menu),
         Button(220 * 3 + 80, 530, 200, 50, (0, 0, 0), settings, "Выйти из игры", exit_game),
     ]
-    
 
     while not in_game:
         background_file = f"./textures/bg/{globalvars.texture_modifier}pacman2.jpg"
