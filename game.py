@@ -83,17 +83,15 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
-            if not audio_channel.get_busy() and not pac.dead:
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        done = True
-                    pac.process_event(event)
-                    if event.key == pygame.K_p:
-                        pause(clock)
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    done = True
+                pac.process_event(event)
+                if event.key == pygame.K_p:
+                    pause(clock)
         screen.fill((0, 0, 0))
         render(screen, player.game_simplified_map)
         # MainGhost.draw_trigger_blocks(screen)
-
         if not globalvars.ghost_less:
             for ghost in ghosts:
                 ghost.draw(screen)
@@ -110,6 +108,7 @@ def main():
                     for ghost in ghosts:
                         if ghost.ghost_logic.stay == 0:
                             ghost.ghost_logic.stage = 2
+                            stage = 2
                     last_time = pygame.time.get_ticks()
             if local_stage == 2:
                 if pygame.time.get_ticks() - last_time >= 7000:
@@ -119,18 +118,21 @@ def main():
                     for ghost in ghosts:
                         if ghost.ghost_logic.stay == 0:
                             ghost.ghost_logic.stage = 1
+                            stage = 1
                     last_time = pygame.time.get_ticks()
+            
 
-            if not audio_channel.get_busy() and not pac.dead:
+        elif not audio_channel.get_busy() and not pac.dead and not pac.win:
+            pac.upd([])
+        
+
+        if pygame.time.get_ticks() % 16 < 8 or not audio_channel.get_busy():
+            pac.draw()
+        if not audio_channel.get_busy() and not pac.dead and not pac.win and not globalvars.ghost_less:
                 pac.upd(ghosts)
                 for ghost in ghosts:
-                    # TODO сделать тригеры и стадии игры (я чутка поправил код, чтобы до логики дошли тригер и стадия
                     ghost.update(pac, ghosts, stage, trigger)
-        elif not audio_channel.get_busy() and not pac.dead:
-            pac.upd([])
 
-        if pygame.time.get_ticks() % 16 <= 10 or not audio_channel.get_busy():
-            pac.draw()
-        done = done or (pac.dead and not pac.play_dead_sound())
+        done = done or (pac.dead and not pac.play_dead_sound()) or (pac.win and not pac.play_win_sound())
         pygame.display.flip()
         clock.tick(120)

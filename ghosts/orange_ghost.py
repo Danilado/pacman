@@ -61,6 +61,8 @@ class OrangeGhostLogic(AbstractGhostLogic):
         return tmp_list_vec
 
     def select_tile(self, target_pos):
+        if globalvars.debug:
+            pygame.draw.rect(self.main_ghost.screen, (255, 153, 0), (target_pos[0], target_pos[1] + 50, 8, 8), 1)
         direction = self.main_ghost.direction
         tmp_list_ways = self.find_ways()
         if direction == 'right':

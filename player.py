@@ -40,10 +40,18 @@ class Pacman:
         self.eat_channel = pygame.mixer.Channel(2)
         self.eat_sound1 = pygame.mixer.Sound("./sounds/munch_1.wav")
         self.eat_sound2 = pygame.mixer.Sound("./sounds/munch_2.wav")
+        self.win = False
+        self.victory_sound_playing = False
+        self.victory_sound_1 = pygame.mixer.Sound("./sounds/victory_1.wav")
+        self.victory_sound_2 = pygame.mixer.Sound("./sounds/victory_2.wav")
+        self.win_channel = pygame.mixer.Channel(3)
         self.current_eat_sound_index = 1
         self.remember_vec = -1
         self.dots = 0
+        if globalvars.iwin:
+            self.dots = 244
         self.number_image = -1
+        self.god = globalvars.god
 
     def draw(self):
         img = img_load(f'./textures/pacsprites/pacman{self.vec}.png')
@@ -59,6 +67,15 @@ class Pacman:
             self.dead_channel.play(self.dead_sound)
             self.dead_sound_playing = True
         return self.dead_channel.get_busy()
+
+    def play_win_sound(self):
+        if not self.victory_sound_playing:
+            if not globalvars.easter:
+                self.win_channel.play(self.victory_sound_1)
+            else:
+                self.win_channel.play(self.victory_sound_2)
+            self.victory_sound_playing = True
+        return self.win_channel.get_busy()
 
     def play_eat_ghost_sound(self):
         is_audio_running = self.eat_channel.get_busy()
@@ -88,7 +105,7 @@ class Pacman:
                         # print(f'{self.eaten} {score}')
                         ghost.reset_position()
                         self.play_eat_ghost_sound()
-                    else:
+                    elif not self.god:
                         self.hit(ghosts)
         if now - self.last >= 7000:
             self.invincible = 0
@@ -119,7 +136,7 @@ class Pacman:
         if self.dots >= 244 // 3:
             globalvars.orange_trigger = 1
         if self.dots >= 244:
-            self.dead = True
+            self.win = True
 
         text_font = pygame.font.SysFont("segoeuisemibold", 16)
         self.screen.blit(text_font.render("Счёт", False, (255, 255, 255)), (0, 0))
@@ -238,7 +255,7 @@ class Pacman:
             self.y = self.y // 8 * 8
 
         # проверка на призрака
-        if not self.invincible:
+        if not self.invincible and not self.god:
             for ghost in ghosts:
                 if ((self.x - ghost.position.x) ** 2 + (self.y - ghost.position.y) ** 2) ** 0.5 <= 8:
                     self.hit(ghosts)

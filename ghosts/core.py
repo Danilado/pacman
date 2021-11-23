@@ -7,6 +7,7 @@ import globalvars
 import player
 from perfomance import img_load
 from player import Pacman
+from globalvars import debug
 
 Direction = Literal["left", "right", "up", "back", ""]
 AnimationList = List[pygame.Surface]
@@ -230,6 +231,7 @@ class MainGhost:
     def draw(self, screen: pygame.Surface):
         """Рисует призрака"""
         # self._check_position()
+        # pygame.draw.rect(screen, (0, 0, 255), (self.ghost_logic.tar, int(self._position.y), 8, 8), 1)
         if self.scared:
             if pygame.time.get_ticks() - self._timer >= 200:  # Каждые 200 мс
                 self._current_animation_frame += (1 + self.scare_mod)
@@ -251,7 +253,7 @@ class MainGhost:
                 self._current_animation_list[self._current_animation_frame],
                 (self._position.x - 4, self._position.y - 4 + 50)
             )
-            # pygame.draw.rect(screen, (0, 0, 255), (int(self._position.x), int(self._position.y), 8, 8), 1)
+            
 
     def update(self, pacman: Pacman, all_ghosts: List["MainGhost"], stage, trigger):
         """Двигает призрака и изменяет его направление"""
@@ -282,6 +284,8 @@ class MainGhost:
         self._position.y = self.default_position.y
         self._ghost_logic.stay = 1
         self._ghost_logic.stage = 1
+        if self.default_position.y == 11 * 8:
+            self._direction = "right"
         self.un_scare()
 
     @property
