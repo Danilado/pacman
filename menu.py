@@ -20,6 +20,7 @@ in_game: bool = False
 
 background_file = f"./textures/bg/{globalvars.texture_modifier}pacman2.jpg"
 
+
 def play():
     global in_game
     in_game = True
@@ -34,10 +35,12 @@ def exit_game():
     global in_game
     in_game = True
 
+
 def sm():
     global background_file
     settings_menu()
     background_file = f"./textures/bg/{globalvars.texture_modifier}pacman2.jpg"
+
 
 def options_menu():
     try:
@@ -74,7 +77,10 @@ def options_menu():
                             timeout = 0
 
             for button in buttons:
-                button.update(events)
+                if not in_game and button.update(events) and button.action is exit_game:
+                    break
+            if in_game:
+                break
 
             for button in buttons:
                 button.draw(main_screen)
@@ -84,5 +90,5 @@ def options_menu():
             main_screen.blit(img, (0, 0))
             clock.tick(120)
         pygame.quit()
-    except:
-        print("Goodbye")
+    except KeyboardInterrupt:
+        pass

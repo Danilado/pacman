@@ -120,18 +120,16 @@ def main():
                             ghost.ghost_logic.stage = 1
                             stage = 1
                     last_time = pygame.time.get_ticks()
-            
 
         elif not audio_channel.get_busy() and not pac.dead and not pac.win:
             pac.upd([])
-        
 
         if pygame.time.get_ticks() % 16 < 8 or not audio_channel.get_busy():
             pac.draw()
         if not audio_channel.get_busy() and not pac.dead and not pac.win and not globalvars.ghost_less:
-                pac.upd(ghosts)
-                for ghost in ghosts:
-                    ghost.update(pac, ghosts, stage, trigger)
+            pac.upd(ghosts)
+            for ghost in ghosts:
+                ghost.update(pac, ghosts, stage, trigger)
 
         done = done or (pac.dead and not pac.play_dead_sound()) or (pac.win and not pac.play_win_sound())
         pygame.display.flip()

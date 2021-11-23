@@ -3,10 +3,11 @@ from random import randint
 
 import pygame
 
+import globalvars
 from ghosts.core import AbstractGhostLogic, MainGhost, Direction
 from layouts import map_with_sprites
 from player import Pacman
-import globalvars
+
 
 class PinkGhostLogic(AbstractGhostLogic):
     default_position = pygame.Vector2(13 * 8 + 4, 14 * 8)

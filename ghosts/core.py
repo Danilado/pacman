@@ -7,7 +7,6 @@ import globalvars
 import player
 from perfomance import img_load
 from player import Pacman
-from globalvars import debug
 
 Direction = Literal["left", "right", "up", "back", ""]
 AnimationList = List[pygame.Surface]
@@ -253,7 +252,6 @@ class MainGhost:
                 self._current_animation_list[self._current_animation_frame],
                 (self._position.x - 4, self._position.y - 4 + 50)
             )
-            
 
     def update(self, pacman: Pacman, all_ghosts: List["MainGhost"], stage, trigger):
         """Двигает призрака и изменяет его направление"""
