@@ -59,6 +59,8 @@ class BlueGhostLogic(AbstractGhostLogic):
         return tmp_list_vec
 
     def select_tile(self, target_pos):
+        if globalvars.debug:
+            pygame.draw.rect(self.main_ghost.screen, (26, 26, 255), (target_pos[0], target_pos[1] + 50, 8, 8), 1)
         direction = self.main_ghost.direction
         tmp_list_ways = self.find_ways()
         if direction == 'right':
@@ -101,7 +103,7 @@ class BlueGhostLogic(AbstractGhostLogic):
         return direction
 
     def acceleration_stage(self):
-        target_pos = [224, 256]
+        target_pos = [216, 256]
         return self.select_tile(target_pos)
 
     def chase_stage(self, pacman, all_ghosts):
@@ -161,7 +163,7 @@ class BlueGhostLogic(AbstractGhostLogic):
             return 'up'
 
     def scared_stage(self):
-        target_pos = [self.main_ghost.position.x + randint(-1, 1) * 8, self.main_ghost.position.x + randint(-1, 1) * 8]
+        target_pos = [self.main_ghost.position.x + randint(-1, 1) * 8, self.main_ghost.position.y + randint(-1, 1) * 8]
         return self.select_tile(target_pos)
 
     def where_am_i_should_move(self, pacman: Pacman, all_ghosts, stage=1,

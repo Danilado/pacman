@@ -6,7 +6,7 @@ import pygame
 from ghosts.core import AbstractGhostLogic, MainGhost, Direction
 from layouts import map_with_sprites
 from player import Pacman
-
+import globalvars
 
 class PinkGhostLogic(AbstractGhostLogic):
     default_position = pygame.Vector2(13 * 8 + 4, 14 * 8)
@@ -53,6 +53,8 @@ class PinkGhostLogic(AbstractGhostLogic):
         return tmp_list_vec
 
     def select_tile(self, target_pos):
+        if globalvars.debug:
+            pygame.draw.rect(self.main_ghost.screen, (204, 51, 255), (target_pos[0], target_pos[1] + 50, 8, 8), 1)
         direction = self.main_ghost.direction
         tmp_list_ways = self.find_ways()
         if direction == 'right':
@@ -95,7 +97,7 @@ class PinkGhostLogic(AbstractGhostLogic):
         return direction
 
     def acceleration_stage(self):
-        target_pos = [0, 0]
+        target_pos = [0, -8]
         return self.select_tile(target_pos)
 
     def chase_stage(self, pacman):

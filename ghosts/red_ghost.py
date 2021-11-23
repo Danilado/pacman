@@ -2,6 +2,7 @@ from math import sqrt
 from random import randint
 
 import pygame
+import globalvars
 
 from ghosts.core import AbstractGhostLogic, MainGhost, Direction
 from layouts import map_with_sprites
@@ -56,6 +57,8 @@ class RedGhostLogic(AbstractGhostLogic):
         return tmp_list_vec
 
     def select_tile(self, target_pos):
+        if globalvars.debug:
+            pygame.draw.rect(self.main_ghost.screen, (255, 0, 0), (target_pos[0], target_pos[1] + 50, 8, 8), 1)
         direction = self.main_ghost.direction
         tmp_list_ways = self.find_ways()
         if direction == 'right':
@@ -98,7 +101,7 @@ class RedGhostLogic(AbstractGhostLogic):
         return direction
 
     def acceleration_stage(self):
-        target_pos = [224, 0]
+        target_pos = [216, -8]
         return self.select_tile(target_pos)
 
     def chase_stage(self, pacman):
@@ -111,7 +114,7 @@ class RedGhostLogic(AbstractGhostLogic):
 
     def go_home(self):
         self.main_ghost.reset_position()
-        self.main_ghost.direction = "right"
+        self.main_ghost._direction = "right"
 
     def where_am_i_should_move(self, pacman: Pacman, all_ghosts, stage=1,
                                trigger=0) -> Direction:  # 1 - стадия разгона, 2 - стадия преследования, 3 - страх
