@@ -22,18 +22,18 @@ def ask_name():
         frame += 1
         clock.tick(30)
         pygame.display.flip()
-        main_screen.fill("blue")
+        main_screen.fill("black")
 
-        pygame.draw.rect(main_screen, "white", (0, 300, 1066, 46))
+        pygame.draw.rect(main_screen, (33,) * 3, (0, 300, 1066, 46))
         text_width = text_font.size(result)[0]
         if frame % 24 <= 24 / 2:
             pygame.draw.rect(main_screen, "black", (text_width, 300, 0, 46), 1)
         main_screen.blit(
-            text_font.render("Введите своё имя", False, "black"),
+            text_font.render("Введите своё имя", False, "white"),
             (1066 // 2 - text_font.size("Введите своё имя")[0] // 2, 100)
         )
         main_screen.blit(
-            text_font.render(result, False, "black"), (0, 300)
+            text_font.render(result, False, "white"), (0, 300)
         )
 
         for event in pygame.event.get():
@@ -48,9 +48,11 @@ def ask_name():
                     backspace_pressed = True
                     time_when_backspace_pressed = pygame.time.get_ticks()
                 else:
-                    result += event.unicode
-                    any_symbol_pressed = True
                     symbol = event.unicode
+                    if event.key == pygame.K_TAB:
+                        symbol = " " * 4
+                    result += symbol
+                    any_symbol_pressed = True
                     time_when_any_symbol_pressed = pygame.time.get_ticks()
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_BACKSPACE:
