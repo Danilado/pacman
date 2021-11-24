@@ -8,7 +8,3 @@ orange_trigger = 0
 blue_trigger = 0
 difficulty = 1
 easter = 0
-score = 0
-tick1 = 0
-tick2 = 0
-tick3 = 0

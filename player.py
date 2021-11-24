@@ -3,7 +3,6 @@ from typing import List, TYPE_CHECKING
 import pygame
 
 import globalvars
-from globalvars import tick1
 from perfomance import img_load
 from store_score import get_scores
 
@@ -13,13 +12,13 @@ if TYPE_CHECKING:
 black = 0, 0, 0
 game_map = []
 game_simplified_map = []
-cherry_img = pygame.image.load('textures/Cherry.png')
-
+score = 0
 
 class Pacman:
 
     def __init__(self, x, y, window):
         scores = tuple(get_scores())
+        self.cherry_img = pygame.image.load('textures/Cherry.png')
         self.best = max(scores, key=lambda item: item.score).score if scores != () else 0
         self.x = x
         self.y = y
@@ -53,6 +52,9 @@ class Pacman:
             self.dots = 244
         self.number_image = -1
         self.god = globalvars.god
+        self.chcall = 0xAB0BA
+        self.cherryonscreen = 0
+        self.cherrymul = 100
 
     def draw(self):
         img = img_load(f'./textures/pacsprites/pacman{self.vec}.png')
@@ -132,8 +134,20 @@ class Pacman:
         global game_map
         global game_simplified_map
 
+        if self.cherryonscreen:
+            self.update_cherry()
+
         if self.dots >= 30:
             globalvars.blue_trigger = 1
+        if self.dots == 244 * 0.25:
+            self.cherrymul = 100
+            self.cherry_spawn()
+        if self.dots == 244 * 0.50:
+            self.cherrymul = 300
+            self.cherry_spawn()
+        if self.dots == 244 * 0.75:
+            self.cherrymul = 500
+            self.cherry_spawn()
         if self.dots >= 244 // 3:
             globalvars.orange_trigger = 1
         if self.dots >= 244:
@@ -344,22 +358,20 @@ class Pacman:
                 self.remember_vec = 3
 
     def cherry_spawn(self):
-        if self.last == 7000:
-            now = pygame.time.get_ticks()
-            if now - self.last <= 5000:
-                self.screen.blit(cherry_img, (120, 144))
+        self.chcall = pygame.time.get_ticks()
+        self.cherryonscreen = 1
 
-        if self.last == 18000:
-            now = pygame.time.get_ticks()
-            if now - self.last <= 5000:
-                self.screen.blit(cherry_img, (120, 144))
-
-        if self.last == 26000:
-            now = pygame.time.get_ticks()
-            if now - self.last <= 5000:
-                self.screen.blit(cherry_img, (120, 144))
-
-
-
-
-
+    def update_cherry(self):
+        global score
+        now = pygame.time.get_ticks()
+        if now - self.chcall >= 10000:
+            self.cherryonscreen = 0
+        elif now - self.chcall >= 7000:
+            if (now - self.chcall)%1000 >= 500:
+                self.screen.blit(self.cherry_img, (self.screen.get_width() // 2 - 8, 190))
+        else:
+            self.screen.blit(self.cherry_img, (self.screen.get_width() // 2 - 8, 190))
+        if ((self.screen.get_width() // 2 - 4 - self.x)**2 + (144 - self.y)**2)**0.5 <= 8:
+            self.cherryonscreen = 0
+            score += self.cherrymul
+            self.chcall = 0xAB0BA
