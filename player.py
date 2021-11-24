@@ -10,7 +10,6 @@ if TYPE_CHECKING:
     from ghosts.core import MainGhost
 
 black = 0, 0, 0
-score = 0
 game_map = []
 game_simplified_map = []
 
