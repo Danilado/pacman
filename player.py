@@ -3,6 +3,7 @@ from typing import List, TYPE_CHECKING
 import pygame
 
 import globalvars
+from globalvars import tick1
 from perfomance import img_load
 from store_score import get_scores
 
@@ -12,6 +13,7 @@ if TYPE_CHECKING:
 black = 0, 0, 0
 game_map = []
 game_simplified_map = []
+cherry_img = pygame.image.load('textures/Cherry.png')
 
 
 class Pacman:
@@ -340,3 +342,24 @@ class Pacman:
                         self.remember_vec = 3
             elif game_map[int(self.y // 8) + 1][int(self.x // 8)] == 0:
                 self.remember_vec = 3
+
+    def cherry_spawn(self):
+        if self.last == 7000:
+            now = pygame.time.get_ticks()
+            if now - self.last <= 5000:
+                self.screen.blit(cherry_img, (120, 144))
+
+        if self.last == 18000:
+            now = pygame.time.get_ticks()
+            if now - self.last <= 5000:
+                self.screen.blit(cherry_img, (120, 144))
+
+        if self.last == 26000:
+            now = pygame.time.get_ticks()
+            if now - self.last <= 5000:
+                self.screen.blit(cherry_img, (120, 144))
+
+
+
+
+
