@@ -16,7 +16,6 @@ score = 0
 
 
 class Pacman:
-
     def __init__(self, x, y, window):
         scores = tuple(get_scores())
         self.cherry_img = pygame.image.load('textures/Cherry.png')
@@ -53,9 +52,9 @@ class Pacman:
             self.dots = 244
         self.number_image = -1
         self.god = globalvars.god
-        self.chcall = 0xAB0BA
-        self.cherryonscreen = 0
-        self.cherrymul = 100
+        self.cherry_call = 0xAB0BA
+        self.cherry_on_screen = 0
+        self.cherry_multiplier = 100
 
     def draw(self):
         img = img_load(f'./textures/pacsprites/pacman{self.vec}.png')
@@ -135,19 +134,19 @@ class Pacman:
         global game_map
         global game_simplified_map
 
-        if self.cherryonscreen:
+        if self.cherry_on_screen:
             self.update_cherry()
 
         if self.dots >= 30:
             globalvars.blue_trigger = 1
         if self.dots == 244 * 0.25:
-            self.cherrymul = 100
+            self.cherry_multiplier = 100
             self.cherry_spawn()
         if self.dots == 244 * 0.50:
-            self.cherrymul = 300
+            self.cherry_multiplier = 300
             self.cherry_spawn()
         if self.dots == 244 * 0.75:
-            self.cherrymul = 500
+            self.cherry_multiplier = 500
             self.cherry_spawn()
         if self.dots >= 244 // 3:
             globalvars.orange_trigger = 1
@@ -359,24 +358,24 @@ class Pacman:
                 self.remember_vec = 3
 
     def cherry_spawn(self):
-        self.chcall = pygame.time.get_ticks()
-        self.cherryonscreen = 1
+        self.cherry_call = pygame.time.get_ticks()
+        self.cherry_on_screen = 1
 
     def update_cherry(self):
         global score
         now = pygame.time.get_ticks()
         if ((self.screen.get_width() // 2 - 4 - self.x) ** 2 + (144 - self.y) ** 2) ** 0.5 <= 8:
-            self.cherryonscreen = 0
-            score += self.cherrymul
-            self.chcall = 0xAB0BA
+            self.cherry_on_screen = 0
+            score += self.cherry_multiplier
+            self.cherry_call = 0xAB0BA
             self.play_eat_ghost_sound()
             return
-        if now - self.chcall >= 10000:
-            self.cherryonscreen = 0
-            self.chcall = 0xAB0BA
+        if now - self.cherry_call >= 10000:
+            self.cherry_on_screen = 0
+            self.cherry_call = 0xAB0BA
             return
-        elif now - self.chcall >= 7000:
-            if (now - self.chcall) % 1000 >= 500:
+        elif now - self.cherry_call >= 7000:
+            if (now - self.cherry_call) % 1000 >= 500:
                 self.screen.blit(self.cherry_img, (self.screen.get_width() // 2 - 8, 182))
         else:
             self.screen.blit(self.cherry_img, (self.screen.get_width() // 2 - 8, 182))
