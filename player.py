@@ -364,14 +364,19 @@ class Pacman:
     def update_cherry(self):
         global score
         now = pygame.time.get_ticks()
-        if now - self.chcall >= 10000:
-            self.cherryonscreen = 0
-        elif now - self.chcall >= 7000:
-            if (now - self.chcall)%1000 >= 500:
-                self.screen.blit(self.cherry_img, (self.screen.get_width() // 2 - 8, 190))
-        else:
-            self.screen.blit(self.cherry_img, (self.screen.get_width() // 2 - 8, 190))
         if ((self.screen.get_width() // 2 - 4 - self.x)**2 + (144 - self.y)**2)**0.5 <= 8:
             self.cherryonscreen = 0
             score += self.cherrymul
             self.chcall = 0xAB0BA
+            self.play_eat_ghost_sound()
+            return
+        if now - self.chcall >= 10000:
+            self.cherryonscreen = 0
+            self.chcall = 0xAB0BA
+            return
+        elif now - self.chcall >= 7000:
+            if (now - self.chcall)%1000 >= 500:
+                self.screen.blit(self.cherry_img, (self.screen.get_width() // 2 - 8, 182))
+        else:
+            self.screen.blit(self.cherry_img, (self.screen.get_width() // 2 - 8, 182))
+        
