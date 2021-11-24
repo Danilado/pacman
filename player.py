@@ -18,7 +18,7 @@ score = 0
 class Pacman:
     def __init__(self, x, y, window):
         scores = tuple(get_scores())
-        self.cherry_img = pygame.image.load('textures/Cherry.png')
+        self.cherry_img = img_load('textures/Cherry.png')
         self.best = max(scores, key=lambda item: item.score).score if scores != () else 0
         self.x = x
         self.y = y
