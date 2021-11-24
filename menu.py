@@ -20,6 +20,7 @@ in_game: bool = False
 
 background_file = f"./textures/bg/{globalvars.texture_modifier}pacman2.jpg"
 
+
 def play():
     global in_game
     in_game = True
@@ -34,10 +35,12 @@ def exit_game():
     global in_game
     in_game = True
 
+
 def sm():
     global background_file
     settings_menu()
     background_file = f"./textures/bg/{globalvars.texture_modifier}pacman2.jpg"
+
 
 def options_menu():
     try:
