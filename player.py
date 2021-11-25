@@ -81,13 +81,16 @@ class Pacman:
             for ghost in ghosts:
                 if ((self.x-ghost.position.x)**2 + (self.y-ghost.position.y)**2)**0.5<=8:
                     if ghost.scared:
-                        score += 200 * (2 ** self.eaten)
-                        self.eaten += 1
-                        # print(f'{self.eaten} {score}')
-                        ghost.reset_position()
-                        self.play_eat_ghost_sound()
+                        if not ghost.ghost_logic.eaten:
+                            score += 200 * (2 ** self.eaten)
+                            self.eaten += 1
+                            # print(f'{self.eaten} {score}')
+                            #ghost.reset_position()
+                            ghost.trigger_eaten()
+                            self.play_eat_ghost_sound()
                     else:
-                        self.hit(ghosts)
+                        if not ghost.ghost_logic.eaten:
+                            self.hit(ghosts)
         if now - self.last >= 7000:
             self.invincible = 0
             self.in_energizer = False
@@ -230,7 +233,7 @@ class Pacman:
         # проверка на призрака
         if not self.invincible:
             for ghost in ghosts:
-                if ((self.x-ghost.position.x)**2 + (self.y-ghost.position.y)**2)**0.5<=8:
+                if ((self.x-ghost.position.x)**2 + (self.y-ghost.position.y)**2)**0.5<=8 and not ghost._ghost_logic.eaten:
                     self.hit(ghosts)
 
         

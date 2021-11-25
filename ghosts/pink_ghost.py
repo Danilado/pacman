@@ -20,6 +20,7 @@ class PinkGhostLogic(AbstractGhostLogic):
     def __init__(self, main_ghost: "MainGhost"):
         super().__init__(main_ghost)
         self.stay = 1
+        self.eaten = 0
         self.main_ghost = main_ghost
         self.trigger = 0
 
@@ -126,17 +127,41 @@ class PinkGhostLogic(AbstractGhostLogic):
                 self.stay = 0
                 self.prev_block = (self.main_ghost.position[0], self.main_ghost.position[1])
                 return 'right'
-        return 'up'
+            else:
+                return "up"
+        else:
+            return 'up'
+
+    def eaten_stage(self):
+        target_pos = [13 * 8 + 4, 11 * 8]
+        print(self.eaten, self.main_ghost.position)
+        if self.eaten == 1:
+            self.speed = 1
+            if self.main_ghost.position.x != target_pos[0] or self.main_ghost.position.y != target_pos[1]:
+                return self.select_tile(target_pos)
+            else:
+                self.eaten = 2
+                return 'back'
+        elif self.eaten == 2:
+            if self.main_ghost.position.y != 14 * 8:
+                return 'back'
+            else:
+                self.eaten = 0
+                self.speed = 0.3
+                self.stay = 1
+                return 'up'
+
 
     def where_am_i_should_move(self, pacman: Pacman, all_ghosts, stage=1,
                                trigger=0) -> Direction:  ## 1 - стадия разгона, 2 - стадия преследования, 3 - страх
         if self.stay:
             return self.stay_stage(1)
+        elif self.eaten:
+            return self.eaten_stage()
         elif self.main_ghost.scared:
             return self.scared_stage()
         elif stage == 1:
             return self.chase_stage(pacman)
         elif stage == 2:
             return self.acceleration_stage()
-        
         return 'back'

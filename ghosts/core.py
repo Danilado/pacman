@@ -34,7 +34,7 @@ class AbstractGhostLogic(ABC):
                 self.up_animations[index] = img_load(up_animation).convert_alpha()
 
         self.scared_animations_blue = [img_load("./textures/ghosts/scared/z1.png").convert_alpha(), img_load("./textures/ghosts/scared/z2.png").convert_alpha(), img_load("./textures/ghosts/scared/z3.png").convert_alpha(), img_load("./textures/ghosts/scared/z4.png").convert_alpha()]
-
+        self.glaza = img_load("./textures/ghosts/yeys.png")
 
         
 
@@ -225,7 +225,7 @@ class MainGhost:
     def draw(self, screen: pygame.Surface):
         """Рисует призрака"""
         # self._check_position()
-        if self.scared:
+        if self.scared and not self._ghost_logic.eaten:
             if pygame.time.get_ticks() - self._timer >= 200:  # Каждые 200 мс
                 self._current_animation_frame += (1 + self.scaremod)
                 self._timer = pygame.time.get_ticks()
@@ -233,6 +233,11 @@ class MainGhost:
                     self._current_animation_frame = 0
             screen.blit(
                 self._ghost_logic.scared_animations_blue[self._current_animation_frame],
+                (self._position.x - 4, self._position.y - 4 + 50)
+            )
+        elif self._ghost_logic.eaten:
+            screen.blit(
+                self._ghost_logic.glaza,
                 (self._position.x - 4, self._position.y - 4 + 50)
             )
         elif self.direction != "":
@@ -348,3 +353,7 @@ class MainGhost:
     @property
     def ghost_logic(self):
         return self._ghost_logic
+
+    def trigger_eaten(self):
+        if not self.ghost_logic.eaten:
+            self.ghost_logic.eaten = 1
