@@ -14,7 +14,8 @@ from layouts import simplified
 from perfomance import img_load
 
 resolution = w, h = 224, 336
-
+last_time = 0
+local_stage = 1
 
 def render(window, matrix):  # Моя функция рендера карты и зёрен
     for i in range(len(matrix)):  # Y
@@ -29,21 +30,30 @@ def render(window, matrix):  # Моя функция рендера карты �
                 # Всё остальное отрисовывается
 
 
-def pause(clock: pygame.time.Clock):
+def pause(clock: pygame.time.Clock, screen):
+    global last_time
+    global local_stage
+    save = pygame.time.get_ticks()
     paused = True
-    print("paused")
+    pause_icon = pygame.image.load(f'./textures/pause.png').convert_alpha()
+    print("Game paused...")
     while paused:
+        if pygame.time.get_ticks() % 1000 < 500:
+            screen.blit(pause_icon, (screen.get_width() - 32, 0))
+        else:
+            screen.fill((0,0,0), (screen.get_width() - 32, 0, 32, 32))
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_p:
-                    print("un paused")
+                    print("Resuming...")
                     paused = False
-
+                    last_time += pygame.time.get_ticks() - save
         pygame.display.update()
-        clock.tick(15)
+        clock.tick(120)
 
 
 def main():
@@ -53,9 +63,11 @@ def main():
     screen = pygame.display.set_mode(resolution)
     done = False
     pac = player.Pacman(w / 2 - 4, h / 2 + 6 * 8 + 8 - 40, screen)
-    last_time = 0
-    local_stage = 1
+    
     flag = 0
+
+    global last_time
+    global local_stage
 
     ghosts: List[MainGhost] = []
     if not globalvars.ghost_less:
@@ -88,7 +100,7 @@ def main():
                     done = True
                 pac.process_event(event)
                 if event.key == pygame.K_p:
-                    pause(clock)
+                    pause(clock, screen)
         screen.fill((0, 0, 0))
         render(screen, player.game_simplified_map)
         # MainGhost.draw_trigger_blocks(screen)

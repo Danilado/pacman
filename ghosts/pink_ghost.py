@@ -141,7 +141,7 @@ class PinkGhostLogic(AbstractGhostLogic):
     def eaten_stage(self):
         target_pos = [13 * 8 + 4, 11 * 8]
         if self.eaten == 1:
-            self.speed = 2
+            self.speed = 1
             if self.main_ghost.position.x != target_pos[0] or self.main_ghost.position.y != target_pos[1]:
                 return self.select_tile(target_pos)
             else:
