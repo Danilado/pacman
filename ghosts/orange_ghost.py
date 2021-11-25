@@ -26,6 +26,7 @@ class OrangeGhostLogic(AbstractGhostLogic):
     speed = 0.321
     flag = 1
     list_normal_tile = ['seed', 5, 'nrg']
+    eaten: int = 0
 
     def __init__(self, main_ghost: "MainGhost"):
         super().__init__(main_ghost)
@@ -33,6 +34,7 @@ class OrangeGhostLogic(AbstractGhostLogic):
         self.abs_speed = 0.1
         self.prev_block = (0, 0)
         self.stage = 1
+        self.eaten = 0
 
     def my_position_in_blocks(self):
         return int((self.main_ghost.position.x + 4) // 8), int((self.main_ghost.position.y + 4) // 8)
@@ -156,10 +158,37 @@ class OrangeGhostLogic(AbstractGhostLogic):
                     return 'right'
             return 'up'
 
+    def eaten_stage(self):
+        target_pos = [13 * 8 + 4, 11 * 8]
+        if self.eaten == 1:
+            self.speed = 1
+            if self.main_ghost.position.x != target_pos[0] or self.main_ghost.position.y != target_pos[1]:
+                return self.select_tile(target_pos)
+            else:
+                self.eaten = 2
+                return 'back'
+        elif self.eaten == 2:
+            if self.main_ghost.position.y != 14 * 8:
+                return 'back'
+            else:
+                self.eaten = 3
+                return 'right'
+        elif self.eaten == 3:
+            if self.main_ghost.position.x != 15 * 8 + 4:
+                return 'right'
+            else:
+                self.eaten = 0
+                self.stay = 1
+                self.speed = 0.3
+                return 'up'
+
     def where_am_i_should_move(self, pacman: Pacman, all_ghosts, stage=1,
-                               trigger=0) -> Direction:  # stage: 1 - стадия разгона,2 - стадия преследования,3 - страх
+                               trigger=0) -> Direction:  # stage: 1 - стадия разгона,
+        # 2 - стадия преследования, 3 - страх
         if self.stay:  # trigger: 0 - не выходить, 1 - сигнал к выходу
             return self.stay_stage(globalvars.orange_trigger)
+        elif self.eaten:
+            return self.eaten_stage()
         elif self.main_ghost.scared:
             return self.scared_stage()
         elif self.stage == 1:

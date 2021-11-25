@@ -24,12 +24,14 @@ class BlueGhostLogic(AbstractGhostLogic):
     speed = 0.3
     flag = 1
     list_normal_tile = ['seed', 5, 'nrg']
+    eaten: int = 0
 
     def __init__(self, main_ghost: "MainGhost"):
         super().__init__(main_ghost)
         self.prev_block = (0, 0)
         self.main_ghost = main_ghost
         self.stage = 1
+        self.eaten = 0
         self.stay = 1
 
     def my_position_in_blocks(self):
@@ -166,10 +168,36 @@ class BlueGhostLogic(AbstractGhostLogic):
         target_pos = [self.main_ghost.position.x + randint(-1, 1) * 8, self.main_ghost.position.y + randint(-1, 1) * 8]
         return self.select_tile(target_pos)
 
+    def eaten_stage(self):
+        target_pos = [13 * 8 + 4, 11 * 8]
+        if self.eaten == 1:
+            self.speed = 1
+            if self.main_ghost.position.x != target_pos[0] or self.main_ghost.position.y != target_pos[1]:
+                return self.select_tile(target_pos)
+            else:
+                self.eaten = 2
+                return 'back'
+        elif self.eaten == 2:
+            if self.main_ghost.position.y != 14 * 8:
+                return 'back'
+            else:
+                self.eaten = 3
+                return 'left'
+        elif self.eaten == 3:
+            if self.main_ghost.position.x != 11 * 8 + 4:
+                return 'left'
+            else:
+                self.eaten = 0
+                self.stay = 1
+                self.speed = 0.3
+                return 'up'
+
     def where_am_i_should_move(self, pacman: Pacman, all_ghosts, stage=1,
                                trigger=0) -> Direction:  # 1 - стадия разгона, 2 - стадия преследования, 3 - страх
         if self.stay:
             return self.stay_stage(globalvars.blue_trigger)
+        elif self.eaten:
+            return self.eaten_stage()
         elif self.main_ghost.scared:
             return self.scared_stage()
         elif self.stage == 1:

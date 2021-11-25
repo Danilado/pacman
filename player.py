@@ -48,7 +48,7 @@ class Pacman:
         self.current_eat_sound_index = 1
         self.remember_vec = -1
         self.dots = 0
-        if globalvars.iwin:
+        if globalvars.instant_win:
             self.dots = 244
         self.number_image = -1
         self.god = globalvars.god
@@ -56,14 +56,15 @@ class Pacman:
         self.cherry_on_screen = 0
         self.cherry_multiplier = 100
         self.total_way = 0
-        self.status_kvak = 0
+        self.status_eat = 0
 
     def draw(self):
-        if self.status_kvak == 90:
+        img = img_load(f'./textures/pacsprites/pacman0.png')
+        if self.status_eat == 90:
             img = img_load(f'./textures/pacsprites/pacman{self.vec + 5}.png')
-        elif self.status_kvak == 0:
+        elif self.status_eat == 0:
             img = img_load(f'./textures/pacsprites/pacman9.png')
-        elif self.status_kvak == 45:
+        elif self.status_eat == 45:
             img = img_load(f'./textures/pacsprites/pacman{self.vec}.png')
         img2 = img_load(f'./textures/pacsprites/pacman0.png')
         for i in range(self.lives):
@@ -110,12 +111,13 @@ class Pacman:
             for ghost in ghosts:
                 if ((self.x - ghost.position.x) ** 2 + (self.y - ghost.position.y) ** 2) ** 0.5 <= 8:
                     if ghost.scared:
-                        score += 200 * (2 ** self.eaten)
-                        self.eaten += 1
-                        # print(f'{self.eaten} {score}')
-                        ghost.reset_position()
-                        self.play_eat_ghost_sound()
-                    elif not self.god:
+                        if not ghost.ghost_logic.eaten:
+                            score += 200 * (2 ** self.eaten)
+                            self.eaten += 1
+                            # print(f'{self.eaten} {score}')
+                            self.play_eat_ghost_sound()
+                            ghost.trigger_eaten()
+                    elif not self.god and not ghost.ghost_logic.eaten:
                         self.hit(ghosts)
         if now - self.last >= 7000:
             self.invincible = 0
@@ -135,7 +137,6 @@ class Pacman:
         self.play_dead_sound()
         if self.lives == 0:
             self.dead = True
-
 
     def upd(self, ghosts: List["MainGhost"]):
         global score
@@ -161,10 +162,9 @@ class Pacman:
         if self.dots >= 244:
             self.win = True
             img = img_load(f'./textures/pacsprites/pacman9.png')
-            self.status_kvak = 0
+            self.status_eat = 0
             img = pygame.transform.scale(img, (16, 16))
             self.screen.blit(img, (self.x - 4, self.y - 4 + 50))
-
 
         text_font = pygame.font.SysFont("segoeuisemibold", 16)
         self.screen.blit(text_font.render("Счёт", False, (255, 255, 255)), (0, 0))
@@ -176,14 +176,14 @@ class Pacman:
         if self.status != 'hit-0' and self.status != 'hit-1' and self.status != 'hit-2' and self.status != 'hit-3':
             self.total_way += 1
             if self.total_way == 20:
-                if self.status_kvak == 90:
-                    self.status_kvak = 0
+                if self.status_eat == 90:
+                    self.status_eat = 0
                     self.total_way = 0
-                elif self.status_kvak == 45:
-                    self.status_kvak = 90
+                elif self.status_eat == 45:
+                    self.status_eat = 90
                     self.total_way = 0
-                elif self.status_kvak == 0:
-                    self.status_kvak = 45
+                elif self.status_eat == 0:
+                    self.status_eat = 45
                     self.total_way = 0
             self.vel = self.speed
             if self.vec == 0 or self.vec == 3:
@@ -270,29 +270,29 @@ class Pacman:
                 self.vel = 0
                 self.y += 1
                 self.status = 'hit-1'
-                if self.status_kvak == 0:
-                    self.status_kvak = 45
+                if self.status_eat == 0:
+                    self.status_eat = 45
             # коллизия влево
             if self.vec == 2 and game_map[int(self.y // 8)][int(self.x // 8)] == 0:
                 self.vel = 0
                 self.x += 1
                 self.status = 'hit-2'
-                if self.status_kvak == 0:
-                    self.status_kvak = 45
+                if self.status_eat == 0:
+                    self.status_eat = 45
             # коллизия вниз
             if self.vec == 3 and game_map[int((self.y + 8) // 8)][int(self.x // 8)] == 0:
                 self.vel = 0
                 # self.y-=1
                 self.status = 'hit-3'
-                if self.status_kvak == 0:
-                    self.status_kvak = 45
+                if self.status_eat == 0:
+                    self.status_eat = 45
             # коллизия вправо
             if self.vec == 0 and game_map[int(self.y // 8)][int((self.x + 8) // 8)] == 0:
                 self.vel = 0
                 # self.x-=1
                 self.status = 'hit-0'
-                if self.status_kvak == 0:
-                    self.status_kvak = 45
+                if self.status_eat == 0:
+                    self.status_eat = 45
 
         if (self.x - 9) >= self.screen.get_width():
             self.x = -7
@@ -304,7 +304,8 @@ class Pacman:
         # проверка на призрака
         if not self.invincible and not self.god:
             for ghost in ghosts:
-                if ((self.x - ghost.position.x) ** 2 + (self.y - ghost.position.y) ** 2) ** 0.5 <= 8:
+                if ((self.x - ghost.position.x) ** 2 + (
+                        self.y - ghost.position.y) ** 2) ** 0.5 <= 8 and not ghost.ghost_logic.eaten:
                     self.hit(ghosts)
 
     def process_event(self, event: pygame.event.Event):
