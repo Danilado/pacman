@@ -1,5 +1,5 @@
 ghost_less = 0
-iwin = 0
+instant_win = 0
 god = 0
 debug = 0
 datetime_format = "%d.%m.%Y %H:%M:%S"

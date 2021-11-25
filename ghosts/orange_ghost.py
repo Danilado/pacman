@@ -26,6 +26,7 @@ class OrangeGhostLogic(AbstractGhostLogic):
     speed = 0.321
     flag = 1
     list_normal_tile = ['seed', 5, 'nrg']
+    eaten: int = 0
 
     def __init__(self, main_ghost: "MainGhost"):
         super().__init__(main_ghost)
@@ -182,8 +183,9 @@ class OrangeGhostLogic(AbstractGhostLogic):
                 return 'up'
 
     def where_am_i_should_move(self, pacman: Pacman, all_ghosts, stage=1,
-                               trigger=0) -> Direction:  #stage: 1 - стадия разгона, 2 - стадия преследования, 3 - страх
-        if self.stay:                                    #trigger: 0 - не выходить, 1 - сигнал к выходу
+                               trigger=0) -> Direction:  # stage: 1 - стадия разгона,
+        # 2 - стадия преследования, 3 - страх
+        if self.stay:  # trigger: 0 - не выходить, 1 - сигнал к выходу
             return self.stay_stage(globalvars.orange_trigger)
         elif self.eaten:
             return self.eaten_stage()

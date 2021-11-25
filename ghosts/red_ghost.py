@@ -2,8 +2,8 @@ from math import sqrt
 from random import randint
 
 import pygame
-import globalvars
 
+import globalvars
 from ghosts.core import AbstractGhostLogic, MainGhost, Direction
 from layouts import map_with_sprites
 from player import Pacman
@@ -22,6 +22,7 @@ class RedGhostLogic(AbstractGhostLogic):
     speed = 0.3333
     flag = 1
     list_normal_tile = ['seed', 5, 'nrg']
+    eaten: int = 0
 
     def __init__(self, main_ghost: "MainGhost"):
         super().__init__(main_ghost)
@@ -117,11 +118,11 @@ class RedGhostLogic(AbstractGhostLogic):
         self.main_ghost.reset_position()
         self.main_ghost._direction = "right"
 
-    def stay_stage(self, trigger):
+    def stay_stage(self) -> Direction:
         self.default_direction = "right"
         if (self.main_ghost.position[1]) % 8 == 0:
-            if map_with_sprites[self.my_position_in_blocks()[1] + 1][
-                (self.main_ghost.position_in_blocks[0])] == 'gate':
+            if map_with_sprites[self.my_position_in_blocks()[1] + 1][(self.main_ghost.position_in_blocks[0])] == \
+                    'gate':
                 self.stay = 0
                 self.prev_block = (self.main_ghost.position[0], self.main_ghost.position[1])
                 return 'right'
@@ -131,7 +132,7 @@ class RedGhostLogic(AbstractGhostLogic):
             return 'up'
 
     def eaten_stage(self):
-        target_pos = [13*8+ 4,11*8]
+        target_pos = [13 * 8 + 4, 11 * 8]
         if self.eaten == 1:
             self.speed = 1
             if self.main_ghost.position.x != target_pos[0] or self.main_ghost.position.y != target_pos[1]:
@@ -149,9 +150,9 @@ class RedGhostLogic(AbstractGhostLogic):
                 return 'up'
 
     def where_am_i_should_move(self, pacman: Pacman, all_ghosts, stage=1,
-                               trigger=0) -> Direction:  ## 1 - стадия разгона, 2 - стадия преследования, 3 - страх
+                               trigger=0) -> Direction:  # 1 - стадия разгона, 2 - стадия преследования, 3 - страх
         if self.stay:
-            return self.stay_stage(1)
+            return self.stay_stage()
         elif self.eaten:
             return self.eaten_stage()
         elif self.main_ghost.scared:

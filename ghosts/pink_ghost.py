@@ -19,6 +19,7 @@ class PinkGhostLogic(AbstractGhostLogic):
     scared_animations_blue = [f"./textures/ghosts/scared/z{i}.png" for i in range(1, 5)]
     speed = 0.25
     list_normal_tile = ['seed', 5, 'nrg']
+    eaten: int = 0
 
     def __init__(self, main_ghost: "MainGhost"):
         super().__init__(main_ghost)
@@ -154,7 +155,6 @@ class PinkGhostLogic(AbstractGhostLogic):
                 self.speed = 0.3
                 self.stay = 1
                 return 'up'
-
 
     def where_am_i_should_move(self, pacman: Pacman, all_ghosts, stage=1,
                                trigger=0) -> Direction:  # 1 - стадия разгона, 2 - стадия преследования, 3 - страх

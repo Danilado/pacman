@@ -15,7 +15,7 @@ def main():
         globalvars.ghost_less = 1
         print("Ghosts off")
     if args.instawin:
-        globalvars.iwin = 1
+        globalvars.instant_win = 1
         print("Instant win on")
     if args.god:
         globalvars.god = 1

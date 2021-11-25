@@ -36,7 +36,7 @@ class AbstractGhostLogic(ABC):
                 self.up_animations[index] = img_load(up_animation).convert_alpha()
 
         # Текстуры режима страха
-        self.glaza = img_load("./textures/ghosts/yeys.png")
+        self.eyes = img_load("./textures/ghosts/eyes.png")
         for index, scared_animation in enumerate(self.scared_animations_blue):
             if type(scared_animation) is str:
                 self.scared_animations_blue[index] = img_load(scared_animation)
@@ -104,6 +104,16 @@ class AbstractGhostLogic(ABC):
     @abstractmethod
     def go_home(self):
         """Функция которая возвращает призрака в калитку."""
+        ...
+
+    @property
+    @abstractmethod
+    def eaten(self) -> int:
+        ...
+
+    @eaten.setter
+    @abstractmethod
+    def eaten(self, value: int) -> int:
         ...
 
 
@@ -245,7 +255,7 @@ class MainGhost:
             )
         elif self._ghost_logic.eaten:
             screen.blit(
-                self._ghost_logic.glaza,
+                self._ghost_logic.eyes,
                 (self._position.x - 4, self._position.y - 4 + 50)
             )
         elif self.direction != "":
@@ -364,10 +374,10 @@ class MainGhost:
     def ghost_logic(self):
         return self._ghost_logic
 
-
     def trigger_eaten(self):
         if not self.ghost_logic.eaten:
             self.ghost_logic.eaten = 1
+
     @property
     def default_position(self):
         return self._ghost_logic.default_position

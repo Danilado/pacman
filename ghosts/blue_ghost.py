@@ -24,6 +24,7 @@ class BlueGhostLogic(AbstractGhostLogic):
     speed = 0.3
     flag = 1
     list_normal_tile = ['seed', 5, 'nrg']
+    eaten: int = 0
 
     def __init__(self, main_ghost: "MainGhost"):
         super().__init__(main_ghost)
