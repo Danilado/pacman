@@ -1,5 +1,3 @@
-from typing import Tuple
-
 import pygame
 
 from globalvars import datetime_format
@@ -37,8 +35,7 @@ def store_score_menu():
     text_font = pygame.font.SysFont("Consolas", 32)
 
     back_color = "black"
-    # noinspection PyTypeChecker
-    text_color: Tuple[int, int, int] = "white"
+    text_color = "white"
     while running:
         if pygame.event.peek(pump=True):
             main_screen.fill(back_color)

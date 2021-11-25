@@ -1,26 +1,29 @@
 from math import sqrt
 from random import randint
+
 import pygame
 
-from ghosts.core import AbstractGhostLogic, MainGhost, Direction
 import globalvars
+from ghosts.core import AbstractGhostLogic, MainGhost, Direction
+from layouts import map_with_sprites
 from player import Pacman
-from layouts import simplified
-from layouts import sprited
 
 
 class BlueGhostLogic(AbstractGhostLogic):
     default_position = pygame.Vector2(11 * 8 + 4, 14 * 8)
     default_direction = "right"
-    back_animations = [f"./textures/ghosts/blue/{globalvars.texture_modifier}b1.png", f"./textures/ghosts/blue/{globalvars.texture_modifier}b2.png"]
-    left_animations = [f"./textures/ghosts/blue/{globalvars.texture_modifier}l1.png", f"./textures/ghosts/blue/{globalvars.texture_modifier}l2.png"]
-    right_animations = [f"./textures/ghosts/blue/{globalvars.texture_modifier}r1.png", f"./textures/ghosts/blue/{globalvars.texture_modifier}r2.png"]
-    up_animations = [f"./textures/ghosts/blue/{globalvars.texture_modifier}u1.png", f"./textures/ghosts/blue/{globalvars.texture_modifier}u2.png"]
-    scared_animations_blue = []
+    back_animations = [f"./textures/ghosts/blue/{globalvars.texture_modifier}b1.png",
+                       f"./textures/ghosts/blue/{globalvars.texture_modifier}b2.png"]
+    left_animations = [f"./textures/ghosts/blue/{globalvars.texture_modifier}l1.png",
+                       f"./textures/ghosts/blue/{globalvars.texture_modifier}l2.png"]
+    right_animations = [f"./textures/ghosts/blue/{globalvars.texture_modifier}r1.png",
+                        f"./textures/ghosts/blue/{globalvars.texture_modifier}r2.png"]
+    up_animations = [f"./textures/ghosts/blue/{globalvars.texture_modifier}u1.png",
+                     f"./textures/ghosts/blue/{globalvars.texture_modifier}u2.png"]
+    scared_animations_blue = [f"./textures/ghosts/scared/z{i}.png" for i in range(1, 5)]
     speed = 0.3
     flag = 1
     list_normal_tile = ['seed', 5, 'nrg']
-    
 
     def __init__(self, main_ghost: "MainGhost"):
         super().__init__(main_ghost)
@@ -35,27 +38,30 @@ class BlueGhostLogic(AbstractGhostLogic):
 
     def find_ways(self):  # 0 - ищем выход из начальной комнаты
         tmp_list_vec = []
-        if (self.main_ghost.position[0]) % 8 == 0 and (self.main_ghost.position[1]) % 8 == 0 and self.prev_block != (
+        if self.main_ghost.position[0] % 8 == 0 and self.main_ghost.position[1] % 8 == 0 and self.prev_block != (
                 self.main_ghost.position[0], self.main_ghost.position[1]):
             self.prev_block = (self.main_ghost.position[0], self.main_ghost.position[1])
-            if len(sprited[0]) <= self.my_position_in_blocks()[0] + 1 or self.my_position_in_blocks()[0] - 1 < 0:
+            if len(map_with_sprites[0]) <= self.my_position_in_blocks()[0] + 1 or \
+                    self.my_position_in_blocks()[0] - 1 < 0:
                 tmp_list_vec.append('ll')
                 return tmp_list_vec
-            if sprited[self.my_position_in_blocks()[1] + 1][
-                (self.my_position_in_blocks()[0])] in self.list_normal_tile:
+            if map_with_sprites[self.my_position_in_blocks()[1] + 1][self.my_position_in_blocks()[0]] in \
+                    self.list_normal_tile:
                 tmp_list_vec.append('back')
-            if sprited[self.my_position_in_blocks()[1] - 1][
-                (self.my_position_in_blocks()[0])] in self.list_normal_tile:
+            if map_with_sprites[self.my_position_in_blocks()[1] - 1][self.my_position_in_blocks()[0]] in \
+                    self.list_normal_tile:
                 tmp_list_vec.append('up')
-            if sprited[(self.my_position_in_blocks()[1])][
-                self.my_position_in_blocks()[0] + 1] in self.list_normal_tile:
+            if map_with_sprites[self.my_position_in_blocks()[1]][self.my_position_in_blocks()[0] + 1] in \
+                    self.list_normal_tile:
                 tmp_list_vec.append('right')
-            if sprited[(self.my_position_in_blocks()[1])][
-                self.my_position_in_blocks()[0] - 1] in self.list_normal_tile:
+            if map_with_sprites[self.my_position_in_blocks()[1]][self.my_position_in_blocks()[0] - 1] in \
+                    self.list_normal_tile:
                 tmp_list_vec.append('left')
         return tmp_list_vec
 
     def select_tile(self, target_pos):
+        if globalvars.debug:
+            pygame.draw.rect(self.main_ghost.screen, (26, 26, 255), (target_pos[0], target_pos[1] + 50, 8, 8), 1)
         direction = self.main_ghost.direction
         tmp_list_ways = self.find_ways()
         if direction == 'right':
@@ -98,11 +104,11 @@ class BlueGhostLogic(AbstractGhostLogic):
         return direction
 
     def acceleration_stage(self):
-        target_pos = [224, 256]
+        target_pos = [216, 256]
         return self.select_tile(target_pos)
 
     def chase_stage(self, pacman, all_ghosts):
-        Blinky_pos = all_ghosts[1].position
+        blinky_pos = all_ghosts[1].position
         tmp_pos = [pacman.x, pacman.y]
         if pacman.vec == 0:
             tmp_pos[0] += 16
@@ -114,10 +120,10 @@ class BlueGhostLogic(AbstractGhostLogic):
             tmp_pos[1] += 16
         else:
             print("или стоит или фейл")
-        target_pos = (tmp_pos[0] + tmp_pos[0] - Blinky_pos[0], tmp_pos[1] + tmp_pos[1] - Blinky_pos[1])
+        target_pos = (tmp_pos[0] + tmp_pos[0] - blinky_pos[0], tmp_pos[1] + tmp_pos[1] - blinky_pos[1])
         return self.select_tile(target_pos)
 
-    def gohome(self):
+    def go_home(self):
         self.main_ghost.reset_position()
         self.main_ghost.direction = "up"
         self.stay = 1
@@ -131,33 +137,34 @@ class BlueGhostLogic(AbstractGhostLogic):
             self.flag = 0
         if self.stay == 1:
             if (self.main_ghost.position[1] + 4) % 8 == 0:
-                if sprited[(self.main_ghost.position.y + 8) // 8 + 1][
-                    (self.main_ghost.position.x // 8)] in self.list_normal_tile:
+                if map_with_sprites[(self.main_ghost.position.y + 8) // 8 + 1][(self.main_ghost.position.x // 8)] in \
+                        self.list_normal_tile:
                     return 'back'
-                elif sprited[(self.main_ghost.position.y + 8) // 8 - 1][
-                    (self.main_ghost.position.x // 8)] in self.list_normal_tile:
+                elif map_with_sprites[(self.main_ghost.position.y + 8) // 8 - 1][(self.main_ghost.position.x // 8)] in \
+                        self.list_normal_tile:
                     return 'up'
             return self.main_ghost.direction
         elif self.stay == 2:
             if (self.main_ghost.position[0] + 4) % 8 == 0:
-                if sprited[self.main_ghost.position_in_blocks[1] - 1][
-                    (self.main_ghost.position_in_blocks[0])] == 'gate' or \
-                        sprited[self.main_ghost.position_in_blocks[1] - 2][
-                            (self.main_ghost.position_in_blocks[0])] == 'gate':
+                if any(
+                        map_with_sprites[self.main_ghost.position_in_blocks[1] - i][
+                            self.main_ghost.position_in_blocks[0]] == 'gate'
+                        for i in range(1, 3)
+                ):
                     self.stay = 3
                     return 'up'
             return 'right'
         elif self.stay == 3:
-            if (self.main_ghost.position[1]) % 8 == 0:
-                if sprited[self.my_position_in_blocks()[1] + 1][
-                    (self.main_ghost.position_in_blocks[0])] == 'gate':
+            if self.main_ghost.position[1] % 8 == 0:
+                if map_with_sprites[self.my_position_in_blocks()[1] + 1][self.main_ghost.position_in_blocks[0]] == \
+                        'gate':
                     self.stay = 0
                     self.prev_block = (self.main_ghost.position[0], self.main_ghost.position[1])
                     return 'right'
             return 'up'
 
     def scared_stage(self):
-        target_pos = [self.main_ghost.position.x + randint(-1, 1)*8, self.main_ghost.position.x + randint(-1, 1)*8]
+        target_pos = [self.main_ghost.position.x + randint(-1, 1) * 8, self.main_ghost.position.y + randint(-1, 1) * 8]
         return self.select_tile(target_pos)
 
     def eaten_stage(self):
@@ -185,10 +192,9 @@ class BlueGhostLogic(AbstractGhostLogic):
                 return 'up'
 
     def where_am_i_should_move(self, pacman: Pacman, all_ghosts, stage=1,
-                               trigger=0) -> Direction:  ## 1 - стадия разгона, 2 - стадия преследования, 3 - страх
-        # print(f'{globalvars.bluetrigger} {self.stage} {self.stay}')
+                               trigger=0) -> Direction:  # 1 - стадия разгона, 2 - стадия преследования, 3 - страх
         if self.stay:
-            return self.stay_stage(globalvars.bluetrigger)
+            return self.stay_stage(globalvars.blue_trigger)
         elif self.eaten:
             return self.eaten_stage()
         elif self.main_ghost.scared:
