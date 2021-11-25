@@ -68,8 +68,8 @@ def settings_menu():
                 txt_str = "Альтернативные"
             main_screen.blit(text_font.render("Сложность", False, text_color), (20, 90))
             main_screen.blit(text_font.render("Текстуры", False, text_color), (20, 190))
-            main_screen.blit(text_font.render(f"Текущая сложность:    {dif_str}", False, text_color), (20, 290))
-            main_screen.blit(text_font.render(f"Текущие текстуры:    {txt_str}", False, text_color), (20, 390))
+            main_screen.blit(text_font.render(f"Текущая сложность:      {dif_str}", False, text_color), (20, 290))
+            main_screen.blit(text_font.render(f"Текущие текстуры:      {txt_str}", False, text_color), (20, 390))
 
             for event in events:
                 if event.type == pygame.QUIT:
