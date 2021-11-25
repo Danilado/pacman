@@ -57,6 +57,8 @@ class Pacman:
         self.cherry_multiplier = 100
         self.total_way = 0
         self.status_eat = 0
+        self.paused = 0
+        self.paused_time = 0
 
     def draw(self):
         img = img_load(f'./textures/pacsprites/pacman0.png')
@@ -76,7 +78,8 @@ class Pacman:
     def play_dead_sound(self):
         if not self.dead_sound_playing:
             self.dead_channel.play(self.dead_sound)
-            self.dead_sound_playing = True
+            if self.lives == 0:
+                self.dead_sound_playing = True
         return self.dead_channel.get_busy()
 
     def play_win_sound(self):
@@ -137,6 +140,9 @@ class Pacman:
         self.play_dead_sound()
         if self.lives == 0:
             self.dead = True
+        else:
+            self.paused_time = pygame.time.get_ticks()
+            self.paused = 1
 
     def upd(self, ghosts: List["MainGhost"]):
         global score

@@ -124,12 +124,23 @@ def main():
         elif not audio_channel.get_busy() and not pac.dead and not pac.win:
             pac.upd([])
 
-        if pygame.time.get_ticks() % 16 < 8 or not audio_channel.get_busy():
+        if pygame.time.get_ticks() % 500 < 250 or not audio_channel.get_busy() and not pac.paused:
             pac.draw()
-        if not audio_channel.get_busy() and not pac.dead and not pac.win and not globalvars.ghost_less:
+        if not audio_channel.get_busy() and not pac.dead and not pac.win and not globalvars.ghost_less and not pac.paused:
             pac.upd(ghosts)
             for ghost in ghosts:
                 ghost.update(pac, ghosts, stage, trigger)
+            
+        if pac.paused:
+            if pygame.time.get_ticks() - pac.paused_time >= 2500:
+                pac.paused = 0
+                pac.paused_frame = 0
+                pac.status = 'unhit'
+                pac.vec = 0
+            if pygame.time.get_ticks() % 500 < 250:
+                pac.status_eat = 0
+                pac.draw()
+
 
         done = done or (pac.dead and not pac.play_dead_sound()) or (pac.win and not pac.play_win_sound())
         pygame.display.flip()

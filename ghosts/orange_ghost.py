@@ -161,7 +161,7 @@ class OrangeGhostLogic(AbstractGhostLogic):
     def eaten_stage(self):
         target_pos = [13 * 8 + 4, 11 * 8]
         if self.eaten == 1:
-            self.speed = 1
+            self.speed = 2
             if self.main_ghost.position.x != target_pos[0] or self.main_ghost.position.y != target_pos[1]:
                 return self.select_tile(target_pos)
             else:
@@ -179,7 +179,8 @@ class OrangeGhostLogic(AbstractGhostLogic):
             else:
                 self.eaten = 0
                 self.stay = 1
-                self.speed = 0.3
+                self.speed = 0.321
+                self.main_ghost.un_scare()
                 return 'up'
 
     def where_am_i_should_move(self, pacman: Pacman, all_ghosts, stage=1,
