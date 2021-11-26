@@ -190,6 +190,7 @@ class BlueGhostLogic(AbstractGhostLogic):
                 self.eaten = 0
                 self.stay = 1
                 self.speed = 0.3
+                self.main_ghost.un_scare()
                 return 'up'
 
     def where_am_i_should_move(self, pacman: Pacman, all_ghosts, stage=1,

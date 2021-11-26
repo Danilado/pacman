@@ -14,6 +14,8 @@ from layouts import simplified
 from perfomance import img_load
 
 resolution = w, h = 224, 336
+last_time = 0
+local_stage = 1
 
 
 def render(window, matrix):  # Моя функция рендера карты и зёрен
@@ -29,21 +31,30 @@ def render(window, matrix):  # Моя функция рендера карты �
                 # Всё остальное отрисовывается
 
 
-def pause(clock: pygame.time.Clock):
+def pause(clock: pygame.time.Clock, screen):
+    global last_time
+    global local_stage
+    save = pygame.time.get_ticks()
     paused = True
-    print("paused")
+    pause_icon = img_load(f'./textures/pause.png')
+    print("Game paused...")
     while paused:
+        if pygame.time.get_ticks() % 1000 < 500:
+            screen.blit(pause_icon, (screen.get_width() - 32, 0))
+        else:
+            screen.fill((0, 0, 0), (screen.get_width() - 32, 0, 32, 32))
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_p:
-                    print("un paused")
+                    print("Resuming...")
                     paused = False
-
+                    last_time += pygame.time.get_ticks() - save
         pygame.display.update()
-        clock.tick(15)
+        clock.tick(120)
 
 
 def main():
@@ -53,9 +64,11 @@ def main():
     screen = pygame.display.set_mode(resolution)
     done = False
     pac = player.Pacman(w / 2 - 4, h / 2 + 6 * 8 + 8 - 40, screen)
-    last_time = 0
-    local_stage = 1
+
     flag = 0
+
+    global last_time
+    global local_stage
 
     ghosts: List[MainGhost] = []
     if not globalvars.ghost_less:
@@ -88,7 +101,7 @@ def main():
                     done = True
                 pac.process_event(event)
                 if event.key == pygame.K_p:
-                    pause(clock)
+                    pause(clock, screen)
         screen.fill((0, 0, 0))
         render(screen, player.game_simplified_map)
         # MainGhost.draw_trigger_blocks(screen)
@@ -124,12 +137,23 @@ def main():
         elif not audio_channel.get_busy() and not pac.dead and not pac.win:
             pac.upd([])
 
-        if pygame.time.get_ticks() % 16 < 8 or not audio_channel.get_busy():
+        if pygame.time.get_ticks() % 500 < 250 or not audio_channel.get_busy() and not pac.paused:
             pac.draw()
-        if not audio_channel.get_busy() and not pac.dead and not pac.win and not globalvars.ghost_less:
+        if not audio_channel.get_busy() and not pac.dead and not pac.win and \
+                not globalvars.ghost_less and not pac.paused:
             pac.upd(ghosts)
             for ghost in ghosts:
                 ghost.update(pac, ghosts, stage, trigger)
+
+        if pac.paused:
+            if pygame.time.get_ticks() - pac.paused_time >= 2500:
+                pac.paused = 0
+                pac.paused_frame = 0
+                pac.status = 'unhit'
+                pac.vec = 0
+            if pygame.time.get_ticks() % 500 < 250:
+                pac.status_eat = 0
+                pac.draw()
 
         done = done or (pac.dead and not pac.play_dead_sound()) or (pac.win and not pac.play_win_sound())
         pygame.display.flip()
