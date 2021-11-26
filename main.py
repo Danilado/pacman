@@ -1,7 +1,15 @@
 import argparse
 
 import globalvars
+import store_settings
 from menu import options_menu
+
+
+def load_settings():
+    my_settings = store_settings.get_settings()
+    if my_settings is not None:
+        globalvars.texture_modifier = my_settings.texture_modifier
+        globalvars.difficulty = my_settings.difficulty
 
 
 def main():
@@ -27,4 +35,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+    load_settings()
     options_menu()
