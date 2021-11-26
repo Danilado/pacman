@@ -9,6 +9,7 @@ from ghosts.core import MainGhost
 from ghosts.orange_ghost import OrangeGhostLogic
 from ghosts.pink_ghost import PinkGhostLogic
 from ghosts.red_ghost import RedGhostLogic
+from ghosts.sounds import Sound
 from layouts import map_with_sprites
 from layouts import simplified
 from perfomance import img_load
@@ -91,6 +92,8 @@ def main():
             globalvars.orange_trigger = 0
             ghost.reset_position()
 
+    Sound().current_sound_index = 1
+
     while not done:
         trigger = 0
         for event in pygame.event.get():
@@ -141,6 +144,10 @@ def main():
             pac.draw()
         if not audio_channel.get_busy() and not pac.dead and not pac.win and \
                 not globalvars.ghost_less and not pac.paused:
+            if pac.in_energizer:
+                Sound().play_energizer_sound()
+            else:
+                Sound().play_siren()
             pac.upd(ghosts)
             for ghost in ghosts:
                 ghost.update(pac, ghosts, stage, trigger)

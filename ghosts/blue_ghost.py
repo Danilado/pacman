@@ -5,6 +5,7 @@ import pygame
 
 import globalvars
 from ghosts.core import AbstractGhostLogic, MainGhost, Direction
+from ghosts.sounds import Sound
 from layouts import map_with_sprites
 from player import Pacman
 
@@ -214,7 +215,9 @@ class BlueGhostLogic(AbstractGhostLogic):
         elif self.main_ghost.scared:
             return self.scared_stage(pacman)
         elif self.stage == 1:
+            Sound().current_sound_index = max(Sound().current_sound_index, 3)
             return self.chase_stage(pacman, all_ghosts)
         elif self.stage == 2:
+            Sound().current_sound_index = max(Sound().current_sound_index, 3)
             return self.acceleration_stage()
         return 'back'

@@ -192,17 +192,9 @@ class MainGhost:
         [15, 23],
     ]
 
-    trigger_blocks_not_up = [
-    ]
-
     @staticmethod
     def draw_trigger_blocks(screen: pygame.Surface):
         """Рисует trigger_blocks на экране"""
-        for trigger_block_not_up in MainGhost.trigger_blocks_not_up:
-            pygame.draw.rect(screen,
-                             "yellow",
-                             (int(8 * trigger_block_not_up[0]), int(8 * trigger_block_not_up[1]), 8, 8),
-                             1)
         for trigger_block in MainGhost.trigger_blocks:
             pygame.draw.rect(screen, (255, 0, 0), (int(8 * trigger_block[0]), int(8 * trigger_block[1]), 8, 8), 1)
 
