@@ -55,6 +55,7 @@ def options_menu():
             Button(220 * 3 + 80, 530, 200, 50, (0, 0, 0), settings, "Выйти из игры", exit_game),
         ]
         timeout = 0
+        background_file = f"./textures/bg/{globalvars.texture_modifier}pacman2.jpg"
         while not in_game:
             timeout += 1
             events = pygame.event.get()
@@ -79,6 +80,7 @@ def options_menu():
             for button in buttons:
                 if not in_game and button.update(events) and button.action is exit_game:
                     break
+            
             if in_game:
                 break
 
