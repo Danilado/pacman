@@ -102,7 +102,8 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     done = True
-                pac.process_event(event)
+                if not audio_channel.get_busy() and not pac.dead_channel.get_busy() and not pac.win_channel.get_busy():
+                    pac.process_event(event)
                 if event.key == pygame.K_p:
                     pause(clock, screen)
         screen.fill((0, 0, 0))
