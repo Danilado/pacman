@@ -116,8 +116,20 @@ class OrangeGhostLogic(AbstractGhostLogic):
             target_pos = [pacman.x, pacman.y]
         return self.select_tile(target_pos)
 
-    def scared_stage(self):
-        target_pos = [self.main_ghost.position.x + randint(-1, 1) * 8, self.main_ghost.position.y + randint(-1, 1) * 8]
+    def scared_stage(self, pacman):
+        left_block = [self.main_ghost.position.x + -1 * 24, self.main_ghost.position.y]
+        down_block = [self.main_ghost.position.x, self.main_ghost.position.y + -1 * 24]
+        up_block = [self.main_ghost.position.x, self.main_ghost.position.y + 1 * 24]
+        if sqrt((pacman.x - up_block[0]) ** 2 + (pacman.y - up_block[1]) ** 2) > sqrt(
+                (pacman.x - left_block[0]) ** 2 + (pacman.y - left_block[1]) ** 2):
+            target_pos = up_block
+        elif sqrt((pacman.x - left_block[0]) ** 2 + (pacman.y - left_block[1]) ** 2) > sqrt(
+                (pacman.x - down_block[0]) ** 2 + (pacman.y - down_block[1]) ** 2):
+            target_pos = left_block
+        else:
+            target_pos = down_block
+
+        # target_pos = [self.main_ghost.position.x + randint(-1, 1) * 8, self.main_ghost.position.y + randint(-1, 1) * 8]
         return self.select_tile(target_pos)
 
     def go_home(self):
@@ -191,7 +203,7 @@ class OrangeGhostLogic(AbstractGhostLogic):
         elif self.eaten:
             return self.eaten_stage()
         elif self.main_ghost.scared:
-            return self.scared_stage()
+            return self.scared_stage(pacman)
         elif self.stage == 1:
             return self.chase_stage(pacman)
         elif self.stage == 2:

@@ -226,7 +226,7 @@ class MainGhost:
 
     def scare(self):
         self.scared = 1
-        self.speed_mod = 0.5
+        self.speed_mod = 0.7
         self.scare_mod = 1
         self.scare_timer = pygame.time.get_ticks()
 
