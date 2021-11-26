@@ -256,6 +256,5 @@ cython_debug/
 # Support for Project snippet scope
 !.vscode/*.code-snippets
 
-top_score.txt
-
-top_score.csv
+saves/*
+!.gitkeep
