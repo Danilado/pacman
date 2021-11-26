@@ -37,7 +37,7 @@ def pause(clock: pygame.time.Clock, screen):
     global local_stage
     save = pygame.time.get_ticks()
     paused = True
-     pygame.mixer.pause()
+    pygame.mixer.pause()
     pause_icon = img_load(f'./textures/pause.png')
     print("Game paused...")
     while paused:
@@ -54,7 +54,7 @@ def pause(clock: pygame.time.Clock, screen):
                 if event.key == pygame.K_p:
                     print("Resuming...")
                     paused = False
-                     pygame.mixer.unpause()
+                    pygame.mixer.unpause()
                     last_time += pygame.time.get_ticks() - save
         pygame.display.update()
         clock.tick(120)
@@ -104,7 +104,7 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     done = True
-                     pygame.mixer.pause()
+                    pygame.mixer.pause()
                 if not audio_channel.get_busy() and not pac.dead_channel.get_busy() and not pac.win_channel.get_busy():
                     pac.process_event(event)
                 if event.key == pygame.K_p:
