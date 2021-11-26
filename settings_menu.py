@@ -1,6 +1,7 @@
 import pygame
 
 import globalvars
+import store_settings
 from globalclasses import Button, GuiSettings
 
 
@@ -78,8 +79,12 @@ def settings_menu():
                     if event.key == pygame.K_ESCAPE:
                         running = False
 
+            _____________________________________needed_to_save_settings_____________________________ = False
             for button in buttons:
-                button.update(events)
+                if button.update(events):
+                    _____________________________________needed_to_save_settings_____________________________ = True
+            if _____________________________________needed_to_save_settings_____________________________:
+                store_settings.store_settings()
 
             for button in buttons:
                 button.draw(main_screen)
