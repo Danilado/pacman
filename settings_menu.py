@@ -54,8 +54,8 @@ def settings_menu():
                 )
             )
 
-            dif_str = ""
-            txt_str = ""
+            dif_str: str
+            txt_str: str
             if globalvars.difficulty == 0.5:
                 dif_str = "Легкая"
             elif globalvars.difficulty == 1.5:

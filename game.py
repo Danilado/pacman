@@ -17,6 +17,7 @@ resolution = w, h = 224, 336
 last_time = 0
 local_stage = 1
 
+
 def render(window, matrix):  # Моя функция рендера карты и зёрен
     for i in range(len(matrix)):  # Y
         for j in range(len(matrix[i])):
@@ -35,13 +36,13 @@ def pause(clock: pygame.time.Clock, screen):
     global local_stage
     save = pygame.time.get_ticks()
     paused = True
-    pause_icon = pygame.image.load(f'./textures/pause.png').convert_alpha()
+    pause_icon = img_load(f'./textures/pause.png')
     print("Game paused...")
     while paused:
         if pygame.time.get_ticks() % 1000 < 500:
             screen.blit(pause_icon, (screen.get_width() - 32, 0))
         else:
-            screen.fill((0,0,0), (screen.get_width() - 32, 0, 32, 32))
+            screen.fill((0, 0, 0), (screen.get_width() - 32, 0, 32, 32))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -63,7 +64,7 @@ def main():
     screen = pygame.display.set_mode(resolution)
     done = False
     pac = player.Pacman(w / 2 - 4, h / 2 + 6 * 8 + 8 - 40, screen)
-    
+
     flag = 0
 
     global last_time
@@ -138,11 +139,12 @@ def main():
 
         if pygame.time.get_ticks() % 500 < 250 or not audio_channel.get_busy() and not pac.paused:
             pac.draw()
-        if not audio_channel.get_busy() and not pac.dead and not pac.win and not globalvars.ghost_less and not pac.paused:
+        if not audio_channel.get_busy() and not pac.dead and not pac.win and \
+                not globalvars.ghost_less and not pac.paused:
             pac.upd(ghosts)
             for ghost in ghosts:
                 ghost.update(pac, ghosts, stage, trigger)
-            
+
         if pac.paused:
             if pygame.time.get_ticks() - pac.paused_time >= 2500:
                 pac.paused = 0
@@ -152,7 +154,6 @@ def main():
             if pygame.time.get_ticks() % 500 < 250:
                 pac.status_eat = 0
                 pac.draw()
-
 
         done = done or (pac.dead and not pac.play_dead_sound()) or (pac.win and not pac.play_win_sound())
         pygame.display.flip()
