@@ -23,7 +23,7 @@ class Score:
 def get_scores():
     if not os.path.exists(filename):
         clear_scores()
-    with open(filename, "r", encoding="ascii") as file:
+    with open(filename, "r", encoding="utf-8") as file:
         reader = csv.reader(file)
         for line in reader:
             if len(line) >= 3:
@@ -33,7 +33,7 @@ def get_scores():
 
 
 def clear_scores():
-    open(filename, "w", encoding="ascii").close()
+    open(filename, "w", encoding="utf-8").close()
 
 
 def store_score(score: int, nickname: str):
@@ -43,7 +43,7 @@ def store_score(score: int, nickname: str):
     scores.append(Score(datetime.today(), nickname, score))
     scores.sort(key=lambda item: item.score, reverse=True)
     # print(scores)
-    with open(filename, "w", encoding="ascii") as file:
+    with open(filename, "w", encoding="utf-8") as file:
         writer = csv.writer(file)
         for date_and_time, nickname, score in [astuple(score) for score in scores]:
             writer.writerow((date_and_time.strftime("%d.%m.%Y %H:%M:%S"), nickname, score))

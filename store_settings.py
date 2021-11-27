@@ -15,7 +15,7 @@ class Settings:
 
 
 def clear_settings():
-    open(filename, "w", encoding="ascii").close()
+    open(filename, "w", encoding="utf-8").close()
 
 
 def get_settings():
@@ -23,7 +23,7 @@ def get_settings():
     if _settings_cache is None:
         if not os.path.exists(filename):
             clear_settings()
-        with open(filename, "r", encoding="ascii") as file:
+        with open(filename, "r", encoding="utf-8") as file:
             reader = csv.reader(file)
             for line in reader:
                 if len(line) >= 2:
@@ -41,6 +41,6 @@ def store_settings():
     _settings_cache = Settings(globalvars.texture_modifier, globalvars.difficulty)
     if not os.path.exists(filename):
         clear_settings()
-    with open(filename, "w", encoding="ascii") as file:
+    with open(filename, "w", encoding="utf-8") as file:
         writer = csv.writer(file)
         writer.writerow((globalvars.texture_modifier, str(globalvars.difficulty)))
