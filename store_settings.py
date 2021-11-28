@@ -10,7 +10,6 @@ _settings_cache = None
 
 @dataclass
 class Settings:
-    texture_modifier: str
     difficulty: float
 
 
@@ -27,7 +26,7 @@ def get_settings():
             reader = csv.reader(file)
             for line in reader:
                 if len(line) >= 2:
-                    result = Settings(line[0], float(line[1]))
+                    result = Settings(float(line[1]))
                     _settings_cache = result
                     return result
                 elif globalvars.debug:
@@ -38,9 +37,9 @@ def get_settings():
 
 def store_settings():
     global _settings_cache
-    _settings_cache = Settings(globalvars.texture_modifier, globalvars.difficulty)
+    _settings_cache = Settings(globalvars.difficulty)
     if not os.path.exists(filename):
         clear_settings()
     with open(filename, "w", encoding="utf-8") as file:
         writer = csv.writer(file)
-        writer.writerow((globalvars.texture_modifier, str(globalvars.difficulty)))
+        writer.writerow((str(globalvars.difficulty),))
