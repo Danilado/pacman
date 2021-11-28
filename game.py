@@ -4,6 +4,7 @@ import pygame
 
 import globalvars
 import player
+from change_theme import ChangeThemeApi
 from ghosts.blue_ghost import BlueGhostLogic
 from ghosts.core import MainGhost
 from ghosts.orange_ghost import OrangeGhostLogic
@@ -96,7 +97,10 @@ def main():
 
     Sound().current_sound_index = 1
 
+    change_theme_api = ChangeThemeApi()
+
     while not done:
+        change_theme_api.tick()
         trigger = 0
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
