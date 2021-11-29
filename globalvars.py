@@ -8,3 +8,6 @@ orange_trigger = 0
 blue_trigger = 0
 difficulty = 1
 easter = 0
+dots = 0
+pacs = []
+count_of_cherry = 0
