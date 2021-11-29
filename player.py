@@ -174,12 +174,8 @@ class Pacman:
             self.y = 88
         self.vec = 1
         self.remember_vec = -1
-        self.play_dead_sound()
         if self.lives == 0:
             self.dead = True
-        else:
-            self.paused_time = pygame.time.get_ticks()
-            self.paused = 1
 
 
     def upd(self, ghosts: List["MainGhost"]):
