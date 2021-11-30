@@ -8,3 +8,4 @@ orange_trigger = 0
 blue_trigger = 0
 difficulty = 1
 easter = 0
+cell_size = 16

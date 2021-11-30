@@ -2,7 +2,7 @@ from typing import List
 
 import pygame
 
-import globalvars
+import global_vars
 import player
 from change_theme import ChangeThemeApi
 from ghosts.blue_ghost import BlueGhostLogic
@@ -15,7 +15,7 @@ from layouts import map_with_sprites
 from layouts import simplified
 from perfomance import img_load
 
-resolution = w, h = 224, 336
+resolution = w, h = 224 / 8 * global_vars.cell_size, 336 / 8 * global_vars.cell_size
 last_time = 0
 local_stage = 1
 
@@ -25,11 +25,20 @@ def render(window, matrix):  # Моя функция рендера карты �
         for j in range(len(matrix[i])):
             # X
             if matrix[i][j] == 5:
-                pygame.draw.rect(window, (0, 0, 0), (8 * j, 8 * i + 50, 8, 8), 1)
+                pygame.draw.rect(
+                    window, (0, 0, 0),
+                    (global_vars.cell_size * j, global_vars.cell_size * i + 50,
+                     global_vars.cell_size, global_vars.cell_size),
+                    1
+                )
                 # Пустота окрашивается в чёрное   но зачем ?
             else:
-                window.blit(img_load(f'./textures/walls/{globalvars.texture_modifier}{matrix[i][j]}.png'),
-                            (8 * j, 8 * i + 50))
+                window.blit(
+                    img_load(f'./textures/walls/{global_vars.texture_modifier}{matrix[i][j]}.png',
+                             global_vars.cell_size, global_vars.cell_size
+                             ),
+                    (global_vars.cell_size * j, global_vars.cell_size * i + 50)
+                )
                 # Всё остальное отрисовывается
 
 
@@ -67,7 +76,13 @@ def main():
     player.score = 0
     screen = pygame.display.set_mode(resolution)
     done = False
-    pac = player.Pacman(w / 2 - 4, h / 2 + 6 * 8 + 8 - 40, screen)
+    pac = player.Pacman(
+        w / 2 - (global_vars.cell_size / 2),
+        h / 2 + 0.75 * global_vars.cell_size * global_vars.cell_size +
+        global_vars.cell_size - (5 + global_vars.cell_size / 8 / 4) * global_vars.cell_size * (
+                    global_vars.cell_size / 8),
+        screen
+    )
 
     flag = 0
 
@@ -75,7 +90,7 @@ def main():
     global local_stage
 
     ghosts: List[MainGhost] = []
-    if not globalvars.ghost_less:
+    if not global_vars.ghost_less:
         orange_ghost = MainGhost(OrangeGhostLogic, screen)
         red_ghost = MainGhost(RedGhostLogic, screen)
         pink_ghost = MainGhost(PinkGhostLogic, screen)
@@ -89,10 +104,10 @@ def main():
     clock = pygame.time.Clock()
     stage = 1
 
-    if not globalvars.ghost_less:
+    if not global_vars.ghost_less:
         for ghost in ghosts:
-            globalvars.blue_trigger = 0
-            globalvars.orange_trigger = 0
+            global_vars.blue_trigger = 0
+            global_vars.orange_trigger = 0
             ghost.reset_position()
 
     Sound().current_sound_index = 1
@@ -116,7 +131,7 @@ def main():
         screen.fill((0, 0, 0))
         render(screen, player.game_simplified_map)
         # MainGhost.draw_trigger_blocks(screen)
-        if not globalvars.ghost_less:
+        if not global_vars.ghost_less:
             for ghost in ghosts:
                 ghost.draw(screen)
 
@@ -151,7 +166,7 @@ def main():
         if pygame.time.get_ticks() % 500 < 250 or not audio_channel.get_busy() and not pac.paused:
             pac.draw()
         if not audio_channel.get_busy() and not pac.dead and not pac.win and \
-                not globalvars.ghost_less and not pac.paused:
+                not global_vars.ghost_less and not pac.paused:
             if pac.in_energizer:
                 Sound().play_energizer_sound()
             else:

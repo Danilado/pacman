@@ -1,6 +1,6 @@
 import argparse
 
-import globalvars
+import global_vars
 import store_settings
 from menu import options_menu
 
@@ -8,8 +8,8 @@ from menu import options_menu
 def load_settings():
     my_settings = store_settings.get_settings()
     if my_settings is not None:
-        globalvars.texture_modifier = my_settings.texture_modifier
-        globalvars.difficulty = my_settings.difficulty
+        global_vars.texture_modifier = my_settings.texture_modifier
+        global_vars.difficulty = my_settings.difficulty
 
 
 def main():
@@ -20,16 +20,16 @@ def main():
     parser.add_argument("-d", "--debug",        help='Shows ghosts target position',    action="store_true")
     args = parser.parse_args()
     if args.ghostbusters:
-        globalvars.ghost_less = 1
+        global_vars.ghost_less = 1
         print("Ghosts off")
     if args.instawin:
-        globalvars.instant_win = 1
+        global_vars.instant_win = 1
         print("Instant win on")
     if args.god:
-        globalvars.god = 1
+        global_vars.god = 1
         print("Godmode on")
     if args.debug:
-        globalvars.debug = 1
+        global_vars.debug = 1
         print("Debug mode on")
 
 

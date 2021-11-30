@@ -3,8 +3,8 @@ import os.path
 from dataclasses import dataclass, astuple
 from datetime import datetime
 
-import globalvars
-from globalvars import datetime_format
+import global_vars
+from global_vars import datetime_format
 
 filename = "saves/top_score.csv"
 max_store = 5
@@ -28,7 +28,7 @@ def get_scores():
         for line in reader:
             if len(line) >= 3:
                 yield Score(datetime.strptime(line[0], datetime_format), line[1], int(line[2]))
-            elif globalvars.debug:
+            elif global_vars.debug:
                 print(f"[WARNING] Can not parse {filename}:{line}")
 
 
