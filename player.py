@@ -1,5 +1,7 @@
 from typing import List, TYPE_CHECKING
+
 import pygame
+
 import globalvars
 from perfomance import img_load
 from store_score import get_scores
@@ -127,10 +129,8 @@ class Pacman:
                             ghost.trigger_eaten()
                     elif not self.god and not ghost.ghost_logic.eaten:
                         self.hit(ghosts)
-            if globalvars.ghost_less:
-                if globalvars.pacs[0].in_energizer == True and globalvars.pacs[1].in_energizer == True:
-                    pass
-                else:
+            if globalvars.coop:
+                if not globalvars.pacs[0].in_energizer or not globalvars.pacs[1].in_energizer:
                     if self.num == 1:
                         if ((self.x - globalvars.pacs[1].x) ** 2 + (self.y - globalvars.pacs[1].y) ** 2) ** 0.5 <= 8:
                             globalvars.pacs[1].hit_with_pac()
@@ -160,7 +160,7 @@ class Pacman:
         if self.lives == 0:
             self.dead = True
         else:
-            if not globalvars.ghost_less:
+            if not globalvars.coop:
                 self.paused_time = pygame.time.get_ticks()
                 self.paused = 1
 
@@ -176,7 +176,6 @@ class Pacman:
         self.remember_vec = -1
         if self.lives == 0:
             self.dead = True
-
 
     def upd(self, ghosts: List["MainGhost"]):
         global score
@@ -205,7 +204,7 @@ class Pacman:
             self.status_eat = 0
             img = pygame.transform.scale(img, (16, 16))
             self.screen.blit(img, (self.x - 4, self.y - 4 + 50))
-        if globalvars.ghost_less:
+        if globalvars.coop:
             if globalvars.dots >= 244:
                 self.win = True
                 img = img_load(f'./textures/pacsprites/pacman9.png')
@@ -215,19 +214,20 @@ class Pacman:
 
         text_font = pygame.font.SysFont("segoeuisemibold", 16)
 
-        if globalvars.ghost_less:
+        if globalvars.coop:
             self.screen.blit(text_font.render("Счёт 1", False, (255, 255, 255)), (0, 0))
             self.screen.blit(text_font.render("Счёт 2", False, (255, 255, 255)), (self.screen.get_width() - 35, 0))
             self.screen.blit(text_font.render(f"{globalvars.pacs[0].score}", False, (255, 255, 255)), (0, 18))
-            self.screen.blit(text_font.render(f"{globalvars.pacs[1].score}", False, (255, 255, 255)), (self.screen.get_width() - 35, 18))
-        if not globalvars.ghost_less:
+            self.screen.blit(text_font.render(f"{globalvars.pacs[1].score}", False, (255, 255, 255)),
+                             (self.screen.get_width() - 35, 18))
+        if not globalvars.coop:
             self.screen.blit(text_font.render("Счёт", False, (255, 255, 255)), (0, 0))
             self.screen.blit(text_font.render("Рекорд", False, (255, 255, 255)), (self.screen.get_width() / 2, 0))
             self.screen.blit(text_font.render(f"{score}", False, (255, 255, 255)), (0, 18))
 
-
-        if not globalvars.ghost_less:
-            self.screen.blit(text_font.render(f"{self.best}", False, (255, 255, 255)), (self.screen.get_width() / 2, 18))
+        if not globalvars.coop:
+            self.screen.blit(text_font.render(f"{self.best}", False, (255, 255, 255)),
+                             (self.screen.get_width() / 2, 18))
 
         if self.status != 'hit-0' and self.status != 'hit-1' and self.status != 'hit-2' and self.status != 'hit-3':
             self.total_way += 1
@@ -301,7 +301,7 @@ class Pacman:
         if 0 <= self.x < self.screen.get_width() - 8:
             # коллизия с зерном
             if game_map[int(self.y // 8)][int(self.x // 8)] == 3:
-                if globalvars.ghost_less:
+                if globalvars.coop:
                     if self.num == 1:
                         globalvars.pacs[0].score += 10
                     else:
@@ -317,11 +317,8 @@ class Pacman:
             if game_map[int(self.y // 8)][int(self.x // 8)] == 4:
                 self.invincible = 1
                 self.eaten = 0
-                if globalvars.ghost_less:
-                    if self.num == 1:
-                        globalvars.pacs[0].score += 50
-                    else:
-                        globalvars.pacs[1].score += 50
+                if globalvars.coop:
+                    globalvars.pacs[1 - self.num].score += 50
                 else:
                     score += 50
                 self.dots += 1
@@ -380,167 +377,94 @@ class Pacman:
 
     def process_event(self, event: pygame.event.Event):
         # ПРОВЕРКА НА ПОВОРОТ И ЗАПОМИНАНИЕ В СЛУЧИИ ЕГО ОТСУТСВИЯ
-        if self.num == 1:
-            if event.key == pygame.K_a:
-                if game_map[int(self.y // 8)][int(self.x // 8) - 1] == 3 or \
-                        game_map[int(self.y // 8)][int(self.x // 8) - 1] == 5 or \
-                        game_map[int(self.y // 8)][int(self.x // 8) - 1] == 4 and \
-                        self.vec != 2:
-                    if self.vec == 0 and self.y % 1 >= 0:
-                        self.y = int(self.y) + 1
-                    elif self.vec == 2 and self.y % 1 >= 0:
-                        self.y = int(self.y) - 1
-                    if self.status != 'hit-2':
-                        if self.status == 'hit-1' or self.status == 'hit-3' or self.status == 'hit-0' or self.vec == 0:
-                            self.status = 'unhit'
-                            self.vec = 2
-                            self.number_image = 2
-                            self.remember_vec = -1
-                        else:
-                            self.remember_vec = 2
-                elif game_map[int(self.y // 8)][int(self.x // 8) - 1] == 0:
-                    self.remember_vec = 2
-
-            if event.key == pygame.K_d:
-                if game_map[int(self.y // 8)][int(self.x // 8) + 1] == 3 or \
-                        game_map[int(self.y // 8)][int(self.x // 8) + 1] == 5 or \
-                        game_map[int(self.y // 8)][int(self.x // 8) + 1] == 4 and \
-                        self.vec != 0:
-                    if self.vec == 0 and self.y % 1 >= 0:
-                        self.y = int(self.y) + 1
-                    elif self.vec == 2 and self.y % 1 >= 0:
-                        self.y = int(self.y) - 1
-                    if self.status != 'hit-0':
-                        if self.status == 'hit-1' or self.status == 'hit-2' or self.status == 'hit-3' or self.vec == 2:
-                            self.status = 'unhit'
-                            self.vec = 0
-                            self.number_image = 0
-                            self.remember_vec = -1
-                        else:
-                            self.remember_vec = 0
-                elif game_map[int(self.y // 8)][int(self.x // 8) + 1] == 0:
-                    self.remember_vec = 0
-
-            if event.key == pygame.K_w:
-                if game_map[int(self.y // 8) - 1][int(self.x // 8)] == 3 or \
-                        game_map[int(self.y // 8) - 1][int(self.x // 8)] == 5 or \
-                        game_map[int(self.y // 8) - 1][int(self.x // 8)] == 4 and \
-                        self.vec != 1:
-                    if self.vec == 0 and self.x % 1 >= 0:
-                        self.x = int(self.x) + 1
-                    elif self.vec == 2 and self.x % 1 >= 0:
-                        self.x = int(self.x) - 1
-                    if self.status != 'hit-1':
-                        if self.status == 'hit-3' or self.status == 'hit-2' or self.status == 'hit-0' or self.vec == 3:
-                            self.status = 'unhit'
-                            self.vec = 1
-                            self.number_image = 1
-                            self.remember_vec = -1
-                        else:
-                            self.remember_vec = 1
-                elif game_map[int(self.y // 8) - 1][int(self.x // 8)] == 0:
-                    self.remember_vec = 1
-
-            if event.key == pygame.K_s:
-                if game_map[int(self.y // 8) + 1][int(self.x // 8)] == 3 or \
-                        game_map[int(self.y // 8) + 1][int(self.x // 8)] == 5 or \
-                        game_map[int(self.y // 8) + 1][int(self.x // 8)] == 4 and \
-                        self.vec != 3:
-                    if self.vec == 0 and self.x % 1 >= 0:
-                        self.x = int(self.x) + 1
-                    elif self.vec == 2 and self.x % 1 >= 0:
-                        self.x = int(self.x) - 1
-                    if self.status != 'hit-3':
-                        if self.status == 'hit-1' or self.status == 'hit-2' or self.status == 'hit-0' or self.vec == 1:
-                            self.status = 'unhit'
-                            self.vec = 3
-                            self.number_image = 3
-                            self.remember_vec = -1
-                        else:
-                            self.remember_vec = 3
-                elif game_map[int(self.y // 8) + 1][int(self.x // 8)] == 0:
-                    self.remember_vec = 3
-
+        key_up = pygame.K_w
+        key_back = pygame.K_s
+        key_left = pygame.K_a
+        key_right = pygame.K_d
         if self.num == 2:
-            if event.key == pygame.K_LEFT:
-                if game_map[int(self.y // 8)][int(self.x // 8) - 1] == 3 or \
-                        game_map[int(self.y // 8)][int(self.x // 8) - 1] == 5 or \
-                        game_map[int(self.y // 8)][int(self.x // 8) - 1] == 4 and \
-                        self.vec != 2:
-                    if self.vec == 0 and self.y % 1 >= 0:
-                        self.y = int(self.y) + 1
-                    elif self.vec == 2 and self.y % 1 >= 0:
-                        self.y = int(self.y) - 1
-                    if self.status != 'hit-2':
-                        if self.status == 'hit-1' or self.status == 'hit-3' or self.status == 'hit-0' or self.vec == 0:
-                            self.status = 'unhit'
-                            self.vec = 2
-                            self.number_image = 2
-                            self.remember_vec = -1
-                        else:
-                            self.remember_vec = 2
-                elif game_map[int(self.y // 8)][int(self.x // 8) - 1] == 0:
-                    self.remember_vec = 2
+            key_up = pygame.K_UP
+            key_back = pygame.K_DOWN
+            key_left = pygame.K_LEFT
+            key_right = pygame.K_RIGHT
+        if event.key == key_left:
+            if game_map[int(self.y // 8)][int(self.x // 8) - 1] == 3 or \
+                    game_map[int(self.y // 8)][int(self.x // 8) - 1] == 5 or \
+                    game_map[int(self.y // 8)][int(self.x // 8) - 1] == 4 and \
+                    self.vec != 2:
+                if self.vec == 0 and self.y % 1 >= 0:
+                    self.y = int(self.y) + 1
+                elif self.vec == 2 and self.y % 1 >= 0:
+                    self.y = int(self.y) - 1
+                if self.status != 'hit-2':
+                    if self.status == 'hit-1' or self.status == 'hit-3' or self.status == 'hit-0' or self.vec == 0:
+                        self.status = 'unhit'
+                        self.vec = 2
+                        self.number_image = 2
+                        self.remember_vec = -1
+                    else:
+                        self.remember_vec = 2
+            elif game_map[int(self.y // 8)][int(self.x // 8) - 1] == 0:
+                self.remember_vec = 2
 
-            if event.key == pygame.K_RIGHT:
-                if game_map[int(self.y // 8)][int(self.x // 8) + 1] == 3 or \
-                        game_map[int(self.y // 8)][int(self.x // 8) + 1] == 5 or \
-                        game_map[int(self.y // 8)][int(self.x // 8) + 1] == 4 and \
-                        self.vec != 0:
-                    if self.vec == 0 and self.y % 1 >= 0:
-                        self.y = int(self.y) + 1
-                    elif self.vec == 2 and self.y % 1 >= 0:
-                        self.y = int(self.y) - 1
-                    if self.status != 'hit-0':
-                        if self.status == 'hit-1' or self.status == 'hit-2' or self.status == 'hit-3' or self.vec == 2:
-                            self.status = 'unhit'
-                            self.vec = 0
-                            self.number_image = 0
-                            self.remember_vec = -1
-                        else:
-                            self.remember_vec = 0
-                elif game_map[int(self.y // 8)][int(self.x // 8) + 1] == 0:
-                    self.remember_vec = 0
+        if event.key == key_right:
+            if game_map[int(self.y // 8)][int(self.x // 8) + 1] == 3 or \
+                    game_map[int(self.y // 8)][int(self.x // 8) + 1] == 5 or \
+                    game_map[int(self.y // 8)][int(self.x // 8) + 1] == 4 and \
+                    self.vec != 0:
+                if self.vec == 0 and self.y % 1 >= 0:
+                    self.y = int(self.y) + 1
+                elif self.vec == 2 and self.y % 1 >= 0:
+                    self.y = int(self.y) - 1
+                if self.status != 'hit-0':
+                    if self.status == 'hit-1' or self.status == 'hit-2' or self.status == 'hit-3' or self.vec == 2:
+                        self.status = 'unhit'
+                        self.vec = 0
+                        self.number_image = 0
+                        self.remember_vec = -1
+                    else:
+                        self.remember_vec = 0
+            elif game_map[int(self.y // 8)][int(self.x // 8) + 1] == 0:
+                self.remember_vec = 0
 
-            if event.key == pygame.K_UP:
-                if game_map[int(self.y // 8) - 1][int(self.x // 8)] == 3 or \
-                        game_map[int(self.y // 8) - 1][int(self.x // 8)] == 5 or \
-                        game_map[int(self.y // 8) - 1][int(self.x // 8)] == 4 and \
-                        self.vec != 1:
-                    if self.vec == 0 and self.x % 1 >= 0:
-                        self.x = int(self.x) + 1
-                    elif self.vec == 2 and self.x % 1 >= 0:
-                        self.x = int(self.x) - 1
-                    if self.status != 'hit-1':
-                        if self.status == 'hit-3' or self.status == 'hit-2' or self.status == 'hit-0' or self.vec == 3:
-                            self.status = 'unhit'
-                            self.vec = 1
-                            self.number_image = 1
-                            self.remember_vec = -1
-                        else:
-                            self.remember_vec = 1
-                elif game_map[int(self.y // 8) - 1][int(self.x // 8)] == 0:
-                    self.remember_vec = 1
+        if event.key == key_up:
+            if game_map[int(self.y // 8) - 1][int(self.x // 8)] == 3 or \
+                    game_map[int(self.y // 8) - 1][int(self.x // 8)] == 5 or \
+                    game_map[int(self.y // 8) - 1][int(self.x // 8)] == 4 and \
+                    self.vec != 1:
+                if self.vec == 0 and self.x % 1 >= 0:
+                    self.x = int(self.x) + 1
+                elif self.vec == 2 and self.x % 1 >= 0:
+                    self.x = int(self.x) - 1
+                if self.status != 'hit-1':
+                    if self.status == 'hit-3' or self.status == 'hit-2' or self.status == 'hit-0' or self.vec == 3:
+                        self.status = 'unhit'
+                        self.vec = 1
+                        self.number_image = 1
+                        self.remember_vec = -1
+                    else:
+                        self.remember_vec = 1
+            elif game_map[int(self.y // 8) - 1][int(self.x // 8)] == 0:
+                self.remember_vec = 1
 
-            if event.key == pygame.K_DOWN:
-                if game_map[int(self.y // 8) + 1][int(self.x // 8)] == 3 or \
-                        game_map[int(self.y // 8) + 1][int(self.x // 8)] == 5 or \
-                        game_map[int(self.y // 8) + 1][int(self.x // 8)] == 4 and \
-                        self.vec != 3:
-                    if self.vec == 0 and self.x % 1 >= 0:
-                        self.x = int(self.x) + 1
-                    elif self.vec == 2 and self.x % 1 >= 0:
-                        self.x = int(self.x) - 1
-                    if self.status != 'hit-3':
-                        if self.status == 'hit-1' or self.status == 'hit-2' or self.status == 'hit-0' or self.vec == 1:
-                            self.status = 'unhit'
-                            self.vec = 3
-                            self.number_image = 3
-                            self.remember_vec = -1
-                        else:
-                            self.remember_vec = 3
-                elif game_map[int(self.y // 8) + 1][int(self.x // 8)] == 0:
-                    self.remember_vec = 3
+        if event.key == key_back:
+            if game_map[int(self.y // 8) + 1][int(self.x // 8)] == 3 or \
+                    game_map[int(self.y // 8) + 1][int(self.x // 8)] == 5 or \
+                    game_map[int(self.y // 8) + 1][int(self.x // 8)] == 4 and \
+                    self.vec != 3:
+                if self.vec == 0 and self.x % 1 >= 0:
+                    self.x = int(self.x) + 1
+                elif self.vec == 2 and self.x % 1 >= 0:
+                    self.x = int(self.x) - 1
+                if self.status != 'hit-3':
+                    if self.status == 'hit-1' or self.status == 'hit-2' or self.status == 'hit-0' or self.vec == 1:
+                        self.status = 'unhit'
+                        self.vec = 3
+                        self.number_image = 3
+                        self.remember_vec = -1
+                    else:
+                        self.remember_vec = 3
+            elif game_map[int(self.y // 8) + 1][int(self.x // 8)] == 0:
+                self.remember_vec = 3
 
     def cherry_spawn(self):
         self.cherry_call = pygame.time.get_ticks()
@@ -550,10 +474,10 @@ class Pacman:
         global score
         now = pygame.time.get_ticks()
         if self.num == 1:
-            if not globalvars.ghost_less:
+            if not globalvars.coop:
                 if ((self.screen.get_width() // 2 - 4 - self.x) ** 2 + (144 - self.y) ** 2) ** 0.5 <= 8:
                     self.cherry_on_screen = 0
-                    if globalvars.ghost_less:
+                    if globalvars.coop:
                         if self.num == 1:
                             globalvars.pacs[0].score += self.cherry_multiplier
                         else:
@@ -575,11 +499,8 @@ class Pacman:
             else:
                 if ((self.screen.get_width() // 2 - 43 - self.x) ** 2 + (144 - self.y) ** 2) ** 0.5 <= 8:
                     self.cherry_on_screen = 0
-                    if globalvars.ghost_less:
-                        if self.num == 1:
-                            globalvars.pacs[0].score += self.cherry_multiplier
-                        else:
-                            globalvars.pacs[1].score += self.cherry_multiplier
+                    if globalvars.coop:
+                        globalvars.pacs[1 - self.num].score += self.cherry_multiplier
                     else:
                         score += self.cherry_multiplier
                     self.cherry_call = 0xAB0BA
@@ -597,11 +518,8 @@ class Pacman:
         if self.num == 2:
             if ((self.screen.get_width() // 2 + 28 - self.x) ** 2 + (144 - 48 - self.y) ** 2) ** 0.5 <= 8:
                 self.cherry_on_screen = 0
-                if globalvars.ghost_less:
-                    if self.num == 1:
-                        globalvars.pacs[0].score += self.cherry_multiplier
-                    else:
-                        globalvars.pacs[1].score += self.cherry_multiplier
+                if globalvars.coop:
+                    globalvars.pacs[1 - self.num].score += self.cherry_multiplier
                 else:
                     score += self.cherry_multiplier
                 self.cherry_call = 0xAB0BA
@@ -613,6 +531,6 @@ class Pacman:
                 return
             elif now - self.cherry_call >= 7000:
                 if (now - self.cherry_call) % 1000 >= 500:
-                    self.screen.blit(self.cherry_img, (self.screen.get_width() // 2 + 28, 184-48))
+                    self.screen.blit(self.cherry_img, (self.screen.get_width() // 2 + 28, 184 - 48))
             else:
-                self.screen.blit(self.cherry_img, (self.screen.get_width() // 2 + 28, 184-48))
+                self.screen.blit(self.cherry_img, (self.screen.get_width() // 2 + 28, 184 - 48))

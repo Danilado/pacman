@@ -196,7 +196,7 @@ class MainGhost:
     def draw_trigger_blocks(screen: pygame.Surface):
         """Рисует trigger_blocks на экране"""
         for trigger_block in MainGhost.trigger_blocks:
-            pygame.draw.rect(screen, (255, 0, 0), (int(8 * trigger_block[0]), int(8 * trigger_block[1]), 8, 8), 1)
+            pygame.draw.rect(screen, (255, 0, 0), (int(8 * trigger_block[0]), 50 + int(8 * trigger_block[1]), 8, 8), 1)
 
     def __init__(self, ghost_logic: Type[AbstractGhostLogic], window=0):
         self.screen = window

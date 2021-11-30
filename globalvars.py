@@ -1,4 +1,4 @@
-ghost_less = 0
+coop = 0
 instant_win = 0
 god = 0
 debug = 0

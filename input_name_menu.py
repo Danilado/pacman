@@ -1,13 +1,14 @@
 import pygame
+
 import globalvars
 
 
 def _remove_one_symbol(string):
-    return string[:len(string)-1]
+    return string[:len(string) - 1]
 
 
 def ask_name():
-    if not globalvars.ghost_less:
+    if not globalvars.coop:
         main_screen = pygame.display.set_mode((1066, 600))
         clock = pygame.time.Clock()
         running = True
@@ -63,15 +64,15 @@ def ask_name():
                         any_symbol_pressed = False
                         symbol = ""
 
-            if backspace_pressed and pygame.time.get_ticks()-time_when_backspace_pressed >= 500:
+            if backspace_pressed and pygame.time.get_ticks() - time_when_backspace_pressed >= 500:
                 if frame % 2 == 0:
                     result = _remove_one_symbol(result)
-            if any_symbol_pressed and pygame.time.get_ticks()-time_when_any_symbol_pressed >= 500:
+            if any_symbol_pressed and pygame.time.get_ticks() - time_when_any_symbol_pressed >= 500:
                 if frame % 2 == 0:
                     result += symbol
         return result
 
-    if globalvars.ghost_less:
+    if globalvars.coop:
         main_screen = pygame.display.set_mode((1066, 600))
         clock = pygame.time.Clock()
         running = True
@@ -79,11 +80,6 @@ def ask_name():
         text_font = pygame.font.SysFont("Arial", 46)
         result = ""
         frame = 0
-        backspace_pressed = False
-        time_when_backspace_pressed = None
-        any_symbol_pressed = False
-        symbol = ""
-        time_when_any_symbol_pressed = None
         while running:
             frame += 1
             clock.tick(30)
@@ -135,14 +131,7 @@ def ask_name():
                     running = False
                 if event.type == pygame.KEYDOWN:
                     # result = result.strip()
-                    if event.key == pygame.K_ESCAPE or event.key == pygame.K_RETURN or event.key == pygame.K_SPACE or event.key == pygame.K_KP_ENTER:
+                    if event.key == pygame.K_ESCAPE or event.key == pygame.K_RETURN or \
+                            event.key == pygame.K_SPACE or event.key == pygame.K_KP_ENTER:
                         running = False
-
-
-            if backspace_pressed and pygame.time.get_ticks() - time_when_backspace_pressed >= 500:
-                if frame % 2 == 0:
-                    result = _remove_one_symbol(result)
-            if any_symbol_pressed and pygame.time.get_ticks() - time_when_any_symbol_pressed >= 500:
-                if frame % 2 == 0:
-                    result += symbol
         return result
