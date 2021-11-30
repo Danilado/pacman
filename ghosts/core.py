@@ -384,9 +384,14 @@ class MainGhost:
     def ghost_logic(self):
         return self._ghost_logic
 
+    def force(self):
+        self._position.x = int((self.position.x + global_vars.cell_size / 2) // global_vars.cell_size)*global_vars.cell_size
+        self._position.y = int((self.position.y + global_vars.cell_size / 2) // global_vars.cell_size)*global_vars.cell_size
+
     def trigger_eaten(self):
         if not self.ghost_logic.eaten:
             self.ghost_logic.eaten = 1
+            self.force()
 
     @property
     def default_position(self):

@@ -36,6 +36,7 @@ class OrangeGhostLogic(AbstractGhostLogic):
         self.prev_block = (0, 0)
         self.stage = 1
         self.eaten = 0
+        self.blyat = 0
 
     def my_position_in_blocks(self):
         return int((self.main_ghost.position.x + global_vars.cell_size / 2) // global_vars.cell_size), \
@@ -127,11 +128,11 @@ class OrangeGhostLogic(AbstractGhostLogic):
         return direction
 
     def acceleration_stage(self):
-        target_pos = [0, 256]
+        target_pos = [0, 256* (global_vars.cell_size/8)]
         return self.select_tile(target_pos)
 
     def chase_stage(self, pacman):
-        target_pos = [0, 256]
+        target_pos = [0, 256* (global_vars.cell_size/8)]
         if sqrt((pacman.x - self.main_ghost.position[0]) ** 2 +
                 (pacman.y - self.main_ghost.position[1]) ** 2) > 8 * global_vars.cell_size:
             target_pos = [pacman.x, pacman.y]
@@ -197,14 +198,19 @@ class OrangeGhostLogic(AbstractGhostLogic):
     def eaten_stage(self):
         target_pos = [13 * global_vars.cell_size + (global_vars.cell_size / 2), 11 * global_vars.cell_size]
         if self.eaten == 1:
-            self.speed = 1
-            if self.main_ghost.position.x != target_pos[0] or self.main_ghost.position.y != target_pos[1]:
+            self.speed = global_vars.cell_size//2
+            if ((self.main_ghost.position.x - target_pos[0])**2 +\
+                (self.main_ghost.position.y - target_pos[1])**2  \
+                )**0.5 > global_vars.cell_size//2:
                 return self.select_tile(target_pos)
             else:
+                self.main_ghost._position.x = target_pos[0]
+                self.main_ghost._position.y = target_pos[1]
                 self.eaten = 2
+                self.speed = 1
                 return 'back'
         elif self.eaten == 2:
-            if self.main_ghost.position.y != 14 * global_vars.cell_size:
+            if abs(self.main_ghost.position.y - 14.5 * global_vars.cell_size) >= 2*(global_vars.cell_size/8):
                 return 'back'
             else:
                 self.eaten = 3
@@ -225,6 +231,12 @@ class OrangeGhostLogic(AbstractGhostLogic):
         if self.stay:  # trigger: 0 - не выходить, 1 - сигнал к выходу
             return self.stay_stage(global_vars.orange_trigger)
         elif self.eaten:
+            if self.eaten == 1:
+                if not self.blyat:
+                    self.main_ghost.force()
+                    self.blyat = 1
+                else:
+                    self.blyat = 0
             return self.eaten_stage()
         elif self.main_ghost.scared:
             return self.scared_stage(pacman)

@@ -29,6 +29,7 @@ class PinkGhostLogic(AbstractGhostLogic):
         self.main_ghost = main_ghost
         self.trigger = 0
         self.prev_block = ()
+        self.blyat = 0
 
     def my_position_in_blocks(self):
         return int((self.main_ghost.position.x + (global_vars.cell_size / 2)) // global_vars.cell_size), \
@@ -120,19 +121,19 @@ class PinkGhostLogic(AbstractGhostLogic):
         return direction
 
     def acceleration_stage(self):
-        target_pos = [0, -8]
+        target_pos = [0 * (global_vars.cell_size/8), -8 * (global_vars.cell_size/8)]
         return self.select_tile(target_pos)
 
     def chase_stage(self, pacman):
         tmp_pos = [pacman.x, pacman.y]
         if pacman.vec == 0:
-            tmp_pos[0] += 32
+            tmp_pos[0] += 32 * (global_vars.cell_size/8)
         elif pacman.vec == 1:
-            tmp_pos[1] -= 32
+            tmp_pos[1] -= 32 * (global_vars.cell_size/8)
         elif pacman.vec == 2:
-            tmp_pos[0] -= 32
+            tmp_pos[0] -= 32 * (global_vars.cell_size/8)
         elif pacman.vec == 3:
-            tmp_pos[1] += 32
+            tmp_pos[1] += 32 * (global_vars.cell_size/8)
         else:
             print("или стоит или фейл")
         return self.select_tile(tmp_pos)
@@ -174,14 +175,19 @@ class PinkGhostLogic(AbstractGhostLogic):
     def eaten_stage(self):
         target_pos = [13 * global_vars.cell_size + (global_vars.cell_size / 2), 11 * global_vars.cell_size]
         if self.eaten == 1:
-            self.speed = 1
-            if self.main_ghost.position.x != target_pos[0] or self.main_ghost.position.y != target_pos[1]:
+            self.speed = global_vars.cell_size//2
+            if ((self.main_ghost.position.x - target_pos[0])**2 +\
+                (self.main_ghost.position.y - target_pos[1])**2  \
+                )**0.5 > global_vars.cell_size//2:
                 return self.select_tile(target_pos)
             else:
+                self.main_ghost._position.x = target_pos[0]
+                self.main_ghost._position.y = target_pos[1]
                 self.eaten = 2
+                self.speed = 1
                 return 'back'
         elif self.eaten == 2:
-            if self.main_ghost.position.y != 14 * global_vars.cell_size:
+            if abs(self.main_ghost.position.y - 14.5 * global_vars.cell_size) >= 2*(global_vars.cell_size/8):
                 return 'back'
             else:
                 self.eaten = 0
@@ -195,6 +201,12 @@ class PinkGhostLogic(AbstractGhostLogic):
         if self.stay:
             return self.stay_stage()
         elif self.eaten:
+            if self.eaten == 1:
+                if not self.blyat:
+                    self.main_ghost.force()
+                    self.blyat = 1
+                else:
+                    self.blyat = 0
             return self.eaten_stage()
         elif self.main_ghost.scared:
             return self.scared_stage(pacman)

@@ -1,6 +1,7 @@
 from typing import List, TYPE_CHECKING
 
 import pygame
+from pygame.constants import GL_BLUE_SIZE
 
 import global_vars
 from perfomance import img_load
@@ -76,7 +77,7 @@ class Pacman:
                            global_vars.cell_size * 2, global_vars.cell_size * 2)
         img2 = img_load(f'./textures/pacsprites/pacman0.png', global_vars.cell_size * 2, global_vars.cell_size * 2)
         for i in range(self.lives):
-            self.screen.blit(img2, (20 * i, self.screen.get_height() - 20))
+            self.screen.blit(img2, (20 * i * (global_vars.cell_size/8), self.screen.get_height() - 20 * (global_vars.cell_size/8)))
         # pygame.draw.rect(self.screen, (255, 255, 0), (self.x, self.y, 8, 8), 1)
         self.screen.blit(img, (self.x - (global_vars.cell_size / 2), self.y - (global_vars.cell_size / 2) + 50))
 
@@ -138,8 +139,8 @@ class Pacman:
             ghost.trigger = 0
             ghost.stay = 1
         self.lives -= 1
-        self.x = 108
-        self.y = 184
+        self.x = 108 * (global_vars.cell_size/8)
+        self.y = 184 * (global_vars.cell_size/8)
         self.vec = 1
         self.remember_vec = -1
         self.status = "hit-1"
@@ -421,9 +422,7 @@ class Pacman:
     def update_cherry(self):
         global score
         now = pygame.time.get_ticks()
-        if self.cherry_on_screen and pygame.rect.Rect(
-                self.x - global_vars.cell_size * 2, self.y + 50, 2 * global_vars.cell_size, 2 * global_vars.cell_size
-        ).colliderect(self.cherry_position):
+        if (int(self.cherry_position[0] - self.x)**2 + int(self.cherry_position[1] + global_vars.cell_size//2 - self.y)**2)**0.5 <= global_vars.cell_size:
             self.cherry_on_screen = 0
             score += self.cherry_multiplier
             self.cherry_call = 0xAB0BA
@@ -437,11 +436,11 @@ class Pacman:
             if (now - self.cherry_call) % 1000 >= 500:
                 self.screen.blit(
                     self.cherry_img,
-                    self.cherry_position
+                    (self.cherry_position[0], self.cherry_position[1] + 50)
                 )
         else:
-            position = (self.screen.get_width() // 2 - global_vars.cell_size, 23 * global_vars.cell_size - 50)
+            self.cherry_position = (100 * (global_vars.cell_size/8) + global_vars.cell_size/2, 128 * (global_vars.cell_size/8) + global_vars.cell_size/2)
             self.screen.blit(
                 self.cherry_img,
-                self.cherry_position
+                (self.cherry_position[0], self.cherry_position[1] + 50)
             )
