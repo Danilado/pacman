@@ -1,6 +1,6 @@
 import pygame
 
-from global_vars import datetime_format
+from global_variables import datetime_format
 from store_score import get_scores, max_store
 
 

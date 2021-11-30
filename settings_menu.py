@@ -1,32 +1,32 @@
 import pygame
 
-import global_vars
+import global_variables
 import store_settings
-from globalclasses import Button, GuiSettings
+from global_classes import Button, GuiSettings
 
 
 def set_easy_difficulty():
-    global_vars.difficulty = 0.5
+    global_variables.difficulty = 0.5
 
 
 def set_normal_difficulty():
-    global_vars.difficulty = 1
+    global_variables.difficulty = 1
 
 
 def set_hard_difficulty():
-    global_vars.difficulty = 1.5
+    global_variables.difficulty = 1.5
 
 
 def settings_menu():
     main_screen = pygame.display.set_mode((1066, 600))
     text_color = (255,) * 3
     settings = GuiSettings(button_color=text_color, button_color_hover=(127,) * 3)
-    btn_easy = Button(220 * 0 + main_screen.get_width() // (global_vars.cell_size / 2) + 80, 80, 200, 50, (0, 0, 0),
-                      settings, "Лёгкая", set_easy_difficulty)
-    btn_norm = Button(220 * 1 + main_screen.get_width() // (global_vars.cell_size / 2) + 80, 80, 200, 50, (0, 0, 0),
-                      settings, "Нормальная", set_normal_difficulty)
-    btn_hard = Button(220 * 2 + main_screen.get_width() // (global_vars.cell_size / 2) + 80, 80, 200, 50, (0, 0, 0),
-                      settings, "Сложная", set_hard_difficulty)
+    btn_easy = Button(220 * 0 + main_screen.get_width() // (global_variables.cell_size / 2) + 80, 80, 200, 50,
+                      (0, 0, 0), settings, "Лёгкая", set_easy_difficulty)
+    btn_norm = Button(220 * 1 + main_screen.get_width() // (global_variables.cell_size / 2) + 80, 80, 200, 50,
+                      (0, 0, 0), settings, "Нормальная", set_normal_difficulty)
+    btn_hard = Button(220 * 2 + main_screen.get_width() // (global_variables.cell_size / 2) + 80, 80, 200, 50,
+                      (0, 0, 0), settings, "Сложная", set_hard_difficulty)
     buttons = [btn_easy, btn_norm, btn_hard]
     text_font = pygame.font.SysFont("segoeuisemibold", 32)
     running = True
@@ -45,13 +45,13 @@ def settings_menu():
 
             dif_str: str
             txt_str: str
-            if global_vars.difficulty == 0.5:
+            if global_variables.difficulty == 0.5:
                 dif_str = "Легкая"
-            elif global_vars.difficulty == 1.5:
+            elif global_variables.difficulty == 1.5:
                 dif_str = "Сложная"
             else:
                 dif_str = "Нормальная"
-            if global_vars.texture_modifier == "":
+            if global_variables.texture_modifier == "":
                 txt_str = "Классические"
             else:
                 txt_str = "Альтернативные"

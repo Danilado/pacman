@@ -2,7 +2,7 @@ import csv
 import os
 from dataclasses import dataclass
 
-import global_vars
+import global_variables
 
 filename = "saves/settings.csv"
 _settings_cache = None
@@ -29,7 +29,7 @@ def get_settings():
                     result = Settings(float(line[1]))
                     _settings_cache = result
                     return result
-                elif global_vars.debug:
+                elif global_variables.debug:
                     print(f"[WARNING] Can not parse {filename}:{line}")
     else:
         return _settings_cache
@@ -37,9 +37,9 @@ def get_settings():
 
 def store_settings():
     global _settings_cache
-    _settings_cache = Settings(global_vars.difficulty)
+    _settings_cache = Settings(global_variables.difficulty)
     if not os.path.exists(filename):
         clear_settings()
     with open(filename, "w", encoding="utf-8") as file:
         writer = csv.writer(file)
-        writer.writerow((str(global_vars.difficulty),))
+        writer.writerow((str(global_variables.difficulty),))

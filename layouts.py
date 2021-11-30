@@ -33,7 +33,7 @@ map_with_sprites = [
         ["ll",   "seed","sc4", "sbb", "sbb", "sbb", "sbb", "sbb", "sbb", "sbb", "sbb", "sc3", "seed","sc4", "sc3", "seed","sc4", "sbb", "sbb", "sbb", "sbb", "sbb", "sbb", "sbb", "sbb", "sc3", "seed","rr" ],
         ["ll",   "seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","seed","rr" ],
         ["c4",   "bb",  "bb",  "bb",  "bb",  "bb",  "bb",  "bb",  "bb",  "bb",  "bb",  "bb",  "bb",  "bb",  "bb",  "bb",  "bb",  "bb",  "bb",  "bb",  "bb",  "bb",  "bb",  "bb",  "bb",  "bb",  "bb",  "c3" ]
-        ]
+]
 # 0 - стена;
 # 3 - зерно; 
 # 4 - батарейка а.к.а энерджайзер;

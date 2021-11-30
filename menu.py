@@ -2,11 +2,11 @@ import time
 
 import pygame
 
-import global_vars
+import global_variables
 import player
 from game import main
-from globalclasses import Button
-from globalclasses import GuiSettings
+from global_classes import Button
+from global_classes import GuiSettings
 from input_name_menu import ask_name
 from perfomance import img_load
 from settings_menu import settings_menu
@@ -18,7 +18,7 @@ pygame.mixer.init()
 
 in_game: bool = False
 
-background_file = f"./textures/bg/{global_vars.texture_modifier}pacman2.jpg"
+background_file = f"./textures/bg/{global_variables.texture_modifier}pacman2.jpg"
 
 
 def play():
@@ -39,7 +39,7 @@ def exit_game():
 def sm():
     global background_file
     settings_menu()
-    background_file = f"./textures/bg/{global_vars.texture_modifier}pacman2.jpg"
+    background_file = f"./textures/bg/{global_variables.texture_modifier}pacman2.jpg"
 
 
 def options_menu():
@@ -55,7 +55,7 @@ def options_menu():
             Button(220 * 3 + 80, 530, 200, 50, (0, 0, 0), settings, "Выйти из игры", exit_game),
         ]
         timeout = 0
-        background_file = f"./textures/bg/{global_vars.texture_modifier}pacman2.jpg"
+        background_file = f"./textures/bg/{global_variables.texture_modifier}pacman2.jpg"
         while not in_game:
             timeout += 1
             events = pygame.event.get()
@@ -69,12 +69,12 @@ def options_menu():
                     pressed = pygame.key.get_pressed()
                     if pressed[pygame.K_w] and pressed[pygame.K_t] and pressed[pygame.K_f] and timeout >= 100:
                         if background_file == "./textures/bg/pacman4.jpg":
-                            background_file = f"./textures/bg/{global_vars.texture_modifier}pacman2.jpg"
-                            global_vars.easter = 0
+                            background_file = f"./textures/bg/{global_variables.texture_modifier}pacman2.jpg"
+                            global_variables.easter = 0
                             timeout = 0
                         elif timeout >= 100:
                             background_file = "./textures/bg/pacman4.jpg"
-                            global_vars.easter = 1
+                            global_variables.easter = 1
                             timeout = 0
 
             for button in buttons:

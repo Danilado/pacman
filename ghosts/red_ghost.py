@@ -2,7 +2,7 @@ from math import sqrt
 
 import pygame
 
-import global_vars
+import global_variables
 from ghosts.core import AbstractGhostLogic, MainGhost, Direction
 from ghosts.sounds import Sound
 from layouts import map_with_sprites
@@ -12,8 +12,8 @@ from player import Pacman
 class RedGhostLogic(AbstractGhostLogic):
     """Пример логики призрака"""
 
-    default_position = pygame.Vector2(13 * global_vars.cell_size + (global_vars.cell_size / 2),
-                                      11 * global_vars.cell_size)
+    default_position = pygame.Vector2(13 * global_variables.cell_size + (global_variables.cell_size / 2),
+                                      11 * global_variables.cell_size)
     default_direction = "left"
     back_animations = ["./textures/ghosts/red/b1.png", "./textures/ghosts/red/b2.png"]
     left_animations = ["./textures/ghosts/red/l1.png", "./textures/ghosts/red/l2.png"]
@@ -35,14 +35,14 @@ class RedGhostLogic(AbstractGhostLogic):
         self.blyat = 0
 
     def my_position_in_blocks(self):
-        return int((self.main_ghost.position.x + global_vars.cell_size / 2) // global_vars.cell_size), \
-               int((self.main_ghost.position.y + global_vars.cell_size / 2) // global_vars.cell_size)
+        return int((self.main_ghost.position.x + global_variables.cell_size / 2) // global_variables.cell_size), \
+               int((self.main_ghost.position.y + global_variables.cell_size / 2) // global_variables.cell_size)
 
     def find_ways(self):  # 0 - ищем выход из начальной комнаты
         tmp_list_vec = []
-        if self.main_ghost.position[0] % global_vars.cell_size <= 0.1 and \
-           self.main_ghost.position[1] % global_vars.cell_size <= 0.1 and \
-           self.prev_block != (self.main_ghost.position[0], self.main_ghost.position[1]):
+        if self.main_ghost.position[0] % global_variables.cell_size <= 0.1 and \
+                self.main_ghost.position[1] % global_variables.cell_size <= 0.1 and \
+                self.prev_block != (self.main_ghost.position[0], self.main_ghost.position[1]):
 
             self.prev_block = (self.main_ghost.position[0], self.main_ghost.position[1])
             if len(map_with_sprites[0]) <= self.my_position_in_blocks()[0] + 1 or \
@@ -76,11 +76,11 @@ class RedGhostLogic(AbstractGhostLogic):
         return tmp_list_vec
 
     def select_tile(self, target_pos):
-        if global_vars.debug:
+        if global_variables.debug:
             pygame.draw.rect(
                 self.main_ghost.screen,
                 (255, 0, 0),
-                (target_pos[0], target_pos[1] + 50, global_vars.cell_size, global_vars.cell_size),
+                (target_pos[0], target_pos[1] + 50, global_variables.cell_size, global_variables.cell_size),
                 1
             )
         direction = self.main_ghost.direction
@@ -103,17 +103,19 @@ class RedGhostLogic(AbstractGhostLogic):
             for tmp_vel in tmp_list_ways:
                 if tmp_vel != back_direction:
                     if tmp_vel == 'right':
-                        tmp_range = sqrt((self.main_ghost.position[0] + global_vars.cell_size - target_pos[0]) ** 2 +
-                                         (self.main_ghost.position[1] - target_pos[1]) ** 2)
+                        tmp_range = sqrt((self.main_ghost.position[0] + global_variables.cell_size - target_pos[0])
+                                         ** 2 + (self.main_ghost.position[1] - target_pos[1]) ** 2)
                     elif tmp_vel == 'left':
-                        tmp_range = sqrt((self.main_ghost.position[0] - global_vars.cell_size - target_pos[0]) ** 2 +
-                                         (self.main_ghost.position[1] - target_pos[1]) ** 2)
+                        tmp_range = sqrt((self.main_ghost.position[0] - global_variables.cell_size - target_pos[0])
+                                         ** 2 + (self.main_ghost.position[1] - target_pos[1]) ** 2)
                     elif tmp_vel == 'up':
                         tmp_range = sqrt((self.main_ghost.position[0] - target_pos[0]) ** 2 +
-                                         (self.main_ghost.position[1] - global_vars.cell_size - target_pos[1]) ** 2)
+                                         (self.main_ghost.position[1] - global_variables.cell_size - target_pos[1])
+                                         ** 2)
                     else:
                         tmp_range = sqrt((self.main_ghost.position[0] - target_pos[0]) ** 2 +
-                                         (self.main_ghost.position[1] + global_vars.cell_size - target_pos[1]) ** 2)
+                                         (self.main_ghost.position[1] + global_variables.cell_size - target_pos[1])
+                                         ** 2)
                     if tmp_range < min_range:
                         min_range = tmp_range
                         min_vel = tmp_vel
@@ -125,7 +127,7 @@ class RedGhostLogic(AbstractGhostLogic):
         return direction
 
     def acceleration_stage(self):
-        target_pos = [216 * (global_vars.cell_size/8), -8 * (global_vars.cell_size/8)]
+        target_pos = [216 * (global_variables.cell_size / 8), -8 * (global_variables.cell_size / 8)]
         return self.select_tile(target_pos)
 
     def chase_stage(self, pacman):
@@ -155,7 +157,7 @@ class RedGhostLogic(AbstractGhostLogic):
 
     def stay_stage(self) -> Direction:
         self.default_direction = "right"
-        if (self.main_ghost.position[1]) % global_vars.cell_size == 0:
+        if (self.main_ghost.position[1]) % global_variables.cell_size == 0:
             if map_with_sprites[self.my_position_in_blocks()[1] + 1][(self.main_ghost.position_in_blocks[0])] == \
                     'gate':
                 self.stay = 0
@@ -167,21 +169,21 @@ class RedGhostLogic(AbstractGhostLogic):
             return 'up'
 
     def eaten_stage(self):
-        target_pos = [13 * global_vars.cell_size + (global_vars.cell_size / 2), 11 * global_vars.cell_size] 
+        target_pos = [13 * global_variables.cell_size + (global_variables.cell_size / 2),
+                      11 * global_variables.cell_size]
         if self.eaten == 1:
-            self.speed = global_vars.cell_size//2
-            if ((self.main_ghost.position.x - target_pos[0])**2 +\
-                (self.main_ghost.position.y - target_pos[1])**2  \
-                )**0.5 > global_vars.cell_size//2:
+            self.speed = 8
+            if ((self.main_ghost.position.x - target_pos[0]) ** 2 + (self.main_ghost.position.y - target_pos[1]) ** 2) \
+                    ** 0.5 > global_variables.cell_size // 2:
                 return self.select_tile(target_pos)
             else:
-                self.main_ghost._position.x = target_pos[0]
-                self.main_ghost._position.y = target_pos[1]
+                self.main_ghost.position.x = target_pos[0]
+                self.main_ghost.position.y = target_pos[1]
                 self.eaten = 2
                 self.speed = 1
                 return 'back'
         elif self.eaten == 2:
-            if abs(self.main_ghost.position.y - 14 * global_vars.cell_size) < global_vars.cell_size//2:
+            if abs(self.main_ghost.position.y - 14 * global_variables.cell_size) < global_variables.cell_size // 2:
                 return 'back'
             else:
                 self.eaten = 0

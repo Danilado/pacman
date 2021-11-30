@@ -3,7 +3,7 @@ from typing import List, Literal, SupportsAbs, Type, Tuple, Union
 
 import pygame
 
-import global_vars
+import global_variables
 import player
 from perfomance import img_load
 from player import Pacman
@@ -22,33 +22,35 @@ class AbstractGhostLogic(ABC):
         for index, back_animation in enumerate(self.back_animations):
             if type(back_animation) is str:
                 self.back_animations[index] = img_load(back_animation,
-                                                       2 * global_vars.cell_size,
-                                                       2 * global_vars.cell_size).convert_alpha()
+                                                       2 * global_variables.cell_size,
+                                                       2 * global_variables.cell_size).convert_alpha()
         # влево
         for index, left_animation in enumerate(self.left_animations):
             if type(left_animation) is str:
                 self.left_animations[index] = img_load(left_animation,
-                                                       2 * global_vars.cell_size,
-                                                       2 * global_vars.cell_size).convert_alpha()
+                                                       2 * global_variables.cell_size,
+                                                       2 * global_variables.cell_size).convert_alpha()
         # вправо
         for index, right_animation in enumerate(self.right_animations):
             if type(right_animation) is str:
                 self.right_animations[index] = img_load(right_animation,
-                                                        2 * global_vars.cell_size,
-                                                        2 * global_vars.cell_size).convert_alpha()
+                                                        2 * global_variables.cell_size,
+                                                        2 * global_variables.cell_size).convert_alpha()
         # наверх
         for index, up_animation in enumerate(self.up_animations):
             if type(up_animation) is str:
                 self.up_animations[index] = img_load(up_animation,
-                                                     2 * global_vars.cell_size,
-                                                     2 * global_vars.cell_size).convert_alpha()
+                                                     2 * global_variables.cell_size,
+                                                     2 * global_variables.cell_size).convert_alpha()
 
         # Текстуры режима страха
-        self.eyes = img_load("./textures/ghosts/eyes.png", 2 * global_vars.cell_size, 1.5 * global_vars.cell_size)
+        self.eyes = img_load("./textures/ghosts/eyes.png", 2 * global_variables.cell_size,
+                             1.5 * global_variables.cell_size)
         for index, scared_animation in enumerate(self.scared_animations_blue):
             if type(scared_animation) is str:
-                self.scared_animations_blue[index] = img_load(scared_animation,
-                                                              2 * global_vars.cell_size, 2 * global_vars.cell_size)
+                self.scared_animations_blue[index] = img_load(
+                    scared_animation, 2 * global_variables.cell_size, 2 * global_variables.cell_size
+                )
 
     # default_position: pygame.Vector2
     @property
@@ -207,8 +209,8 @@ class MainGhost:
         for trigger_block in MainGhost.trigger_blocks:
             pygame.draw.rect(
                 screen, (255, 0, 0),
-                (int(global_vars.cell_size * trigger_block[0]), int(global_vars.cell_size * trigger_block[1]),
-                 global_vars.cell_size, global_vars.cell_size),
+                (int(global_variables.cell_size * trigger_block[0]), int(global_variables.cell_size * trigger_block[1]),
+                 global_variables.cell_size, global_variables.cell_size),
                 1
             )
 
@@ -257,12 +259,14 @@ class MainGhost:
                     self._current_animation_frame = 0
             screen.blit(
                 self._ghost_logic.scared_animations_blue[self._current_animation_frame],
-                (self._position.x - (global_vars.cell_size / 2), self._position.y - (global_vars.cell_size / 2) + 50)
+                (self._position.x - (global_variables.cell_size / 2),
+                 self._position.y - (global_variables.cell_size / 2) + 50)
             )
         elif self._ghost_logic.eaten:
             screen.blit(
                 self._ghost_logic.eyes,
-                (self._position.x - (global_vars.cell_size / 2), self._position.y - (global_vars.cell_size / 2) + 50)
+                (self._position.x - (global_variables.cell_size / 2),
+                 self._position.y - (global_variables.cell_size / 2) + 50)
             )
         elif self.direction != "":
             if pygame.time.get_ticks() - self._timer >= 200:  # Каждые 200 мс
@@ -273,7 +277,8 @@ class MainGhost:
             screen.blit(  # Если у вас здесь исключение(ошибка). Проверьте свой __init__ в логике класса, скорее всего
                 # там отстуствует super().__init__()
                 self._current_animation_list[self._current_animation_frame],
-                (self._position.x - (global_vars.cell_size / 2), self._position.y - (global_vars.cell_size / 2) + 50)
+                (self._position.x - (global_variables.cell_size / 2),
+                 self._position.y - (global_variables.cell_size / 2) + 50)
             )
 
     def update(self, pacman: Pacman, all_ghosts: List["MainGhost"], stage, trigger):
@@ -287,17 +292,20 @@ class MainGhost:
 
         moved = False
         self.direction = self._ghost_logic.where_am_i_should_move(pacman, all_ghosts, stage,
-                                                                  trigger)  # Направление куда должен
-        # двигаться призрак
+                                                                  trigger)  # Направление куда должен двигаться призрак
         if self._current_speed.x != 0:
             for _ in range(self._timer2, pygame.time.get_ticks(), abs(round(1000 // self._current_speed.x))):
                 self._position.x += self._current_speed.x * self.speed_mod * \
-                                    global_vars.difficulty * (global_vars.cell_size / 8)
+                                    global_variables.difficulty * (global_variables.cell_size / 8)
+                self.direction = self._ghost_logic.where_am_i_should_move(pacman, all_ghosts, stage,
+                                                                          trigger)
                 moved = True
         if self._current_speed.y != 0:
             for _ in range(self._timer2, pygame.time.get_ticks(), abs(round(1000 // self._current_speed.y))):
                 self._position.y += self._current_speed.y * self.speed_mod * \
-                                    global_vars.difficulty * (global_vars.cell_size / 8)
+                                    global_variables.difficulty * (global_variables.cell_size / 8)
+                self.direction = self._ghost_logic.where_am_i_should_move(pacman, all_ghosts, stage,
+                                                                          trigger)
                 moved = True
         if moved:
             self._timer2 = pygame.time.get_ticks()
@@ -307,7 +315,7 @@ class MainGhost:
         self._position.y = self.default_position.y
         self._ghost_logic.stay = 1
         self._ghost_logic.stage = 1
-        if self.default_position.y == 11 * global_vars.cell_size:
+        if self.default_position.y == 11 * global_variables.cell_size:
             self._direction = "right"
         self.un_scare()
 
@@ -365,28 +373,31 @@ class MainGhost:
     @property
     def position(self) -> pygame.rect.Rect:
         """Возвращает позицию призрака"""
-        return pygame.rect.Rect(self._position.x, self._position.y, 2 * global_vars.cell_size,
-                                2 * global_vars.cell_size)
+        return pygame.rect.Rect(self._position.x, self._position.y, 2 * global_variables.cell_size,
+                                2 * global_variables.cell_size)
 
     @position.setter
     def position(self, new_position: Union[pygame.rect.Rect, pygame.Vector2]):
         if isinstance(new_position, pygame.Vector2):
             self._position = pygame.rect.Rect(new_position.x, new_position.y,
-                                              2 * global_vars.cell_size, 2 * global_vars.cell_size)
+                                              2 * global_variables.cell_size, 2 * global_variables.cell_size)
         self._position = new_position
 
     @property
     def position_in_blocks(self) -> Tuple[int, int]:
         """Возвращает позицию призрака в блоках."""
-        return round(self._position.x // global_vars.cell_size), round(self._position.y // global_vars.cell_size)
+        return \
+            round(self._position.x // global_variables.cell_size), round(self._position.y // global_variables.cell_size)
 
     @property
     def ghost_logic(self):
         return self._ghost_logic
 
     def force(self):
-        self._position.x = int((self.position.x + global_vars.cell_size / 2) // global_vars.cell_size)*global_vars.cell_size
-        self._position.y = int((self.position.y + global_vars.cell_size / 2) // global_vars.cell_size)*global_vars.cell_size
+        self._position.x = int((self.position.x + global_variables.cell_size / 2) //
+                               global_variables.cell_size) * global_variables.cell_size
+        self._position.y = int((self.position.y + global_variables.cell_size / 2) //
+                               global_variables.cell_size) * global_variables.cell_size
 
     def trigger_eaten(self):
         if not self.ghost_logic.eaten:
