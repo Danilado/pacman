@@ -65,17 +65,21 @@ def main():
     player.game_simplified_map = [i.copy() for i in map_with_sprites]
     player.game_map = [i.copy() for i in simplified]
     player.score = 0
+    globalvars.dots = 0
     screen = pygame.display.set_mode(resolution)
     done = False
-    pac = player.Pacman(w / 2 - 4, h / 2 + 6 * 8 + 8 - 40, screen)
-
+    pac1 = player.Pacman(w / 2 - 4, h / 2 + 6 * 8 + 8 - 40, screen, 1)
+    globalvars.pacs = [pac1]
+    if globalvars.coop:
+        pac2 = player.Pacman(w / 2 - 4, h / 2 + 6 * 8 + 8 - 136, screen, 2)
+        globalvars.pacs.append(pac2)
     flag = 0
 
     global last_time
     global local_stage
 
     ghosts: List[MainGhost] = []
-    if not globalvars.ghost_less:
+    if not globalvars.coop:
         orange_ghost = MainGhost(OrangeGhostLogic, screen)
         red_ghost = MainGhost(RedGhostLogic, screen)
         pink_ghost = MainGhost(PinkGhostLogic, screen)
@@ -89,7 +93,7 @@ def main():
     clock = pygame.time.Clock()
     stage = 1
 
-    if not globalvars.ghost_less:
+    if not globalvars.coop:
         for ghost in ghosts:
             globalvars.blue_trigger = 0
             globalvars.orange_trigger = 0
@@ -109,14 +113,16 @@ def main():
                 if event.key == pygame.K_ESCAPE:
                     done = True
                     pygame.mixer.pause()
-                if not audio_channel.get_busy() and not pac.dead_channel.get_busy() and not pac.win_channel.get_busy():
-                    pac.process_event(event)
+                for pac in globalvars.pacs:
+                    if not audio_channel.get_busy() and not pac.dead_channel.get_busy() and \
+                            not pac.win_channel.get_busy():
+                        pac.process_event(event)
                 if event.key == pygame.K_p:
                     pause(clock, screen)
         screen.fill((0, 0, 0))
         render(screen, player.game_simplified_map)
         # MainGhost.draw_trigger_blocks(screen)
-        if not globalvars.ghost_less:
+        if not globalvars.coop:
             for ghost in ghosts:
                 ghost.draw(screen)
 
@@ -128,7 +134,8 @@ def main():
                 if pygame.time.get_ticks() - last_time >= 20000:
                     local_stage = 2
                     flag = 0
-                    print("Set AI mode runaway")
+                    if globalvars.debug:
+                        print("Set AI mode runaway")
                     for ghost in ghosts:
                         if ghost.ghost_logic.stay == 0:
                             ghost.ghost_logic.stage = 2
@@ -138,38 +145,40 @@ def main():
                 if pygame.time.get_ticks() - last_time >= 7000:
                     local_stage = 1
                     flag = 0
-                    print("Set AI mode chase")
+                    if globalvars.debug:
+                        print("Set AI mode chase")
                     for ghost in ghosts:
                         if ghost.ghost_logic.stay == 0:
                             ghost.ghost_logic.stage = 1
                             stage = 1
                     last_time = pygame.time.get_ticks()
 
-        elif not audio_channel.get_busy() and not pac.dead and not pac.win:
-            pac.upd([])
+        elif not audio_channel.get_busy() and not pac1.dead and not pac1.win:
+            for pac in globalvars.pacs:
+                pac.upd([])
 
-        if pygame.time.get_ticks() % 500 < 250 or not audio_channel.get_busy() and not pac.paused:
-            pac.draw()
-        if not audio_channel.get_busy() and not pac.dead and not pac.win and \
-                not globalvars.ghost_less and not pac.paused:
-            if pac.in_energizer:
-                Sound().play_energizer_sound()
-            else:
-                Sound().play_siren()
-            pac.upd(ghosts)
-            for ghost in ghosts:
-                ghost.update(pac, ghosts, stage, trigger)
-
-        if pac.paused:
-            if pygame.time.get_ticks() - pac.paused_time >= 2500:
-                pac.paused = 0
-                pac.paused_frame = 0
-                pac.status = 'unhit'
-                pac.vec = 0
-            if pygame.time.get_ticks() % 500 < 250:
-                pac.status_eat = 0
+        for pac in globalvars.pacs:
+            if pygame.time.get_ticks() % 500 < 250 or not audio_channel.get_busy() and not pac.paused:
                 pac.draw()
+            if not audio_channel.get_busy() and not pac.dead and not pac.win and \
+                    not globalvars.coop and not pac.paused:
+                if pac.in_energizer:
+                    Sound().play_energizer_sound()
+                else:
+                    Sound().play_siren()
+                for ghost in ghosts:
+                    ghost.update(pac, ghosts, stage, trigger)
+                pac.upd(ghosts)
+            elif pac.paused:
+                if pygame.time.get_ticks() - pac.paused_time >= 2500:
+                    pac.paused = 0
+                    pac.paused_frame = 0
+                    pac.status = 'unhit'
+                    pac.vec = 0
+                if pygame.time.get_ticks() % 500 < 250:
+                    pac.status_eat = 0
+                    pac.draw()
 
-        done = done or (pac.dead and not pac.play_dead_sound()) or (pac.win and not pac.play_win_sound())
+            done = done or (pac.dead and not pac.play_dead_sound()) or (pac.win and not pac.play_win_sound())
         pygame.display.flip()
         clock.tick(120)
