@@ -156,13 +156,13 @@ class Pacman:
         self.vec = 1
         self.remember_vec = -1
         self.status = "hit-1"
+        pygame.mixer.stop()
         self.play_dead_sound()
         if self.lives == 0:
             self.dead = True
         else:
-            if not globalvars.coop:
-                self.paused_time = pygame.time.get_ticks()
-                self.paused = 1
+            self.paused_time = pygame.time.get_ticks()
+            self.paused = 1
 
     def hit_with_pac(self):
         self.lives -= 1

@@ -162,18 +162,18 @@ def main():
                     Sound().play_energizer_sound()
                 else:
                     Sound().play_siren()
-                pac.upd(ghosts)
                 for ghost in ghosts:
                     ghost.update(pac, ghosts, stage, trigger)
-                if pac.paused:
-                    if pygame.time.get_ticks() - pac.paused_time >= 2500:
-                        pac.paused = 0
-                        pac.paused_frame = 0
-                        pac.status = 'unhit'
-                        pac.vec = 0
-                    if pygame.time.get_ticks() % 500 < 250:
-                        pac.status_eat = 0
-                        pac.draw()
+                pac.upd(ghosts)
+            elif pac.paused:
+                if pygame.time.get_ticks() - pac.paused_time >= 2500:
+                    pac.paused = 0
+                    pac.paused_frame = 0
+                    pac.status = 'unhit'
+                    pac.vec = 0
+                if pygame.time.get_ticks() % 500 < 250:
+                    pac.status_eat = 0
+                    pac.draw()
 
             done = done or (pac.dead and not pac.play_dead_sound()) or (pac.win and not pac.play_win_sound())
         pygame.display.flip()

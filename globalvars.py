@@ -10,4 +10,3 @@ difficulty = 1
 easter = 0
 dots = 0
 pacs = []
-count_of_cherry = 0
