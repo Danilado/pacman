@@ -206,7 +206,8 @@ class MainGhost:
 
     def draw(self, screen: pygame.Surface):
         """Рисует призрака"""
-        self._check_position()
+        if not self._ghost_logic.eaten:
+            self._check_position()
         # pygame.draw.rect(screen, (0, 0, 255), (self.ghost_logic.tar, int(self._position.y), 8, 8), 1)
         img = None
         position = None

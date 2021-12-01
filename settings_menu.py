@@ -66,6 +66,9 @@ def settings_menu():
             main_screen.blit(text_font.render("Размер экрана", False, text_color), (20, 195))
             main_screen.blit(text_font.render(f"Текущая сложность:  {dif_str}", False, text_color), (20, 295))
             main_screen.blit(text_font.render(f"Текущие текстуры:  {txt_str}", False, text_color), (20, 395))
+            main_screen.blit(text_font.render(f"Текущий размер экрана:  "
+                                              f"{'Маленький' if global_variables.cell_size == 8 else 'Большой'}",
+                                              False, text_color), (20, 495))
 
             for event in events:
                 if event.type == pygame.QUIT:

@@ -2,13 +2,14 @@ import argparse
 
 import global_variables
 import store_settings
+from game import set_block_size
 from menu import options_menu
 
 
 def load_settings():
     my_settings = store_settings.get_settings()
     if my_settings is not None:
-        global_variables.texture_modifier = my_settings.texture_modifier
+        set_block_size(my_settings.cell_size)
         global_variables.difficulty = my_settings.difficulty
 
 
