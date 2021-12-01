@@ -64,20 +64,36 @@ class Pacman:
         self.score = 0
 
     def draw(self):
-        img = img_load(f'./textures/pacsprites/pacman0.png')
-        if self.status_eat == 90:
-            img = img_load(f'./textures/pacsprites/pacman{self.vec + 5}.png')
-        elif self.status_eat == 0:
-            img = img_load(f'./textures/pacsprites/pacman9.png')
-        elif self.status_eat == 45:
-            img = img_load(f'./textures/pacsprites/pacman{self.vec}.png')
-        img2 = img_load(f'./textures/pacsprites/pacman0.png')
         if self.num == 1:
-            for i in range(self.lives):
-                self.screen.blit(img2, (20 * i, self.screen.get_height() - 20))
-        elif self.num == 2:
-            for i in range(self.lives):
-                self.screen.blit(img2, (20 * i + 170, self.screen.get_height() - 20))
+            img = img_load(f'./textures/pacsprites/pacman0.png')
+            if self.status_eat == 90:
+                img = img_load(f'./textures/pacsprites/pacman{self.vec + 5}.png')
+            elif self.status_eat == 0:
+                img = img_load(f'./textures/pacsprites/pacman9.png')
+            elif self.status_eat == 45:
+                img = img_load(f'./textures/pacsprites/pacman{self.vec}.png')
+            img2 = img_load(f'./textures/pacsprites/pacman0.png')
+            if self.num == 1:
+                for i in range(self.lives):
+                    self.screen.blit(img2, (20 * i, self.screen.get_height() - 20))
+            elif self.num == 2:
+                for i in range(self.lives):
+                    self.screen.blit(img2, (20 * i + 170, self.screen.get_height() - 20))
+        if self.num == 2:
+            img = img_load(f'./textures/pacsprites/pacman20.png')
+            if self.status_eat == 90:
+                img = img_load(f'./textures/pacsprites/pacman2{self.vec + 5}.png')
+            elif self.status_eat == 0:
+                img = img_load(f'./textures/pacsprites/pacman29.png')
+            elif self.status_eat == 45:
+                img = img_load(f'./textures/pacsprites/pacman2{self.vec}.png')
+            img2 = img_load(f'./textures/pacsprites/pacman20.png')
+            if self.num == 1:
+                for i in range(self.lives):
+                    self.screen.blit(img2, (20 * i, self.screen.get_height() - 20))
+            elif self.num == 2:
+                for i in range(self.lives):
+                    self.screen.blit(img2, (20 * i + 170, self.screen.get_height() - 20))
         img = pygame.transform.scale(img, (16, 16))
         # pygame.draw.rect(self.screen, (255, 255, 0), (self.x, self.y, 8, 8), 1)
         self.screen.blit(img, (self.x - 4, self.y - 4 + 50))
@@ -200,14 +216,20 @@ class Pacman:
             globalvars.orange_trigger = 1
         if globalvars.dots >= 244:
             self.win = True
-            img = img_load(f'./textures/pacsprites/pacman9.png')
+            if self.num == 1:
+                img = img_load(f'./textures/pacsprites/pacman9.png')
+            if self.num == 2:
+                img = img_load(f'./textures/pacsprites/pacman24.png')
             self.status_eat = 0
             img = pygame.transform.scale(img, (16, 16))
             self.screen.blit(img, (self.x - 4, self.y - 4 + 50))
         if globalvars.coop:
             if globalvars.dots >= 244:
                 self.win = True
-                img = img_load(f'./textures/pacsprites/pacman9.png')
+                if self.num == 1:
+                    img = img_load(f'./textures/pacsprites/pacman9.png')
+                if self.num == 2:
+                    img = img_load(f'./textures/pacsprites/pacman24.png')
                 self.status_eat = 0
                 img = pygame.transform.scale(img, (16, 16))
                 self.screen.blit(img, (self.x - 4, self.y - 4 + 50))
