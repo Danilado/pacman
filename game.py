@@ -1,5 +1,3 @@
-from typing import List
-
 import pygame
 
 import global_variables
@@ -70,6 +68,12 @@ def pause(clock: pygame.time.Clock, screen):
         clock.tick(120)
 
 
+def set_block_size(new_cell_size: int):
+    global_variables.cell_size = new_cell_size
+    global resolution, w, h
+    resolution = w, h = 224 / 8 * global_variables.cell_size, 336 / 8 * global_variables.cell_size
+
+
 def main():
     player.game_simplified_map = [i.copy() for i in map_with_sprites]
     player.game_map = [i.copy() for i in simplified]
@@ -89,13 +93,12 @@ def main():
     global last_time
     global local_stage
 
-    ghosts: List[MainGhost] = []
     if not global_variables.ghost_less:
         orange_ghost = MainGhost(OrangeGhostLogic, screen)
         red_ghost = MainGhost(RedGhostLogic, screen)
         pink_ghost = MainGhost(PinkGhostLogic, screen)
         blue_ghost = MainGhost(BlueGhostLogic, screen)
-        ghosts = [orange_ghost, red_ghost, pink_ghost, blue_ghost]
+        global_variables.ghosts = [orange_ghost, red_ghost, pink_ghost, blue_ghost]
 
     audio_sound = pygame.mixer.Sound("./sounds/game_start.wav")
     audio_channel = pygame.mixer.Channel(0)
@@ -105,7 +108,7 @@ def main():
     stage = 1
 
     if not global_variables.ghost_less:
-        for ghost in ghosts:
+        for ghost in global_variables.ghosts:
             global_variables.blue_trigger = 0
             global_variables.orange_trigger = 0
             ghost.reset_position()
@@ -132,10 +135,10 @@ def main():
         render(screen, player.game_simplified_map)
         # MainGhost.draw_trigger_blocks(screen)
         if not global_variables.ghost_less:
-            for ghost in ghosts:
+            for ghost in global_variables.ghosts:
                 ghost.draw(screen)
 
-            if ghosts[0].scared and not flag:
+            if global_variables.ghosts[0].scared and not flag:
                 print("Scare detected")
                 last_time += 7000
                 flag = 1
@@ -144,7 +147,7 @@ def main():
                     local_stage = 2
                     flag = 0
                     print("Set AI mode runaway")
-                    for ghost in ghosts:
+                    for ghost in global_variables.ghosts:
                         if ghost.ghost_logic.stay == 0:
                             ghost.ghost_logic.stage = 2
                             stage = 2
@@ -154,7 +157,7 @@ def main():
                     local_stage = 1
                     flag = 0
                     print("Set AI mode chase")
-                    for ghost in ghosts:
+                    for ghost in global_variables.ghosts:
                         if ghost.ghost_logic.stay == 0:
                             ghost.ghost_logic.stage = 1
                             stage = 1
@@ -171,9 +174,9 @@ def main():
                 Sound().play_energizer_sound()
             else:
                 Sound().play_siren()
-            pac.upd(ghosts)
-            for ghost in ghosts:
-                ghost.update(pac, ghosts, stage, trigger)
+            pac.upd(global_variables.ghosts)
+            for ghost in global_variables.ghosts:
+                ghost.update(pac, global_variables.ghosts, stage, trigger)
 
         if pac.paused:
             if pygame.time.get_ticks() - pac.paused_time >= 2500:

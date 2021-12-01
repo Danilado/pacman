@@ -310,7 +310,7 @@ class Pacman:
                 self.last = pygame.time.get_ticks()
                 self.in_energizer = True
                 for ghost in ghosts:
-                    ghost.scare()
+                    ghost.scared = 1
 
             self._update_energizer_effect(ghosts)
 
