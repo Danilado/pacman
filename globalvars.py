@@ -1,4 +1,4 @@
-ghost_less = 0
+coop = 0
 instant_win = 0
 god = 0
 debug = 0
@@ -10,4 +10,3 @@ difficulty = 1
 easter = 0
 dots = 0
 pacs = []
-count_of_cherry = 0
