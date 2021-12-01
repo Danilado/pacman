@@ -177,8 +177,10 @@ class MainGhost:
         for trigger_block in MainGhost.trigger_blocks:
             pygame.draw.rect(
                 screen, (255, 0, 0),
-                (int(global_variables.cell_size * trigger_block[0]), int(global_variables.cell_size * trigger_block[1]),
-                 global_variables.cell_size, global_variables.cell_size),
+                (int(global_variables.cell_size * trigger_block[0]),
+                 50 + int(global_variables.cell_size * trigger_block[1]),
+                 global_variables.cell_size, global_variables.cell_size
+                 ),
                 1
             )
 
@@ -256,7 +258,8 @@ class MainGhost:
 
         moved = False
         self.direction = self._ghost_logic.where_am_i_should_move(pacman, all_ghosts, stage,
-                                                                  trigger)  # Направление куда должен двигаться призрак
+                                                                  trigger)  # Направление куда должен
+        # двигаться призрак
         if self._current_speed.x != 0:
             for _ in range(self._timer2, pygame.time.get_ticks(), abs(round(1000 // self._current_speed.x))):
                 self._position.x += self._current_speed.x * self.speed_mod * \

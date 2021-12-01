@@ -16,7 +16,7 @@ score = 0
 
 
 class Pacman:
-    def __init__(self, x, y, window):
+    def __init__(self, x, y, window, num):
         scores = tuple(get_scores())
         self.cherry_img = img_load('textures/Cherry.png', 2 * global_variables.cell_size,
                                    1.875 * global_variables.cell_size)
@@ -51,6 +51,7 @@ class Pacman:
         self.dots = 0
         if global_variables.instant_win:
             self.dots = 244
+            global_variables.dots = 244
         self.number_image = -1
         self.god = global_variables.god
         self.cherry_call = 0xAB0BA
@@ -60,30 +61,40 @@ class Pacman:
         self.status_eat = 0
         self.paused = 0
         self.paused_time = 0
+        self.num = num
+        self.score = 0
         self.cherry_position = pygame.rect.Rect(
             self.screen.get_width() // 2 - global_variables.cell_size, 23 * global_variables.cell_size - 50,
             self.cherry_img.get_width(), self.cherry_img.get_height()
         )
 
     def draw(self):
-        img = img_load(f'./textures/pacsprites/pacman0.png', global_variables.cell_size * 2,
+        img = img_load(f'./textures/pacsprites/pacman{"" if self.num == 1 else self.num}0.png',
+                       global_variables.cell_size * 2,
                        global_variables.cell_size * 2)
         if self.status_eat == 90:
-            img = img_load(f'./textures/pacsprites/pacman{self.vec + 5}.png',
-                           global_variables.cell_size * 2, global_variables.cell_size * 2)
+            img = img_load(f'./textures/pacsprites/pacman{"" if self.num == 1 else self.num}{self.vec + 5}.png',
+                           global_variables.cell_size * 2,
+                           global_variables.cell_size * 2
+                           )
         elif self.status_eat == 0:
-            img = img_load(f'./textures/pacsprites/pacman9.png', global_variables.cell_size * 2,
-                           global_variables.cell_size * 2)
+            img = img_load(f'./textures/pacsprites/pacman{"" if self.num == 1 else self.num}9.png',
+                           global_variables.cell_size * 2,
+                           global_variables.cell_size * 2
+                           )
         elif self.status_eat == 45:
-            img = img_load(f'./textures/pacsprites/pacman{self.vec}.png',
-                           global_variables.cell_size * 2, global_variables.cell_size * 2)
-        img2 = img_load(f'./textures/pacsprites/pacman0.png', global_variables.cell_size * 2,
-                        global_variables.cell_size * 2)
+            img = img_load(f'./textures/pacsprites/pacman{"" if self.num == 1 else self.num}{self.vec}.png',
+                           global_variables.cell_size * 2,
+                           global_variables.cell_size * 2
+                           )
         for i in range(self.lives):
+            lives_position_x = 20 * i * (global_variables.cell_size / 8)
+            if self.num == 1:
+                lives_position_x = self.screen.get_width() - lives_position_x - 20 * (global_variables.cell_size / 8)
             self.screen.blit(
-                img2,
+                img,
                 (
-                    20 * i * (global_variables.cell_size / 8),
+                    lives_position_x,
                     self.screen.get_height() - 20 * (global_variables.cell_size / 8)
                 )
             )
@@ -140,6 +151,13 @@ class Pacman:
                             ghost.trigger_eaten()
                     elif not self.god and not ghost.ghost_logic.eaten:
                         self.hit(ghosts)
+            if global_variables.coop:
+                if not global_variables.pacs[0].in_energizer or not global_variables.pacs[1].in_energizer:
+                    if ((self.x - global_variables.pacs[1 - (self.num - 1)].x) ** 2 + (
+                            self.y - global_variables.pacs[1].y) ** 2) ** 0.5 <= 8:
+                        global_variables.pacs[1 - (self.num - 1)].hit_with_pac()
+                        self.score += 200 * (3 - global_variables.pacs[1 - (self.num - 1)].lives)
+                        self.in_energizer = False
         if now - self.last >= 7000:
             self.invincible = 0
             self.in_energizer = False
@@ -150,17 +168,31 @@ class Pacman:
             ghost.trigger = 0
             ghost.stay = 1
         self.lives -= 1
-        self.x = 108 * (global_variables.cell_size / 8)
+        self.x = 110 * (global_variables.cell_size / 8)
         self.y = 184 * (global_variables.cell_size / 8)
         self.vec = 1
         self.remember_vec = -1
         self.status = "hit-1"
+        pygame.mixer.stop()
         self.play_dead_sound()
         if self.lives == 0:
             self.dead = True
         else:
             self.paused_time = pygame.time.get_ticks()
             self.paused = 1
+
+    def hit_with_pac(self):
+        self.lives -= 1
+        if self.num == 1:
+            self.x = 110 * (global_variables.cell_size / 8)
+            self.y = 184 * (global_variables.cell_size / 8)
+        else:
+            self.x = 110 * (global_variables.cell_size / 8)
+            self.y = 88 * (global_variables.cell_size / 8)
+        self.vec = 1
+        self.remember_vec = -1
+        if self.lives == 0:
+            self.dead = True
 
     def upd(self, ghosts: List["MainGhost"]):
         global score
@@ -183,9 +215,10 @@ class Pacman:
             self.cherry_spawn()
         if self.dots >= 244 // 3:
             global_variables.orange_trigger = 1
-        if self.dots >= 244:
+        if global_variables.dots >= 244:
             self.win = True
-            img = img_load(f'./textures/pacsprites/pacman9.png', 2 * global_variables.cell_size,
+            img = img_load(f'./textures/pacsprites/pacman{"" if self.num == 1 else self.num}9.png',
+                           2 * global_variables.cell_size,
                            2 * global_variables.cell_size)
             self.status_eat = 0
             self.screen.blit(
@@ -194,11 +227,21 @@ class Pacman:
             )
 
         text_font = pygame.font.SysFont("segoeuisemibold", 16)
-        self.screen.blit(text_font.render("Счёт", False, (255, 255, 255)), (0, 0))
-        self.screen.blit(text_font.render("Рекорд", False, (255, 255, 255)), (self.screen.get_width() / 2, 0))
 
-        self.screen.blit(text_font.render(f"{score}", False, (255, 255, 255)), (0, 18))
-        self.screen.blit(text_font.render(f"{self.best}", False, (255, 255, 255)), (self.screen.get_width() / 2, 18))
+        if global_variables.coop:
+            self.screen.blit(text_font.render("Счёт 1", False, (255, 255, 255)), (0, 0))
+            self.screen.blit(text_font.render("Счёт 2", False, (255, 255, 255)), (self.screen.get_width() - 35, 0))
+            self.screen.blit(text_font.render(f"{global_variables.pacs[0].score}", False, (255, 255, 255)), (0, 18))
+            self.screen.blit(text_font.render(f"{global_variables.pacs[1].score}", False, (255, 255, 255)),
+                             (self.screen.get_width() - 35, 18))
+        if not global_variables.coop:
+            self.screen.blit(text_font.render("Счёт", False, (255, 255, 255)), (0, 0))
+            self.screen.blit(text_font.render("Рекорд", False, (255, 255, 255)), (self.screen.get_width() / 2, 0))
+            self.screen.blit(text_font.render(f"{score}", False, (255, 255, 255)), (0, 18))
+
+        if not global_variables.coop:
+            self.screen.blit(text_font.render(f"{self.best}", False, (255, 255, 255)),
+                             (self.screen.get_width() / 2, 18))
 
         if self.status != 'hit-0' and self.status != 'hit-1' and self.status != 'hit-2' and self.status != 'hit-3':
             self.total_way += 1
@@ -281,6 +324,7 @@ class Pacman:
                 self.vec = self.remember_vec
                 self.status = 'unhit'
                 self.remember_vec = -1
+
         # Дебаг
         # print(f'{self.x} {self.y} {self.vec} '
         #       f'{game_map[int(self.y//global_variables.cell_size)][int(self.x//global_variables.cell_size)]} '
@@ -292,8 +336,15 @@ class Pacman:
         if 0 <= self.x < self.screen.get_width() - global_variables.cell_size:
             # коллизия с зерном
             if game_map[int(self.y // global_variables.cell_size)][int(self.x // global_variables.cell_size)] == 3:
-                score += 10
+                if global_variables.coop:
+                    if self.num == 1:
+                        global_variables.pacs[0].score += 10
+                    else:
+                        global_variables.pacs[1].score += 10
+                else:
+                    score += 10
                 self.dots += 1
+                global_variables.dots += 1
                 game_map[int(self.y // global_variables.cell_size)][int(self.x // global_variables.cell_size)] = 5
                 game_simplified_map[int(self.y // global_variables.cell_size)][
                     int(self.x // global_variables.cell_size)] = 5
@@ -302,8 +353,12 @@ class Pacman:
             if game_map[int(self.y // global_variables.cell_size)][int(self.x // global_variables.cell_size)] == 4:
                 self.invincible = 1
                 self.eaten = 0
-                score += 50
+                if global_variables.coop:
+                    global_variables.pacs[1 - self.num].score += 50
+                else:
+                    score += 50
                 self.dots += 1
+                global_variables.dots += 1
                 game_map[int(self.y // global_variables.cell_size)][int(self.x // global_variables.cell_size)] = 5
                 game_simplified_map[int(self.y // global_variables.cell_size)][
                     int(self.x // global_variables.cell_size)] = 5
@@ -366,7 +421,16 @@ class Pacman:
 
     def process_event(self, event: pygame.event.Event):
         # ПРОВЕРКА НА ПОВОРОТ И ЗАПОМИНАНИЕ В СЛУЧИИ ЕГО ОТСУТСВИЯ
-        if event.key == pygame.K_a or event.key == pygame.K_LEFT:
+        key_up = pygame.K_w
+        key_back = pygame.K_s
+        key_left = pygame.K_a
+        key_right = pygame.K_d
+        if self.num == 2:
+            key_up = pygame.K_UP
+            key_back = pygame.K_DOWN
+            key_left = pygame.K_LEFT
+            key_right = pygame.K_RIGHT
+        if event.key == key_left:
             if game_map[int(self.y // global_variables.cell_size)][
                 int(self.x // global_variables.cell_size) - 1] == 3 or \
                     game_map[int(self.y // global_variables.cell_size)][
@@ -393,7 +457,7 @@ class Pacman:
             ] == 0:
                 self.remember_vec = 2
 
-        if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
+        if event.key == key_right:
             if game_map[int(self.y // global_variables.cell_size)][
                 int(self.x // global_variables.cell_size) + 1] == 3 or \
                     game_map[int(self.y // global_variables.cell_size)][
@@ -420,7 +484,7 @@ class Pacman:
             ] == 0:
                 self.remember_vec = 0
 
-        if event.key == pygame.K_w or event.key == pygame.K_UP:
+        if event.key == key_up:
             if game_map[int(self.y // global_variables.cell_size) - 1][
                 int(self.x // global_variables.cell_size)] == 3 or \
                     game_map[int(self.y // global_variables.cell_size) - 1][
@@ -447,7 +511,7 @@ class Pacman:
             ] == 0:
                 self.remember_vec = 1
 
-        if event.key == pygame.K_s or event.key == pygame.K_DOWN:
+        if event.key == key_back:
             if game_map[int(self.y // global_variables.cell_size) + 1][
                 int(self.x // global_variables.cell_size)] == 3 or \
                     game_map[int(self.y // global_variables.cell_size) + 1][
@@ -475,6 +539,7 @@ class Pacman:
                 self.remember_vec = 3
 
     def cherry_spawn(self):
+        print(self.num, "Spawn cherry!")
         self.cherry_call = pygame.time.get_ticks()
         self.cherry_on_screen = 1
 
@@ -485,7 +550,10 @@ class Pacman:
             int(self.cherry_position[1] + global_variables.cell_size // 2 - self.y) ** 2) ** 0.5 <= \
                 global_variables.cell_size:
             self.cherry_on_screen = 0
-            score += self.cherry_multiplier
+            if global_variables.coop:
+                global_variables.pacs[1 - self.num].score += self.cherry_multiplier
+            else:
+                score += self.cherry_multiplier
             self.cherry_call = 0xAB0BA
             self.play_eat_ghost_sound()
             return
@@ -502,6 +570,9 @@ class Pacman:
         else:
             self.cherry_position = (100 * (global_variables.cell_size / 8) + global_variables.cell_size / 2, 128 *
                                     (global_variables.cell_size / 8) + global_variables.cell_size / 2)
+            if self.num == 2:  # TODO
+                self.cherry_position = (self.screen.get_width() // 2 + (28*(global_variables.cell_size/8)),
+                                        (184 - 48)*(global_variables.cell_size/8))
             self.screen.blit(
                 self.cherry_img,
                 (self.cherry_position[0], self.cherry_position[1] + 50)

@@ -15,14 +15,14 @@ def load_settings():
 
 def main():
     parser = argparse.ArgumentParser(description='Pacman')
-    parser.add_argument("-b", "--ghostbusters", help='Disables ghosts on the map',      action="store_true")
-    parser.add_argument("-i", "--instawin",     help='Makes pacman win instantly',      action="store_true")
+    parser.add_argument("-c", "--coop",         help='Disables ghosts on the map', action="store_true")
+    parser.add_argument("-i", "--instawin",     help='Makes pacman win instantly', action="store_true")
     parser.add_argument("-g", "--god",          help='Makes pacman immortal',           action="store_true")
     parser.add_argument("-d", "--debug",        help='Shows ghosts target position',    action="store_true")
     args = parser.parse_args()
-    if args.ghostbusters:
-        global_variables.ghost_less = 1
-        print("Ghosts off")
+    if args.coop:
+        global_variables.coop = 1
+        print("Coop on")
     if args.instawin:
         global_variables.instant_win = 1
         print("Instant win on")
