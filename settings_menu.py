@@ -32,9 +32,11 @@ def settings_menu():
                       (0, 0, 0), settings, "Сложная", set_hard_difficulty)
     btn_small = Button(220 * 0 + main_screen.get_width() // 4 / 2 + 80, 180, 200, 50,
                        (0, 0, 0), settings, "Маленький", partial(set_block_size, 8))
+    btn_med = Button(220 * 1 + main_screen.get_width() // 4 / 2 + 80, 180, 200, 50,
+                     (0, 0, 0), settings, "Средний", partial(set_block_size, 10))
     btn_big = Button(220 * 2 + main_screen.get_width() // 4 / 2 + 80, 180, 200, 50,
                      (0, 0, 0), settings, "Большой", partial(set_block_size, 16))
-    buttons = [btn_easy, btn_norm, btn_hard, btn_small, btn_big]
+    buttons = [btn_easy, btn_norm, btn_hard, btn_small, btn_med, btn_big]
     text_font = pygame.font.SysFont("segoeuisemibold", 32)
     running = True
     back_color = "black"
@@ -52,6 +54,7 @@ def settings_menu():
 
             dif_str: str
             txt_str: str
+            size_str: str
             if global_variables.difficulty == 0.5:
                 dif_str = "Легкая"
             elif global_variables.difficulty == 1.5:
@@ -62,13 +65,17 @@ def settings_menu():
                 txt_str = "Классические"
             else:
                 txt_str = "Альтернативные"
+            if global_variables.cell_size == 8:
+                size_str = "Маленький"
+            elif global_variables.cell_size == 10:
+                size_str = "Средний"
+            else:
+                size_str = "Большой"
             main_screen.blit(text_font.render("Сложность", False, text_color), (20, 95))
             main_screen.blit(text_font.render("Размер экрана", False, text_color), (20, 195))
             main_screen.blit(text_font.render(f"Текущая сложность:  {dif_str}", False, text_color), (20, 295))
             main_screen.blit(text_font.render(f"Текущие текстуры:  {txt_str}", False, text_color), (20, 395))
-            main_screen.blit(text_font.render(f"Текущий размер экрана:  "
-                                              f"{'Маленький' if global_variables.cell_size == 8 else 'Большой'}",
-                                              False, text_color), (20, 495))
+            main_screen.blit(text_font.render(f"Текущий размер экрана:  {size_str}", False, text_color), (20, 495))
 
             for event in events:
                 if event.type == pygame.QUIT:
