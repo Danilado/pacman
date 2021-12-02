@@ -20,16 +20,20 @@ class Pacman:
         scores = tuple(get_scores())
         self.cherry_img = img_load('textures/Cherry.png', 2 * global_variables.cell_size,
                                    1.875 * global_variables.cell_size)
+        self.chimg2 = img_load('textures/Cherry_2.png', 2 * global_variables.cell_size,
+                                   1.875 * global_variables.cell_size)
         self.best = max(scores, key=lambda item: item.score).score if scores != () else 0
         self.x = x
         self.y = y
         self.vec = 0  # 0 - вправо. 1 - вверх. 2 - влево. 3 - вниз.
         self.vel = 1
-        self.speed = 0.5 * (global_variables.cell_size / 8)
+        self.speed = 0.5
         self.status = 'unhit'
         self.screen = window
         self.dead = False
         self.dead_sound = pygame.mixer.Sound("./sounds/death_1.wav")
+        if global_variables.easter:
+            self.dead_sound = pygame.mixer.Sound("./sounds/death_1_e.wav")
         self.dead_channel = pygame.mixer.Channel(1)
         self.dead_sound_playing = False
         self.invincible = 0
@@ -38,9 +42,15 @@ class Pacman:
         self.last = pygame.time.get_ticks()
         self.in_energizer = False
         self.eat_ghost_sound = pygame.mixer.Sound("./sounds/eat_ghost.wav")
+        if global_variables.easter:
+            self.eat_ghost_sound = pygame.mixer.Sound("./sounds/eat_ghost_e.wav")
         self.eat_channel = pygame.mixer.Channel(2)
         self.eat_sound1 = pygame.mixer.Sound("./sounds/munch_1.wav")
+        if global_variables.easter:
+            self.eat_sound1 = pygame.mixer.Sound("./sounds/munch_1_e.wav")
         self.eat_sound2 = pygame.mixer.Sound("./sounds/munch_2.wav")
+        if global_variables.easter:
+            self.eat_sound2 = pygame.mixer.Sound("./sounds/munch_2_e.wav")
         self.win = False
         self.victory_sound_playing = False
         self.victory_sound_1 = pygame.mixer.Sound("./sounds/victory_1.wav")
@@ -87,17 +97,16 @@ class Pacman:
                            global_variables.cell_size * 2,
                            global_variables.cell_size * 2
                            )
-        for i in range(self.lives):
-            lives_position_x = 20 * i * (global_variables.cell_size / 8)
-            if self.num == 1:
-                lives_position_x = self.screen.get_width() - lives_position_x - 20 * (global_variables.cell_size / 8)
-            self.screen.blit(
-                img,
-                (
-                    lives_position_x,
-                    self.screen.get_height() - 20 * (global_variables.cell_size / 8)
-                )
-            )
+        if self.num == 1:
+                for i in range(self.lives):
+                    self.screen.blit(img_load(f'./textures/pacsprites/pacman0.png',
+                           global_variables.cell_size * 2,
+                           global_variables.cell_size * 2), (20 * i * (global_variables.cell_size / 8), self.screen.get_height() - 20 * (global_variables.cell_size / 8)))
+        elif self.num == 2:
+            for i in range(self.lives):
+                self.screen.blit(img_load(f'./textures/pacsprites/pacman20.png',
+                           global_variables.cell_size * 2,
+                           global_variables.cell_size * 2), (20 * i * (global_variables.cell_size / 8) + 170 * (global_variables.cell_size / 8), self.screen.get_height() - 20 * (global_variables.cell_size / 8)))
         # pygame.draw.rect(self.screen, (255, 255, 0), (self.x, self.y, 8, 8), 1)
         self.screen.blit(
             img, (self.x - (global_variables.cell_size / 2), self.y - (global_variables.cell_size / 2) + 50)
@@ -120,20 +129,20 @@ class Pacman:
         return self.win_channel.get_busy()
 
     def play_eat_ghost_sound(self):
-        is_audio_running = self.eat_channel.get_busy()
-        if not is_audio_running:
-            self.eat_channel.play(self.eat_ghost_sound)
-        is_audio_running = self.eat_channel.get_busy()
-        return is_audio_running
+        # is_audio_running = self.eat_channel.get_busy()
+        # if not is_audio_running:
+        pygame.mixer.Channel(7).play(self.eat_ghost_sound)
+        # is_audio_running = self.eat_channel.get_busy()
+        return self.eat_channel.get_busy()
 
     def play_munch_sound(self):
-        if not self.eat_channel.get_busy():
-            if self.current_eat_sound_index == 1:
-                self.eat_channel.play(self.eat_sound1)
-                self.current_eat_sound_index += 1
-            elif self.current_eat_sound_index == 2:
-                self.eat_channel.play(self.eat_sound2)
-                self.current_eat_sound_index = 1
+        # if not self.eat_channel.get_busy():
+        if self.current_eat_sound_index == 1:
+            self.eat_channel.play(self.eat_sound1)
+            self.current_eat_sound_index += 1
+        elif self.current_eat_sound_index == 2:
+            self.eat_channel.play(self.eat_sound2)
+            self.current_eat_sound_index = 1
 
     def _update_energizer_effect(self, ghosts: List["MainGhost"]):
         global score
@@ -219,8 +228,7 @@ class Pacman:
         if global_variables.dots >= 244:
             self.win = True
             img = img_load(f'./textures/pacsprites/pacman{"" if self.num == 1 else self.num}9.png',
-                           2 * global_variables.cell_size,
-                           2 * global_variables.cell_size)
+                            2 * global_variables.cell_size, 2 * global_variables.cell_size)
             self.status_eat = 0
             self.screen.blit(
                 img,
@@ -578,7 +586,14 @@ class Pacman:
                                         16 * global_variables.cell_size -
                                         6 * global_variables.cell_size +
                                         (global_variables.cell_size / 2))
-            self.screen.blit(
-                self.cherry_img,
-                (self.cherry_position[0], self.cherry_position[1] + (42 + global_variables.cell_size))
-            )
+            if self.num == 1:
+                self.screen.blit(
+                    self.cherry_img,
+                    (self.cherry_position[0], self.cherry_position[1] + (42 + global_variables.cell_size))
+                )
+
+            if self.num == 2:
+                self.screen.blit(
+                    self.chimg2,
+                    (self.cherry_position[0], self.cherry_position[1] + (42 + global_variables.cell_size))
+                )

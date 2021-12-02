@@ -24,17 +24,17 @@ def settings_menu():
     main_screen = pygame.display.set_mode((1066, 600))
     text_color = (255,) * 3
     settings = GuiSettings(button_color=text_color, button_color_hover=(127,) * 3)
-    btn_easy = Button(220 * 0 + main_screen.get_width() // 4 / 2 + 80, 80, 200, 50,
+    btn_easy = Button(60 + main_screen.get_width() // 4 / 2 + 80, 80, 200, 50,
                       (0, 0, 0), settings, "Лёгкая", set_easy_difficulty)
-    btn_norm = Button(220 * 1 + main_screen.get_width() // 4 / 2 + 80, 80, 200, 50,
+    btn_norm = Button(260 * 1 + 60 + main_screen.get_width() // 4 / 2 + 80, 80, 200, 50,
                       (0, 0, 0), settings, "Нормальная", set_normal_difficulty)
-    btn_hard = Button(220 * 2 + main_screen.get_width() // 4 / 2 + 80, 80, 200, 50,
+    btn_hard = Button(260 * 2 + 60 + main_screen.get_width() // 4 / 2 + 80, 80, 200, 50,
                       (0, 0, 0), settings, "Сложная", set_hard_difficulty)
-    btn_small = Button(220 * 0 + main_screen.get_width() // 4 / 2 + 80, 180, 200, 50,
+    btn_small = Button(60 + main_screen.get_width() // 4 / 2 + 80, 180, 200, 50,
                        (0, 0, 0), settings, "Маленький", partial(set_block_size, 8))
-    btn_med = Button(220 * 1 + main_screen.get_width() // 4 / 2 + 80, 180, 200, 50,
+    btn_med = Button(260 * 1 + 60 + main_screen.get_width() // 4 / 2 + 80, 180, 200, 50,
                      (0, 0, 0), settings, "Средний", partial(set_block_size, 10))
-    btn_big = Button(220 * 2 + main_screen.get_width() // 4 / 2 + 80, 180, 200, 50,
+    btn_big = Button(260 * 2 + 60 + main_screen.get_width() // 4 / 2 + 80, 180, 200, 50,
                      (0, 0, 0), settings, "Большой", partial(set_block_size, 16))
     buttons = [btn_easy, btn_norm, btn_hard, btn_small, btn_med, btn_big]
     text_font = pygame.font.SysFont("segoeuisemibold", 32)
@@ -84,11 +84,11 @@ def settings_menu():
                     if event.key == pygame.K_ESCAPE:
                         running = False
 
-            _____________________________________needed_to_save_settings_____________________________ = False
+            n_t_s_s = False
             for button in buttons:
                 if button.update(events):
-                    _____________________________________needed_to_save_settings_____________________________ = True
-            if _____________________________________needed_to_save_settings_____________________________:
+                    n_t_s_s = True
+            if n_t_s_s:
                 store_settings.store_settings()
 
             for button in buttons:

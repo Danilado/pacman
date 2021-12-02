@@ -16,4 +16,5 @@ easter = 0
 dots = 0
 pacs = []
 cell_size = 16
+cheats = 0
 ghosts: List["MainGhost"] = []
