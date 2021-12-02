@@ -12,10 +12,14 @@ from player import Pacman
 class PinkGhostLogic(AbstractGhostLogic):
     default_position: pygame.Vector2 = None
     default_direction = "up"
-    back_animations = ["./textures/ghosts/pink/b1.png", "./textures/ghosts/pink/b2.png"]
-    left_animations = ["./textures/ghosts/pink/l1.png", "./textures/ghosts/pink/l2.png"]
-    right_animations = ["./textures/ghosts/pink/r1.png", "./textures/ghosts/pink/r2.png"]
-    up_animations = ["./textures/ghosts/pink/u1.png", "./textures/ghosts/pink/u2.png"]
+    back_animations = [f"./textures/ghosts/pink/{global_variables.theme_api.texture_modifier}b1.png",
+                       f"./textures/ghosts/pink/{global_variables.theme_api.texture_modifier}b2.png"]
+    left_animations = [f"./textures/ghosts/pink/{global_variables.theme_api.texture_modifier}l1.png",
+                       f"./textures/ghosts/pink/{global_variables.theme_api.texture_modifier}l2.png"]
+    right_animations = [f"./textures/ghosts/pink/{global_variables.theme_api.texture_modifier}r1.png",
+                        f"./textures/ghosts/pink/{global_variables.theme_api.texture_modifier}r2.png"]
+    up_animations = [f"./textures/ghosts/pink/{global_variables.theme_api.texture_modifier}u1.png",
+                     f"./textures/ghosts/pink/{global_variables.theme_api.texture_modifier}u2.png"]
     scared_animations_blue = [f"./textures/ghosts/scared/z{i}.png" for i in range(1, 5)]
     speed = 0.25
     list_normal_tile = ['seed', 5, 'nrg']
