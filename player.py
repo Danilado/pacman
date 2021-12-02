@@ -25,7 +25,7 @@ class Pacman:
         self.y = y
         self.vec = 0  # 0 - вправо. 1 - вверх. 2 - влево. 3 - вниз.
         self.vel = 1
-        self.speed = 0.5
+        self.speed = 0.5 * (global_variables.cell_size / 8)
         self.status = 'unhit'
         self.screen = window
         self.dead = False
@@ -154,7 +154,8 @@ class Pacman:
             if global_variables.coop:
                 if not global_variables.pacs[0].in_energizer or not global_variables.pacs[1].in_energizer:
                     if ((self.x - global_variables.pacs[1 - (self.num - 1)].x) ** 2 + (
-                            self.y - global_variables.pacs[1].y) ** 2) ** 0.5 <= 8:
+                            self.y - global_variables.pacs[1 - (self.num - 1)].y) ** 2) ** 0.5 <= \
+                            global_variables.cell_size:
                         global_variables.pacs[1 - (self.num - 1)].hit_with_pac()
                         self.score += 200 * (3 - global_variables.pacs[1 - (self.num - 1)].lives)
                         self.in_energizer = False
@@ -539,7 +540,6 @@ class Pacman:
                 self.remember_vec = 3
 
     def cherry_spawn(self):
-        print(self.num, "Spawn cherry!")
         self.cherry_call = pygame.time.get_ticks()
         self.cherry_on_screen = 1
 
@@ -565,15 +565,20 @@ class Pacman:
             if (now - self.cherry_call) % 1000 >= 500:
                 self.screen.blit(
                     self.cherry_img,
-                    (self.cherry_position[0], self.cherry_position[1] + 50)
+                    (self.cherry_position[0], self.cherry_position[1] + (42 + global_variables.cell_size))
                 )
         else:
             self.cherry_position = (100 * (global_variables.cell_size / 8) + global_variables.cell_size / 2, 128 *
                                     (global_variables.cell_size / 8) + global_variables.cell_size / 2)
-            if self.num == 2:  # TODO
-                self.cherry_position = (self.screen.get_width() // 2 + (28*(global_variables.cell_size/8)),
-                                        (184 - 48)*(global_variables.cell_size/8))
+            if global_variables.coop:
+                self.cherry_position = (self.screen.get_width() // 2 - (5.375 * global_variables.cell_size),
+                                        17.5 * global_variables.cell_size)
+            if self.num == 2:
+                self.cherry_position = (self.screen.get_width() // 2 + (3.5 * global_variables.cell_size),
+                                        16 * global_variables.cell_size -
+                                        6 * global_variables.cell_size +
+                                        (global_variables.cell_size / 2))
             self.screen.blit(
                 self.cherry_img,
-                (self.cherry_position[0], self.cherry_position[1] + 50)
+                (self.cherry_position[0], self.cherry_position[1] + (42 + global_variables.cell_size))
             )

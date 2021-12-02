@@ -93,8 +93,7 @@ def main():
     if global_variables.coop:
         pac2 = player.Pacman(
             w / 2 - (global_variables.cell_size / 2),
-            h / 2 + 0.75 * global_variables.cell_size * global_variables.cell_size +
-            global_variables.cell_size - (136 * (global_variables.cell_size / 8)),
+            h / 2 - (10 * global_variables.cell_size),
             screen,
             2)
         global_variables.pacs.append(pac2)
