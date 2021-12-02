@@ -1,6 +1,6 @@
 import pygame
 
-import globalvars
+import global_variables
 
 
 def _remove_one_symbol(string):
@@ -8,7 +8,7 @@ def _remove_one_symbol(string):
 
 
 def ask_name():
-    if not globalvars.coop:
+    if not global_variables.coop:
         main_screen = pygame.display.set_mode((1066, 600))
         clock = pygame.time.Clock()
         running = True
@@ -72,7 +72,7 @@ def ask_name():
                     result += symbol
         return result
 
-    if globalvars.coop:
+    if global_variables.coop:
         main_screen = pygame.display.set_mode((1066, 600))
         clock = pygame.time.Clock()
         running = True
@@ -87,21 +87,21 @@ def ask_name():
             main_screen.fill("black")
             win_score = ''
             text = ''
-            if globalvars.pacs[0].score > globalvars.pacs[1].score:
+            if global_variables.pacs[0].score > global_variables.pacs[1].score:
                 text = "Победа игрока 1"
-                win_score = str(globalvars.pacs[0].score)
-            elif globalvars.pacs[0].score < globalvars.pacs[1].score:
+                win_score = str(global_variables.pacs[0].score)
+            elif global_variables.pacs[0].score < global_variables.pacs[1].score:
                 text = "Победа игрока 2"
-                win_score = str(globalvars.pacs[1].score)
-            elif globalvars.pacs[0].score == globalvars.pacs[1].score:
+                win_score = str(global_variables.pacs[1].score)
+            elif global_variables.pacs[0].score == global_variables.pacs[1].score:
                 text = "Ничья"
-                win_score = str(globalvars.pacs[1].score)
-            if globalvars.pacs[0].lives == 0:
+                win_score = str(global_variables.pacs[1].score)
+            if global_variables.pacs[0].lives == 0:
                 text = "Победа игрока 2"
-                win_score = str(globalvars.pacs[1].score)
-            elif globalvars.pacs[1].lives == 0:
+                win_score = str(global_variables.pacs[1].score)
+            elif global_variables.pacs[1].lives == 0:
                 text = "Победа игрока 1"
-                win_score = str(globalvars.pacs[0].score)
+                win_score = str(global_variables.pacs[0].score)
             win_score += " очков"
             main_screen.blit(
                 text_font.render(text, False, "white"),
@@ -111,19 +111,19 @@ def ask_name():
                 text_font.render("Игрок 1", False, "white"), (100, 250)
             )
             main_screen.blit(
-                text_font.render(str(globalvars.pacs[0].score) + " очков", False, "white"), (100, 300)
+                text_font.render(str(global_variables.pacs[0].score) + " очков", False, "white"), (100, 300)
             )
             main_screen.blit(
-                text_font.render(str(globalvars.pacs[0].lives) + " жизней", False, "white"), (100, 350)
+                text_font.render(str(global_variables.pacs[0].lives) + " жизней", False, "white"), (100, 350)
             )
             main_screen.blit(
                 text_font.render("Игрок 2", False, "white"), (750, 250)
             )
             main_screen.blit(
-                text_font.render(str(globalvars.pacs[1].score) + " очков", False, "white"), (750, 300)
+                text_font.render(str(global_variables.pacs[1].score) + " очков", False, "white"), (750, 300)
             )
             main_screen.blit(
-                text_font.render(str(globalvars.pacs[1].lives) + " жизней", False, "white"), (750, 350)
+                text_font.render(str(global_variables.pacs[1].lives) + " жизней", False, "white"), (750, 350)
             )
 
             for event in pygame.event.get():

@@ -1,15 +1,16 @@
 import argparse
 
-import globalvars
+import global_variables
 import store_settings
+from game import set_block_size
 from menu import options_menu
 
 
 def load_settings():
     my_settings = store_settings.get_settings()
     if my_settings is not None:
-        globalvars.texture_modifier = my_settings.texture_modifier
-        globalvars.difficulty = my_settings.difficulty
+        set_block_size(my_settings.cell_size)
+        global_variables.difficulty = my_settings.difficulty
 
 
 def main():
@@ -20,16 +21,16 @@ def main():
     parser.add_argument("-d", "--debug",        help='Shows ghosts target position',    action="store_true")
     args = parser.parse_args()
     if args.coop:
-        globalvars.coop = 1
+        global_variables.coop = 1
         print("Coop on")
     if args.instawin:
-        globalvars.instant_win = 1
+        global_variables.instant_win = 1
         print("Instant win on")
     if args.god:
-        globalvars.god = 1
+        global_variables.god = 1
         print("Godmode on")
     if args.debug:
-        globalvars.debug = 1
+        global_variables.debug = 1
         print("Debug mode on")
 
 

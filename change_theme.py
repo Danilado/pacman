@@ -1,16 +1,16 @@
 from datetime import datetime
 
-import globalvars
+import global_variables
 
 
 class ChangeThemeApi:
     @staticmethod
     def set_common_textures():
-        globalvars.texture_modifier = ""
+        global_variables.texture_modifier = ""
 
     @staticmethod
     def set_alt_textures():
-        globalvars.texture_modifier = "r_"
+        global_variables.texture_modifier = "r_"
 
     def tick(self):
         current_time = datetime.now()
