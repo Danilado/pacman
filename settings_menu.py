@@ -1,45 +1,42 @@
+from functools import partial
+
 import pygame
 
-import globalvars
+import global_variables
 import store_settings
-from globalclasses import Button, GuiSettings
-
-
-def set_common_textures():
-    globalvars.texture_modifier = ""
-
-
-def set_alt_textures():
-    globalvars.texture_modifier = "r_"
+from game import set_block_size
+from global_classes import Button, GuiSettings
 
 
 def set_easy_difficulty():
-    globalvars.difficulty = 0.5
+    global_variables.difficulty = 0.5
 
 
 def set_normal_difficulty():
-    globalvars.difficulty = 1
+    global_variables.difficulty = 1
 
 
 def set_hard_difficulty():
-    globalvars.difficulty = 1.5
+    global_variables.difficulty = 1.5
 
 
 def settings_menu():
     main_screen = pygame.display.set_mode((1066, 600))
     text_color = (255,) * 3
     settings = GuiSettings(button_color=text_color, button_color_hover=(127,) * 3)
-    btn_easy = Button(220 * 0 + main_screen.get_width() // 4 + 80, 80, 200, 50, (0, 0, 0),
-                      settings, "Лёгкая", set_easy_difficulty)
-    btn_norm = Button(220 * 1 + main_screen.get_width() // 4 + 80, 80, 200, 50, (0, 0, 0),
-                      settings, "Нормальная", set_normal_difficulty)
-    btn_hard = Button(220 * 2 + main_screen.get_width() // 4 + 80, 80, 200, 50, (0, 0, 0),
-                      settings, "Сложная", set_hard_difficulty)
-    btn_common_textures = Button(220 * 0 + main_screen.get_width() // 4 + 80, 180, 200, 50, (0, 0, 0),
-                                 settings, "Классические", set_common_textures)
-    btn_alt_textures = Button(220 * 2 + main_screen.get_width() // 4 + 80, 180, 200, 50, (0, 0, 0),
-                              settings, "Альтернативные", set_alt_textures)
-    buttons = [btn_easy, btn_norm, btn_hard, btn_common_textures, btn_alt_textures]
+    btn_easy = Button(60 + main_screen.get_width() // 4 / 2 + 80, 80, 200, 50,
+                      (0, 0, 0), settings, "Лёгкая", set_easy_difficulty)
+    btn_norm = Button(260 * 1 + 60 + main_screen.get_width() // 4 / 2 + 80, 80, 200, 50,
+                      (0, 0, 0), settings, "Нормальная", set_normal_difficulty)
+    btn_hard = Button(260 * 2 + 60 + main_screen.get_width() // 4 / 2 + 80, 80, 200, 50,
+                      (0, 0, 0), settings, "Сложная", set_hard_difficulty)
+    btn_small = Button(60 + main_screen.get_width() // 4 / 2 + 80, 180, 200, 50,
+                       (0, 0, 0), settings, "Маленький", partial(set_block_size, 8))
+    btn_med = Button(260 * 1 + 60 + main_screen.get_width() // 4 / 2 + 80, 180, 200, 50,
+                     (0, 0, 0), settings, "Средний", partial(set_block_size, 10))
+    btn_big = Button(260 * 2 + 60 + main_screen.get_width() // 4 / 2 + 80, 180, 200, 50,
+                     (0, 0, 0), settings, "Большой", partial(set_block_size, 16))
+    buttons = [btn_easy, btn_norm, btn_hard, btn_small, btn_med, btn_big]
     text_font = pygame.font.SysFont("segoeuisemibold", 32)
     running = True
     back_color = "black"
@@ -57,20 +54,28 @@ def settings_menu():
 
             dif_str: str
             txt_str: str
-            if globalvars.difficulty == 0.5:
+            size_str: str
+            if global_variables.difficulty == 0.5:
                 dif_str = "Легкая"
-            elif globalvars.difficulty == 1.5:
+            elif global_variables.difficulty == 1.5:
                 dif_str = "Сложная"
             else:
                 dif_str = "Нормальная"
-            if globalvars.texture_modifier == "":
+            if global_variables.texture_modifier == "":
                 txt_str = "Классические"
             else:
                 txt_str = "Альтернативные"
-            main_screen.blit(text_font.render("Сложность", False, text_color), (20, 90))
-            main_screen.blit(text_font.render("Текстуры", False, text_color), (20, 190))
-            main_screen.blit(text_font.render(f"Текущая сложность:  {dif_str}", False, text_color), (20, 290))
-            main_screen.blit(text_font.render(f"Текущие текстуры:  {txt_str}", False, text_color), (20, 390))
+            if global_variables.cell_size == 8:
+                size_str = "Маленький"
+            elif global_variables.cell_size == 10:
+                size_str = "Средний"
+            else:
+                size_str = "Большой"
+            main_screen.blit(text_font.render("Сложность", False, text_color), (20, 95))
+            main_screen.blit(text_font.render("Размер экрана", False, text_color), (20, 195))
+            main_screen.blit(text_font.render(f"Текущая сложность:  {dif_str}", False, text_color), (20, 295))
+            main_screen.blit(text_font.render(f"Текущие текстуры:  {txt_str}", False, text_color), (20, 395))
+            main_screen.blit(text_font.render(f"Текущий размер экрана:  {size_str}", False, text_color), (20, 495))
 
             for event in events:
                 if event.type == pygame.QUIT:
@@ -79,11 +84,11 @@ def settings_menu():
                     if event.key == pygame.K_ESCAPE:
                         running = False
 
-            _____________________________________needed_to_save_settings_____________________________ = False
+            n_t_s_s = False
             for button in buttons:
                 if button.update(events):
-                    _____________________________________needed_to_save_settings_____________________________ = True
-            if _____________________________________needed_to_save_settings_____________________________:
+                    n_t_s_s = True
+            if n_t_s_s:
                 store_settings.store_settings()
 
             for button in buttons:

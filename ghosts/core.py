@@ -3,7 +3,7 @@ from typing import List, Literal, SupportsAbs, Type, Tuple, Union
 
 import pygame
 
-import globalvars
+import global_variables
 import player
 from perfomance import img_load
 from player import Pacman
@@ -18,28 +18,7 @@ class AbstractGhostLogic(ABC):
     # noinspection PyUnusedLocal
     @abstractmethod
     def __init__(self, main_ghost: "MainGhost"):
-        # Загружаем список картинок, отвечающих за анимацию вниз,
-        for index, back_animation in enumerate(self.back_animations):
-            if type(back_animation) is str:
-                self.back_animations[index] = img_load(back_animation).convert_alpha()
-        # влево
-        for index, left_animation in enumerate(self.left_animations):
-            if type(left_animation) is str:
-                self.left_animations[index] = img_load(left_animation).convert_alpha()
-        # вправо
-        for index, right_animation in enumerate(self.right_animations):
-            if type(right_animation) is str:
-                self.right_animations[index] = img_load(right_animation).convert_alpha()
-        # наверх
-        for index, up_animation in enumerate(self.up_animations):
-            if type(up_animation) is str:
-                self.up_animations[index] = img_load(up_animation).convert_alpha()
-
-        # Текстуры режима страха
-        self.eyes = img_load("./textures/ghosts/eyes.png")
-        for index, scared_animation in enumerate(self.scared_animations_blue):
-            if type(scared_animation) is str:
-                self.scared_animations_blue[index] = img_load(scared_animation)
+        self.eyes = "./textures/ghosts/eyes.png"
 
     # default_position: pygame.Vector2
     @property
@@ -196,7 +175,14 @@ class MainGhost:
     def draw_trigger_blocks(screen: pygame.Surface):
         """Рисует trigger_blocks на экране"""
         for trigger_block in MainGhost.trigger_blocks:
-            pygame.draw.rect(screen, (255, 0, 0), (int(8 * trigger_block[0]), int(8 * trigger_block[1]), 8, 8), 1)
+            pygame.draw.rect(
+                screen, (255, 0, 0),
+                (int(global_variables.cell_size * trigger_block[0]),
+                 50 + int(global_variables.cell_size * trigger_block[1]),
+                 global_variables.cell_size, global_variables.cell_size
+                 ),
+                1
+            )
 
     def __init__(self, ghost_logic: Type[AbstractGhostLogic], window=0):
         self.screen = window
@@ -210,64 +196,63 @@ class MainGhost:
         self._timer = pygame.time.get_ticks()
         self._timer2 = pygame.time.get_ticks()
         self.direction = self._ghost_logic.default_direction
-        self.scared = 0
+        self._scared = 0
         self.speed_mod = 1
         self.scare_timer = 0
         self.scare_mod = 1
         self.trigger = 0
 
-    def scare(self):
-        self.scared = 1
-        self.speed_mod = 0.7
-        self.scare_mod = 1
-        self.scare_timer = pygame.time.get_ticks()
-
-    def un_scare(self):
-        self.scared = 0
-        self.speed_mod = 1
-        self._current_animation_frame = 0
-
     def _check_position(self):
-        if player.game_map[self.position_in_blocks[0]][self.position_in_blocks[1]] == 0:
-            raise RuntimeError("Ghost in wall")
+        if player.game_map[self.position_in_blocks[1]][self.position_in_blocks[0]] == 0:
+            print(f"[WARNING] Ghost {self} with {self.ghost_logic} in wall")
 
     def draw(self, screen: pygame.Surface):
         """Рисует призрака"""
-        # self._check_position()
+        if not self._ghost_logic.eaten:
+            self._check_position()
         # pygame.draw.rect(screen, (0, 0, 255), (self.ghost_logic.tar, int(self._position.y), 8, 8), 1)
-        if self.scared and not self._ghost_logic.eaten:
+        img = None
+        position = None
+        need_to_draw = True
+        if self._scared and not self._ghost_logic.eaten:
             if pygame.time.get_ticks() - self._timer >= 200:  # Каждые 200 мс
                 self._current_animation_frame += (1 + self.scare_mod)
                 self._timer = pygame.time.get_ticks()
                 if self._current_animation_frame >= (4 - self.scare_mod * 2):
                     self._current_animation_frame = 0
-            screen.blit(
-                self._ghost_logic.scared_animations_blue[self._current_animation_frame],
-                (self._position.x - 4, self._position.y - 4 + 50)
-            )
+            img = img_load(self._ghost_logic.scared_animations_blue[self._current_animation_frame],
+                           2 * global_variables.cell_size,
+                           2 * global_variables.cell_size)
+            position = (self._position.x - (global_variables.cell_size / 2),
+                        self._position.y - (global_variables.cell_size / 2) + 50)
         elif self._ghost_logic.eaten:
-            screen.blit(
-                self._ghost_logic.eyes,
-                (self._position.x - 4, self._position.y - 4 + 50)
-            )
+            img = img_load(self._ghost_logic.eyes, 2 * global_variables.cell_size, 1.5 * global_variables.cell_size)
+            position = (self._position.x - (global_variables.cell_size / 2),
+                        self._position.y - (global_variables.cell_size / 2) + 50)
         elif self.direction != "":
             if pygame.time.get_ticks() - self._timer >= 200:  # Каждые 200 мс
                 self._current_animation_frame += 1
                 self._timer = pygame.time.get_ticks()
                 if self._current_animation_frame >= len(self._current_animation_list):
                     self._current_animation_frame = 0
-            screen.blit(  # Если у вас здесь исключение(ошибка). Проверьте свой __init__ в логике класса, скорее всего
-                # там отстуствует super().__init__()
-                self._current_animation_list[self._current_animation_frame],
-                (self._position.x - 4, self._position.y - 4 + 50)
+            img = img_load(self._current_animation_list[self._current_animation_frame],
+                           2 * global_variables.cell_size, 2 * global_variables.cell_size)
+            position = (self._position.x - (global_variables.cell_size / 2),
+                        self._position.y - (global_variables.cell_size / 2) + 50)
+        else:
+            need_to_draw = False
+        if need_to_draw:
+            screen.blit(
+                img,
+                position
             )
 
     def update(self, pacman: Pacman, all_ghosts: List["MainGhost"], stage, trigger):
         """Двигает призрака и изменяет его направление"""
 
-        if self.scared:
+        if self._scared:
             if pygame.time.get_ticks() - self.scare_timer >= 7000:
-                self.un_scare()
+                self.scared = 0
             if pygame.time.get_ticks() - self.scare_timer >= 4000:
                 self.scare_mod = 0
 
@@ -277,11 +262,17 @@ class MainGhost:
         # двигаться призрак
         if self._current_speed.x != 0:
             for _ in range(self._timer2, pygame.time.get_ticks(), abs(round(1000 // self._current_speed.x))):
-                self._position.x += self._current_speed.x * self.speed_mod * globalvars.difficulty
+                self._position.x += self._current_speed.x * self.speed_mod * \
+                                    global_variables.difficulty * (global_variables.cell_size / 8)
+                self.direction = self._ghost_logic.where_am_i_should_move(pacman, all_ghosts, stage,
+                                                                          trigger)
                 moved = True
         if self._current_speed.y != 0:
             for _ in range(self._timer2, pygame.time.get_ticks(), abs(round(1000 // self._current_speed.y))):
-                self._position.y += self._current_speed.y * self.speed_mod * globalvars.difficulty
+                self._position.y += self._current_speed.y * self.speed_mod * \
+                                    global_variables.difficulty * (global_variables.cell_size / 8)
+                self.direction = self._ghost_logic.where_am_i_should_move(pacman, all_ghosts, stage,
+                                                                          trigger)
                 moved = True
         if moved:
             self._timer2 = pygame.time.get_ticks()
@@ -291,9 +282,9 @@ class MainGhost:
         self._position.y = self.default_position.y
         self._ghost_logic.stay = 1
         self._ghost_logic.stage = 1
-        if self.default_position.y == 11 * 8:
+        if self.default_position.y == 11 * global_variables.cell_size:
             self._direction = "right"
-        self.un_scare()
+        self.scared = 0
 
     @property
     def direction(self) -> Direction:
@@ -349,27 +340,53 @@ class MainGhost:
     @property
     def position(self) -> pygame.rect.Rect:
         """Возвращает позицию призрака"""
-        return pygame.rect.Rect(self._position.x, self._position.y, 2 * 8, 2 * 8)
+        return pygame.rect.Rect(self._position.x, self._position.y, 2 * global_variables.cell_size,
+                                2 * global_variables.cell_size)
 
     @position.setter
     def position(self, new_position: Union[pygame.rect.Rect, pygame.Vector2]):
         if isinstance(new_position, pygame.Vector2):
-            self._position = pygame.rect.Rect(new_position.x, new_position.y, 2 * 8, 2 * 8)
+            self._position = pygame.rect.Rect(new_position.x, new_position.y,
+                                              2 * global_variables.cell_size, 2 * global_variables.cell_size)
         self._position = new_position
 
     @property
     def position_in_blocks(self) -> Tuple[int, int]:
         """Возвращает позицию призрака в блоках."""
-        return round(self._position.x // 8), round(self._position.y // 8)
+        return \
+            round(self._position.x // global_variables.cell_size), round(self._position.y // global_variables.cell_size)
 
     @property
     def ghost_logic(self):
         return self._ghost_logic
 
+    def force(self):
+        self._position.x = int((self.position.x + global_variables.cell_size / 2) //
+                               global_variables.cell_size) * global_variables.cell_size
+        self._position.y = int((self.position.y + global_variables.cell_size / 2) //
+                               global_variables.cell_size) * global_variables.cell_size
+
     def trigger_eaten(self):
         if not self.ghost_logic.eaten:
             self.ghost_logic.eaten = 1
+            self.force()
 
     @property
     def default_position(self):
         return self._ghost_logic.default_position
+
+    @property
+    def scared(self):
+        return self._scared
+
+    @scared.setter
+    def scared(self, val):
+        if val:
+            self._scared = 1
+            self.speed_mod = 0.7
+            self.scare_mod = 1
+            self.scare_timer = pygame.time.get_ticks()
+        else:
+            self._scared = 0
+            self.speed_mod = 1
+            self._current_animation_frame = 0

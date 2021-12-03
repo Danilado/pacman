@@ -1,6 +1,7 @@
 from typing import TypeVar
 
 import pygame.mixer
+import global_variables
 
 C = TypeVar("C")
 
@@ -30,10 +31,10 @@ class Sound:
         self.playing_energizer = False
 
     def play_siren(self):
-        if self.playing_energizer:
+        if self.playing_energizer and not global_variables.easter:
             self.siren_channel.stop()
             self.playing_energizer = False
-        if not self.siren_channel.get_busy():
+        if not self.siren_channel.get_busy() and not global_variables.easter:
             if self.current_sound_index == 1:
                 self.siren_channel.play(self.siren_1)
             if self.current_sound_index == 2:
@@ -46,8 +47,8 @@ class Sound:
                 self.siren_channel.play(self.siren_5)
 
     def play_energizer_sound(self):
-        if not self.playing_energizer:
+        if not self.playing_energizer and not global_variables.easter:
             self.siren_channel.stop()
             self.playing_energizer = True
-        if not self.siren_channel.get_busy():
+        if not self.siren_channel.get_busy() and not global_variables.easter:
             self.siren_channel.play(self.power_pellet_sound)
