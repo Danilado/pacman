@@ -36,22 +36,22 @@ def settings_menu():
                      (0, 0, 0), settings, "Средний", partial(set_block_size, 10))
     btn_big = Button(260 * 2 + 60 + main_screen.get_width() // 4 / 2 + 80, 180, 200, 50,
                      (0, 0, 0), settings, "Большой", partial(set_block_size, 16))
-    btn_classic_theme = Button(220 * 0 + main_screen.get_width() // 4 / 2 + 120, 280, 200, 50,
+    btn_classic_theme = Button(20 + main_screen.get_width() // 4 / 2 + 120, 280, 200, 50,
                                (0, 0, 0), settings, "Классические",
                                partial(setattr, global_variables.theme_api, "textures_mode",
                                        store_settings.TextureSetting.classic))
-    btn_alternative_theme = Button(220 * 1 + main_screen.get_width() // 4 / 2 + 120, 280, 200, 50,
+    btn_alternative_theme = Button(20 + 260 * 1 + main_screen.get_width() // 4 / 2 + 120, 280, 200, 50,
                                    (0, 0, 0), settings, "Альтернативные",
                                    partial(setattr, global_variables.theme_api, "textures_mode",
                                            store_settings.TextureSetting.alternative))
-    btn_auto_theme = Button(220 * 2 + main_screen.get_width() // 4 / 2 + 120, 280, 200, 50,
+    btn_auto_theme = Button(20 + 260 * 2 + main_screen.get_width() // 4 / 2 + 120, 280, 200, 50,
                             (0, 0, 0), settings, "Автоматические",
                             partial(setattr, global_variables.theme_api, "textures_mode",
                                     store_settings.TextureSetting.automatic))
     buttons = [btn_easy, btn_norm, btn_hard,
                btn_small, btn_med, btn_big,
                btn_classic_theme, btn_alternative_theme, btn_auto_theme]
-    text_font = pygame.font.SysFont("segoeuisemibold", 32)
+    text_font = pygame.font.SysFont("segoeuisemibold", 24)
     running = True
     back_color = "black"
     settings_changed = False
