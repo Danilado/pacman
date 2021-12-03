@@ -22,7 +22,7 @@ class Pacman:
                                    1.875 * global_variables.cell_size)
         self.chimg2 = img_load('textures/Cherry_2.png', 2 * global_variables.cell_size,
                                    1.875 * global_variables.cell_size)
-        self.best = max(scores, key=lambda item: item.score).score if scores != () else 0
+        self.best = scores[0].nickname + ' ' + str(max(scores, key=lambda item: item.score).score) if scores != () else 0
         self.x = x
         self.y = y
         self.vec = 0  # 0 - вправо. 1 - вверх. 2 - влево. 3 - вниз.
