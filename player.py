@@ -183,7 +183,8 @@ class Pacman:
         self.vec = 1
         self.remember_vec = -1
         self.status = "hit-1"
-        pygame.mixer.stop()
+        pygame.mixer.pause()
+        global_variables.background_channel.unpause()
         self.play_dead_sound()
         if self.lives == 0:
             self.dead = True
