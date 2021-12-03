@@ -39,7 +39,10 @@ def store_score_menu():
     while running:
         if pygame.event.peek(pump=True):
             main_screen.fill(back_color)
-
+            f1 = pygame.font.Font(None, 36)
+            text1 = f1.render('Чтобы выйти нажмите esc', False,
+                              (255,255,255))
+            main_screen.blit(text1, (20, 0))
             main_screen.blit(
                 text_font.render("Таблица рекордов", False, text_color),
                 (
