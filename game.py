@@ -110,6 +110,8 @@ def main():
         global_variables.ghosts = [orange_ghost, red_ghost, pink_ghost, blue_ghost]
 
     audio_sound = pygame.mixer.Sound("./sounds/game_start.wav")
+    if global_variables.easter == 1:
+        audio_sound = pygame.mixer.Sound("./sounds/game_start_e.wav")
     audio_channel = pygame.mixer.Channel(0)
     audio_channel.play(audio_sound)
 
@@ -149,7 +151,8 @@ def main():
                 ghost.draw(screen)
 
             if global_variables.ghosts[0].scared and not flag:
-                print("Scare detected")
+                if global_variables.debug:
+                    print("Scare detected")
                 last_time += 7000
                 flag = 1
             if local_stage == 1:
@@ -193,7 +196,7 @@ def main():
                     ghost.update(pac, global_variables.ghosts, stage, trigger)
 
             elif pac.paused:
-                if pygame.time.get_ticks() - pac.paused_time >= 2500:
+                if pygame.time.get_ticks() - pac.paused_time >= 2500 + 3500 * global_variables.easter:
                     pac.paused = 0
                     pac.paused_frame = 0
                     pac.status = 'unhit'

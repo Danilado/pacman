@@ -23,15 +23,19 @@ def main():
     args = parser.parse_args()
     if args.coop:
         global_variables.coop = 1
+        global_variables.cheats = 1
         print("Coop on")
     if args.instawin:
         global_variables.instant_win = 1
+        global_variables.cheats = 1
         print("Instant win on")
     if args.god:
         global_variables.god = 1
+        global_variables.cheats = 1
         print("Godmode on")
     if args.debug:
         global_variables.debug = 1
+        global_variables.cheats = 1
         print("Debug mode on")
 
 

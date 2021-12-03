@@ -190,8 +190,8 @@ class PinkGhostLogic(AbstractGhostLogic):
                     ** 0.5 > global_variables.cell_size // 2:
                 return self.select_tile(target_pos)
             else:
-                self.main_ghost.position.x = target_pos[0]
-                self.main_ghost.position.y = target_pos[1]
+                self.main_ghost._position.x = target_pos[0]
+                self.main_ghost._position.y = target_pos[1]
                 self.eaten = 2
                 self.speed = 1
                 return 'back'
