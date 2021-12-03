@@ -4,13 +4,14 @@ import global_variables
 import store_settings
 from game import set_block_size
 from menu import options_menu
+from achievements import achievements_load_from_file
+from actual_stats import stats_load_from_file
 
 
 def load_settings():
     my_settings = store_settings.get_settings()
     if my_settings is not None:
         set_block_size(my_settings.cell_size)
-        global_variables.theme_api.textures_mode = my_settings.texture_setting
         global_variables.difficulty = my_settings.difficulty
 
 
@@ -41,5 +42,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+    achievements_load_from_file()
+    stats_load_from_file()
     load_settings()
     options_menu()
