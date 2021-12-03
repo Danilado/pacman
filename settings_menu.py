@@ -76,7 +76,10 @@ def settings_menu():
             main_screen.blit(text_font.render(f"Текущая сложность:  {dif_str}", False, text_color), (20, 295))
             main_screen.blit(text_font.render(f"Текущие текстуры:  {txt_str}", False, text_color), (20, 395))
             main_screen.blit(text_font.render(f"Текущий размер экрана:  {size_str}", False, text_color), (20, 495))
-
+            f1 = pygame.font.Font(None, 36)
+            text1 = f1.render('Чтобы выйти нажмите esc', False,
+                              (255,255,255))
+            main_screen.blit(text1, (20, 0))            
             for event in events:
                 if event.type == pygame.QUIT:
                     running = False
