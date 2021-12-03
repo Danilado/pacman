@@ -14,10 +14,14 @@ class RedGhostLogic(AbstractGhostLogic):
 
     default_position: pygame.Vector2 = None
     default_direction = "left"
-    back_animations = ["./textures/ghosts/red/b1.png", "./textures/ghosts/red/b2.png"]
-    left_animations = ["./textures/ghosts/red/l1.png", "./textures/ghosts/red/l2.png"]
-    right_animations = ["./textures/ghosts/red/r1.png", "./textures/ghosts/red/r2.png"]
-    up_animations = ["./textures/ghosts/red/u1.png", "./textures/ghosts/red/u2.png"]
+    back_animations = [f"./textures/ghosts/red/{global_variables.theme_api.texture_modifier}b1.png",
+                       f"./textures/ghosts/red/{global_variables.theme_api.texture_modifier}b2.png"]
+    left_animations = [f"./textures/ghosts/red/{global_variables.theme_api.texture_modifier}l1.png",
+                       f"./textures/ghosts/red/{global_variables.theme_api.texture_modifier}l2.png"]
+    right_animations = [f"./textures/ghosts/red/{global_variables.theme_api.texture_modifier}r1.png",
+                        f"./textures/ghosts/red/{global_variables.theme_api.texture_modifier}r2.png"]
+    up_animations = [f"./textures/ghosts/red/{global_variables.theme_api.texture_modifier}u1.png",
+                     f"./textures/ghosts/red/{global_variables.theme_api.texture_modifier}u2.png"]
     scared_animations_blue = [f"./textures/ghosts/scared/z{i}.png" for i in range(1, 5)]
     speed = 0.3333
     flag = 1

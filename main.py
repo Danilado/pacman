@@ -10,6 +10,7 @@ def load_settings():
     my_settings = store_settings.get_settings()
     if my_settings is not None:
         set_block_size(my_settings.cell_size)
+        global_variables.theme_api.textures_mode = my_settings.texture_setting
         global_variables.difficulty = my_settings.difficulty
 
 

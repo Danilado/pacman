@@ -1,5 +1,7 @@
 from typing import List, TYPE_CHECKING
 
+from change_theme import ThemeApi
+
 if TYPE_CHECKING:
     from ghosts.core import MainGhost
 
@@ -8,7 +10,6 @@ instant_win = 0
 god = 0
 debug = 0
 datetime_format = "%d.%m.%Y %H:%M:%S"
-texture_modifier = ""
 orange_trigger = 0
 blue_trigger = 0
 difficulty = 1
@@ -18,3 +19,4 @@ pacs = []
 cell_size = 16
 cheats = 0
 ghosts: List["MainGhost"] = []
+theme_api = ThemeApi()
