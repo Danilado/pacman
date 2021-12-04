@@ -113,10 +113,14 @@ def main():
         global_variables.ghosts = [orange_ghost, red_ghost, pink_ghost, blue_ghost]
 
     audio_sound = pygame.mixer.Sound("./sounds/game_start.wav")
-    if global_variables.easter == 1:
+    if global_variables.easter:
         audio_sound = pygame.mixer.Sound("./sounds/game_start_e.wav")
+
     audio_channel = pygame.mixer.Channel(0)
     audio_channel.play(audio_sound)
+
+    if global_variables.easter:
+        global_variables.theme_sound = pygame.mixer.Sound("./sounds/paradise_lost.wav")
 
     clock = pygame.time.Clock()
     stage = 1
@@ -129,11 +133,11 @@ def main():
 
     Sound().current_sound_index = 1
 
-    # change_theme_api = ThemeApi()
-
     start = time.monotonic()
     while not done:
-        # change_theme_api.tick()
+        if not audio_channel.get_busy() and not global_variables.background_channel.get_busy():
+            print("a")
+            global_variables.background_channel.play(global_variables.theme_sound)
         trigger = 0
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
