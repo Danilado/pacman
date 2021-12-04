@@ -12,6 +12,9 @@ from perfomance import img_load
 from settings_menu import settings_menu
 from store_score import store_score
 from store_score_menu import store_score_menu
+from achievement_menu import achievement_menu
+from achievements import achievements_save_to_file
+from actual_stats import stats_save_to_file
 
 pygame.init()
 pygame.mixer.init()
@@ -36,6 +39,8 @@ def play():
 def exit_game():
     global in_game
     in_game = True
+    achievements_save_to_file()
+    stats_save_to_file()
 
 
 def sm():
@@ -71,6 +76,7 @@ def options_menu():
             Button(220 * 1 + 80, 530, 200, 50, (0, 0, 0), settings, "Таблица Рекордов", store_score_menu),
             Button(220 * 2 + 80, 530, 200, 50, (0, 0, 0), settings, "Настройки", sm),
             Button(220 * 3 + 80, 530, 200, 50, (0, 0, 0), settings, "Выйти из игры", exit_game),
+            Button(220 * 4 + 80, 530, 50, 50, (0, 0, 0), settings, "A", achievement_menu)
         ]
         if global_variables.cheats:
             buttons.append(Button(980, 80,  25, 25, (0, 0, 0), settings, "-d", partial(cheat, 'd')),)
@@ -86,6 +92,8 @@ def options_menu():
             for event in events:
                 if event.type == pygame.QUIT:
                     pygame.quit()
+                    achievements_save_to_file()
+                    stats_save_to_file()
                     return
                 if event.type == pygame.KEYDOWN:
                     if not global_variables.cheats:

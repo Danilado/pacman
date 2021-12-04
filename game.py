@@ -1,7 +1,9 @@
 import pygame
+import time
 
 import global_variables
 import player
+# from change_theme import ThemeApi
 from ghosts.blue_ghost import BlueGhostLogic
 from ghosts.core import MainGhost
 from ghosts.orange_ghost import OrangeGhostLogic
@@ -11,6 +13,8 @@ from ghosts.sounds import Sound
 from layouts import map_with_sprites
 from layouts import simplified
 from perfomance import img_load
+from achievements import achievements
+from actual_stats import stats
 
 resolution = w, h = 224 / 8 * global_variables.cell_size, 336 / 8 * global_variables.cell_size
 last_time = 0
@@ -129,11 +133,11 @@ def main():
 
     Sound().current_sound_index = 1
 
+    start = time.monotonic()
     while not done:
         if not audio_channel.get_busy() and not global_variables.background_channel.get_busy():
             print("a")
             global_variables.background_channel.play(global_variables.theme_sound)
-
         trigger = 0
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -211,6 +215,14 @@ def main():
                     pac.draw()
 
             done = done or (pac.dead and not pac.play_dead_sound()) or (pac.win and not pac.play_win_sound())
+
+            if done:
+                playtime = time.monotonic() - start
+                stats['playtime'] += round(playtime)
+            if pac.win:
+                playtime = time.monotonic() - start
+                if playtime <= 60:
+                    achievements[3].Get()
+
         pygame.display.flip()
         clock.tick(120)
-    global_variables.theme_sound.stop()
