@@ -4,6 +4,8 @@ import global_variables
 import store_settings
 from game import set_block_size
 from menu import options_menu
+from achievements import achievements_load_from_file
+from actual_stats import stats_load_from_file
 
 
 def load_settings():
@@ -40,5 +42,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+    achievements_load_from_file()
+    stats_load_from_file()
     load_settings()
     options_menu()

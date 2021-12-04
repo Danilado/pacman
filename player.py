@@ -5,6 +5,8 @@ import pygame
 import global_variables
 from perfomance import img_load
 from store_score import get_scores
+from achievements import achievements
+from actual_stats import stats
 
 if TYPE_CHECKING:
     from ghosts.core import MainGhost
@@ -22,7 +24,7 @@ class Pacman:
                                    1.875 * global_variables.cell_size)
         self.chimg2 = img_load('textures/Cherry_2.png', 2 * global_variables.cell_size,
                                    1.875 * global_variables.cell_size)
-        self.best = max(scores, key=lambda item: item.score).score if scores != () else 0
+        self.best = scores[0].nickname + ' ' + str(max(scores, key=lambda item: item.score).score) if scores != () else 0
         self.x = x
         self.y = y
         self.vec = 0  # 0 - вправо. 1 - вверх. 2 - влево. 3 - вниз.
@@ -155,6 +157,8 @@ class Pacman:
                         if not ghost.ghost_logic.eaten:
                             score += 200 * (2 ** self.eaten)
                             self.eaten += 1
+                            self.eaten += 1
+                            stats['kills'] += 1
                             # print(f'{self.eaten} {score}')
                             self.play_eat_ghost_sound()
                             ghost.trigger_eaten()
@@ -183,7 +187,8 @@ class Pacman:
         self.vec = 1
         self.remember_vec = -1
         self.status = "hit-1"
-        pygame.mixer.stop()
+        pygame.mixer.pause()
+        global_variables.background_channel.unpause()
         self.play_dead_sound()
         if self.lives == 0:
             self.dead = True
@@ -193,6 +198,7 @@ class Pacman:
 
     def hit_with_pac(self):
         self.lives -= 1
+        self.play_eat_ghost_sound()
         if self.num == 1:
             self.x = 110 * (global_variables.cell_size / 8)
             self.y = 184 * (global_variables.cell_size / 8)
@@ -227,6 +233,7 @@ class Pacman:
             global_variables.orange_trigger = 1
         if global_variables.dots >= 244:
             self.win = True
+            stats['wins'] += 1
             img = img_load(f'./textures/pacsprites/pacman{"" if self.num == 1 else self.num}9.png',
                             2 * global_variables.cell_size, 2 * global_variables.cell_size)
             self.status_eat = 0
@@ -413,6 +420,10 @@ class Pacman:
                 if self.status_eat == 0:
                     self.status_eat = 45
 
+        if ((self.x - 9) >= self.screen.get_width()) or (self.x <= -9):
+            achievements[4].Get()
+            achievements[4].changeName("[СЕКРЕТ] Высокие технологии")
+            achievements[4].changeDescription("Пройдите сквозь портал")
         if (self.x - 9) >= self.screen.get_width():
             self.x = -7
             self.y = self.y // global_variables.cell_size * global_variables.cell_size

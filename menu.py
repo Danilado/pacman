@@ -12,6 +12,9 @@ from perfomance import img_load
 from settings_menu import settings_menu
 from store_score import store_score
 from store_score_menu import store_score_menu
+from achievement_menu import achievement_menu
+from achievements import achievements_save_to_file
+from actual_stats import stats_save_to_file
 
 pygame.init()
 pygame.mixer.init()
@@ -20,7 +23,7 @@ cheats_on_sfx = pygame.mixer.Sound("./sounds/cheats_on.wav")
 
 in_game: bool = False
 
-background_file = f"./textures/bg/{global_variables.texture_modifier}pacman2.jpg"
+background_file = f"./textures/bg/{global_variables.theme_api.texture_modifier}pacman2.jpg"
 
 
 def play():
@@ -36,12 +39,14 @@ def play():
 def exit_game():
     global in_game
     in_game = True
+    achievements_save_to_file()
+    stats_save_to_file()
 
 
 def sm():
     global background_file
     settings_menu()
-    background_file = f"./textures/bg/{global_variables.texture_modifier}pacman2.jpg"
+    background_file = f"./textures/bg/{global_variables.theme_api.texture_modifier}pacman2.jpg"
 
 def cheat(key):
     if key == 'd':
@@ -71,6 +76,7 @@ def options_menu():
             Button(220 * 1 + 80, 530, 200, 50, (0, 0, 0), settings, "Таблица Рекордов", store_score_menu),
             Button(220 * 2 + 80, 530, 200, 50, (0, 0, 0), settings, "Настройки", sm),
             Button(220 * 3 + 80, 530, 200, 50, (0, 0, 0), settings, "Выйти из игры", exit_game),
+            Button(220 * 4 + 80, 530, 50, 50, (0, 0, 0), settings, "A", achievement_menu)
         ]
         if global_variables.cheats:
             buttons.append(Button(980, 80,  25, 25, (0, 0, 0), settings, "-d", partial(cheat, 'd')),)
@@ -78,7 +84,7 @@ def options_menu():
             buttons.append(Button(980, 160, 25, 25, (0, 0, 0), settings, "-i", partial(cheat, 'i')),)
             buttons.append(Button(980, 200, 25, 25, (0, 0, 0), settings, "-c", partial(cheat, 'c')),)
         timeout = 0
-        background_file = f"./textures/bg/{global_variables.texture_modifier}pacman2.jpg"
+        background_file = f"./textures/bg/{global_variables.theme_api.texture_modifier}pacman2.jpg"
         localcombo = konami
         while not in_game:
             timeout += 1
@@ -86,6 +92,8 @@ def options_menu():
             for event in events:
                 if event.type == pygame.QUIT:
                     pygame.quit()
+                    achievements_save_to_file()
+                    stats_save_to_file()
                     return
                 if event.type == pygame.KEYDOWN:
                     if not global_variables.cheats:
@@ -105,7 +113,7 @@ def options_menu():
                     pressed = pygame.key.get_pressed()
                     if pressed[pygame.K_w] and pressed[pygame.K_t] and pressed[pygame.K_f] and timeout >= 100:
                         if background_file == "./textures/bg/pacman4.jpg":
-                            background_file = f"./textures/bg/{global_variables.texture_modifier}pacman2.jpg"
+                            background_file = f"./textures/bg/{global_variables.theme_api.texture_modifier}pacman2.jpg"
                             global_variables.easter = 0
                             timeout = 0
                         elif timeout >= 100:

@@ -1,8 +1,9 @@
 import pygame
+import time
 
 import global_variables
 import player
-from change_theme import ChangeThemeApi
+# from change_theme import ThemeApi
 from ghosts.blue_ghost import BlueGhostLogic
 from ghosts.core import MainGhost
 from ghosts.orange_ghost import OrangeGhostLogic
@@ -12,6 +13,8 @@ from ghosts.sounds import Sound
 from layouts import map_with_sprites
 from layouts import simplified
 from perfomance import img_load
+from achievements import achievements
+from actual_stats import stats
 
 resolution = w, h = 224 / 8 * global_variables.cell_size, 336 / 8 * global_variables.cell_size
 last_time = 0
@@ -32,7 +35,7 @@ def render(window, matrix):  # Моя функция рендера карты �
                 # Пустота окрашивается в чёрное   но зачем ?
             else:
                 window.blit(
-                    img_load(f'./textures/walls/{global_variables.texture_modifier}{matrix[i][j]}.png',
+                    img_load(f'./textures/walls/{global_variables.theme_api.texture_modifier}{matrix[i][j]}.png',
                              global_variables.cell_size, global_variables.cell_size
                              ),
                     (global_variables.cell_size * j, global_variables.cell_size * i + 50)
@@ -110,10 +113,14 @@ def main():
         global_variables.ghosts = [orange_ghost, red_ghost, pink_ghost, blue_ghost]
 
     audio_sound = pygame.mixer.Sound("./sounds/game_start.wav")
-    if global_variables.easter == 1:
+    if global_variables.easter:
         audio_sound = pygame.mixer.Sound("./sounds/game_start_e.wav")
+
     audio_channel = pygame.mixer.Channel(0)
     audio_channel.play(audio_sound)
+
+    if global_variables.easter:
+        global_variables.theme_sound = pygame.mixer.Sound("./sounds/paradise_lost.wav")
 
     clock = pygame.time.Clock()
     stage = 1
@@ -126,10 +133,11 @@ def main():
 
     Sound().current_sound_index = 1
 
-    change_theme_api = ChangeThemeApi()
-
+    start = time.monotonic()
     while not done:
-        change_theme_api.tick()
+        if not audio_channel.get_busy() and not global_variables.background_channel.get_busy():
+            print("a")
+            global_variables.background_channel.play(global_variables.theme_sound)
         trigger = 0
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -207,5 +215,14 @@ def main():
                     pac.draw()
 
             done = done or (pac.dead and not pac.play_dead_sound()) or (pac.win and not pac.play_win_sound())
+
+            if done:
+                playtime = time.monotonic() - start
+                stats['playtime'] += round(playtime)
+            if pac.win:
+                playtime = time.monotonic() - start
+                if playtime <= 60:
+                    achievements[3].Get()
+
         pygame.display.flip()
         clock.tick(120)

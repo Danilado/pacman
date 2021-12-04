@@ -36,10 +36,25 @@ def settings_menu():
                      (0, 0, 0), settings, "Средний", partial(set_block_size, 10))
     btn_big = Button(260 * 2 + 60 + main_screen.get_width() // 4 / 2 + 80, 180, 200, 50,
                      (0, 0, 0), settings, "Большой", partial(set_block_size, 16))
-    buttons = [btn_easy, btn_norm, btn_hard, btn_small, btn_med, btn_big]
-    text_font = pygame.font.SysFont("segoeuisemibold", 32)
+    btn_classic_theme = Button(20 + main_screen.get_width() // 4 / 2 + 120, 280, 200, 50,
+                               (0, 0, 0), settings, "Классические",
+                               partial(setattr, global_variables.theme_api, "textures_mode",
+                                       store_settings.TextureSetting.classic))
+    btn_alternative_theme = Button(20 + 260 * 1 + main_screen.get_width() // 4 / 2 + 120, 280, 200, 50,
+                                   (0, 0, 0), settings, "Альтернативные",
+                                   partial(setattr, global_variables.theme_api, "textures_mode",
+                                           store_settings.TextureSetting.alternative))
+    btn_auto_theme = Button(20 + 260 * 2 + main_screen.get_width() // 4 / 2 + 120, 280, 200, 50,
+                            (0, 0, 0), settings, "Автоматические",
+                            partial(setattr, global_variables.theme_api, "textures_mode",
+                                    store_settings.TextureSetting.automatic))
+    buttons = [btn_easy, btn_norm, btn_hard,
+               btn_small, btn_med, btn_big,
+               btn_classic_theme, btn_alternative_theme, btn_auto_theme]
+    text_font = pygame.font.SysFont("segoeuisemibold", 24)
     running = True
     back_color = "black"
+    settings_changed = False
     while running:
         if pygame.event.peek(pump=True):
             events = pygame.event.get()
@@ -61,7 +76,9 @@ def settings_menu():
                 dif_str = "Сложная"
             else:
                 dif_str = "Нормальная"
-            if global_variables.texture_modifier == "":
+            if global_variables.theme_api.textures_mode is store_settings.TextureSetting.automatic:
+                txt_str = "Автоматически"
+            elif global_variables.theme_api.textures_mode is store_settings.TextureSetting.classic:
                 txt_str = "Классические"
             else:
                 txt_str = "Альтернативные"
@@ -71,11 +88,13 @@ def settings_menu():
                 size_str = "Средний"
             else:
                 size_str = "Большой"
+
             main_screen.blit(text_font.render("Сложность", False, text_color), (20, 95))
             main_screen.blit(text_font.render("Размер экрана", False, text_color), (20, 195))
-            main_screen.blit(text_font.render(f"Текущая сложность:  {dif_str}", False, text_color), (20, 295))
-            main_screen.blit(text_font.render(f"Текущие текстуры:  {txt_str}", False, text_color), (20, 395))
-            main_screen.blit(text_font.render(f"Текущий размер экрана:  {size_str}", False, text_color), (20, 495))
+            main_screen.blit(text_font.render(f"Настройка текстур", False, text_color), (20, 295))
+            main_screen.blit(text_font.render(f"Текущая настройка текстур:  {txt_str}", False, text_color), (20, 350))
+            main_screen.blit(text_font.render(f"Текущая сложность:  {dif_str}", False, text_color), (20, 400))
+            main_screen.blit(text_font.render(f"Текущий размер экрана:  {size_str}", False, text_color), (20, 450))
 
             for event in events:
                 if event.type == pygame.QUIT:
@@ -84,14 +103,13 @@ def settings_menu():
                     if event.key == pygame.K_ESCAPE:
                         running = False
 
-            n_t_s_s = False
             for button in buttons:
                 if button.update(events):
-                    n_t_s_s = True
-            if n_t_s_s:
-                store_settings.store_settings()
+                    settings_changed = True
 
             for button in buttons:
                 button.draw(main_screen)
 
             pygame.display.flip()
+    if settings_changed:
+        store_settings.store_settings()
