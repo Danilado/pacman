@@ -23,7 +23,7 @@ cheats_on_sfx = pygame.mixer.Sound("./sounds/cheats_on.wav")
 
 in_game: bool = False
 
-background_file = f"./textures/bg/{global_variables.texture_modifier}pacman2.jpg"
+background_file = f"./textures/bg/{global_variables.theme_api.texture_modifier}pacman2.jpg"
 
 
 def play():
@@ -46,7 +46,7 @@ def exit_game():
 def sm():
     global background_file
     settings_menu()
-    background_file = f"./textures/bg/{global_variables.texture_modifier}pacman2.jpg"
+    background_file = f"./textures/bg/{global_variables.theme_api.texture_modifier}pacman2.jpg"
 
 def cheat(key):
     if key == 'd':
@@ -84,7 +84,7 @@ def options_menu():
             buttons.append(Button(980, 160, 25, 25, (0, 0, 0), settings, "-i", partial(cheat, 'i')),)
             buttons.append(Button(980, 200, 25, 25, (0, 0, 0), settings, "-c", partial(cheat, 'c')),)
         timeout = 0
-        background_file = f"./textures/bg/{global_variables.texture_modifier}pacman2.jpg"
+        background_file = f"./textures/bg/{global_variables.theme_api.texture_modifier}pacman2.jpg"
         localcombo = konami
         while not in_game:
             timeout += 1
@@ -113,7 +113,7 @@ def options_menu():
                     pressed = pygame.key.get_pressed()
                     if pressed[pygame.K_w] and pressed[pygame.K_t] and pressed[pygame.K_f] and timeout >= 100:
                         if background_file == "./textures/bg/pacman4.jpg":
-                            background_file = f"./textures/bg/{global_variables.texture_modifier}pacman2.jpg"
+                            background_file = f"./textures/bg/{global_variables.theme_api.texture_modifier}pacman2.jpg"
                             global_variables.easter = 0
                             timeout = 0
                         elif timeout >= 100:

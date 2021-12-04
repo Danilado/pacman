@@ -3,7 +3,7 @@ import time
 
 import global_variables
 import player
-from change_theme import ChangeThemeApi
+# from change_theme import ThemeApi
 from ghosts.blue_ghost import BlueGhostLogic
 from ghosts.core import MainGhost
 from ghosts.orange_ghost import OrangeGhostLogic
@@ -35,7 +35,7 @@ def render(window, matrix):  # Моя функция рендера карты �
                 # Пустота окрашивается в чёрное   но зачем ?
             else:
                 window.blit(
-                    img_load(f'./textures/walls/{global_variables.texture_modifier}{matrix[i][j]}.png',
+                    img_load(f'./textures/walls/{global_variables.theme_api.texture_modifier}{matrix[i][j]}.png',
                              global_variables.cell_size, global_variables.cell_size
                              ),
                     (global_variables.cell_size * j, global_variables.cell_size * i + 50)
@@ -129,11 +129,11 @@ def main():
 
     Sound().current_sound_index = 1
 
-    change_theme_api = ChangeThemeApi()
+    # change_theme_api = ThemeApi()
 
     start = time.monotonic()
     while not done:
-        change_theme_api.tick()
+        # change_theme_api.tick()
         trigger = 0
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

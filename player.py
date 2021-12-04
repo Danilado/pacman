@@ -24,7 +24,7 @@ class Pacman:
                                    1.875 * global_variables.cell_size)
         self.chimg2 = img_load('textures/Cherry_2.png', 2 * global_variables.cell_size,
                                    1.875 * global_variables.cell_size)
-        self.best = max(scores, key=lambda item: item.score).score if scores != () else 0
+        self.best = scores[0].nickname + ' ' + str(max(scores, key=lambda item: item.score).score) if scores != () else 0
         self.x = x
         self.y = y
         self.vec = 0  # 0 - вправо. 1 - вверх. 2 - влево. 3 - вниз.
@@ -187,7 +187,8 @@ class Pacman:
         self.vec = 1
         self.remember_vec = -1
         self.status = "hit-1"
-        pygame.mixer.stop()
+        pygame.mixer.pause()
+        global_variables.background_channel.unpause()
         self.play_dead_sound()
         if self.lives == 0:
             self.dead = True
@@ -197,6 +198,7 @@ class Pacman:
 
     def hit_with_pac(self):
         self.lives -= 1
+        self.play_eat_ghost_sound()
         if self.num == 1:
             self.x = 110 * (global_variables.cell_size / 8)
             self.y = 184 * (global_variables.cell_size / 8)
